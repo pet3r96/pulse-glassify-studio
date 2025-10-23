@@ -4,8 +4,9 @@ import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { useToast } from "@/hooks/use-toast";
-import { Zap, Mail, Lock, User } from "lucide-react";
+import { Zap, Mail, Lock, User, Building2, Users } from "lucide-react";
 
 const Auth = () => {
   const [searchParams] = useSearchParams();
@@ -14,6 +15,7 @@ const Auth = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [fullName, setFullName] = useState("");
+  const [role, setRole] = useState<"agency" | "subaccount">("agency");
   const navigate = useNavigate();
   const { toast } = useToast();
 
@@ -47,6 +49,7 @@ const Auth = () => {
             emailRedirectTo: `${window.location.origin}/dashboard`,
             data: {
               full_name: fullName,
+              role: role,
             },
           },
         });
@@ -109,21 +112,51 @@ const Auth = () => {
           {/* Form */}
           <form onSubmit={handleAuth} className="space-y-4">
             {isSignUp && (
-              <div className="space-y-2">
-                <Label htmlFor="fullName" className="flex items-center gap-2">
-                  <User className="w-4 h-4" />
-                  Full Name
-                </Label>
-                <Input
-                  id="fullName"
-                  type="text"
-                  placeholder="John Doe"
-                  value={fullName}
-                  onChange={(e) => setFullName(e.target.value)}
-                  required={isSignUp}
-                  className="glass border-white/10 focus:border-pulsePurple"
-                />
-              </div>
+              <>
+                <div className="space-y-2">
+                  <Label htmlFor="fullName" className="flex items-center gap-2">
+                    <User className="w-4 h-4" />
+                    Full Name
+                  </Label>
+                  <Input
+                    id="fullName"
+                    type="text"
+                    placeholder="John Doe"
+                    value={fullName}
+                    onChange={(e) => setFullName(e.target.value)}
+                    required={isSignUp}
+                    className="glass border-white/10 focus:border-pulsePurple"
+                  />
+                </div>
+
+                <div className="space-y-3">
+                  <Label className="flex items-center gap-2">
+                    Account Type
+                  </Label>
+                  <RadioGroup value={role} onValueChange={(value) => setRole(value as "agency" | "subaccount")}>
+                    <div className="flex items-center space-x-2 glass p-4 rounded-lg border border-white/10 hover:border-pulsePurple/50 transition-colors">
+                      <RadioGroupItem value="agency" id="agency" />
+                      <Label htmlFor="agency" className="flex items-center gap-2 cursor-pointer flex-1">
+                        <Building2 className="w-4 h-4" />
+                        <div>
+                          <div className="font-medium">Agency</div>
+                          <div className="text-xs text-muted-foreground">Manage multiple subaccounts</div>
+                        </div>
+                      </Label>
+                    </div>
+                    <div className="flex items-center space-x-2 glass p-4 rounded-lg border border-white/10 hover:border-pulsePurple/50 transition-colors">
+                      <RadioGroupItem value="subaccount" id="subaccount" />
+                      <Label htmlFor="subaccount" className="flex items-center gap-2 cursor-pointer flex-1">
+                        <Users className="w-4 h-4" />
+                        <div>
+                          <div className="font-medium">Subaccount</div>
+                          <div className="text-xs text-muted-foreground">Individual account access</div>
+                        </div>
+                      </Label>
+                    </div>
+                  </RadioGroup>
+                </div>
+              </>
             )}
 
             <div className="space-y-2">
