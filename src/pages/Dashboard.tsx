@@ -119,7 +119,10 @@ const Dashboard = () => {
       <div className="glass-card">
         <h2 className="font-heading text-xl mb-4">Quick Actions</h2>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <Button className="gradient-pulse hover-glow justify-start h-auto py-4">
+          <Button 
+            className="gradient-pulse hover-glow justify-start h-auto py-4"
+            onClick={() => navigate("/dashboard/themes/create")}
+          >
             <Palette className="w-5 h-5 mr-2" />
             <div className="text-left">
               <p className="font-semibold">Create New Theme</p>
