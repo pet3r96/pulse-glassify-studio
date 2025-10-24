@@ -12,12 +12,12 @@ const Index = () => {
       {/* Hero Section */}
       <section className="relative pt-32 pb-20 px-6 overflow-hidden">
         {/* Animated background */}
-        <div className="absolute inset-0 -z-10">
+        <div className="absolute inset-0 pointer-events-none">
           <div className="absolute top-0 left-1/4 w-96 h-96 gradient-pulse rounded-full blur-[120px] opacity-20 animate-pulse-glow" />
           <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-pulseBlue rounded-full blur-[120px] opacity-20 animate-pulse-glow" />
         </div>
 
-        <div className="container mx-auto">
+        <div className="container mx-auto relative z-10">
           <div className="grid lg:grid-cols-2 gap-12 items-center">
             <div className="space-y-8">
               <div className="inline-block glass rounded-full px-4 py-2 text-sm animate-pulse-glow">
