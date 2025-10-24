@@ -93,7 +93,11 @@ All colors MUST be HSL.
   }
   
   .gradient-text {
-    @apply gradient-pulse bg-clip-text text-transparent;
+    background: linear-gradient(135deg, #FF4BCB 0%, #6C2BFF 50%, #00A0FF 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    display: inline;
   }
   
   /* Glow Effects */
