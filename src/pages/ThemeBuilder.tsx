@@ -8,8 +8,15 @@ import { Textarea } from "@/components/ui/textarea";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
-import { ArrowLeft, Save, Eye } from "lucide-react";
+import { ArrowLeft, Save, Code2 } from "lucide-react";
 import GHLMockDashboard from "@/components/theme-builder/GHLMockDashboard";
+import { GHLLoginScreen } from "@/components/theme-builder/GHLLoginScreen";
+import { GHLContacts } from "@/components/theme-builder/GHLContacts";
+import { GHLOpportunities } from "@/components/theme-builder/GHLOpportunities";
+import { GHLCalendar } from "@/components/theme-builder/GHLCalendar";
+import { DeploymentDialog } from "@/components/theme-builder/DeploymentDialog";
+import { generateDeploymentCode } from "@/utils/themeCodeGenerator";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
 interface ThemeColors {
   primary: string;
@@ -44,6 +51,8 @@ const ThemeBuilder = () => {
   const [customCSS, setCustomCSS] = useState("");
   const [customJS, setCustomJS] = useState("");
   const [isSaving, setIsSaving] = useState(false);
+  const [previewPage, setPreviewPage] = useState<string>("dashboard");
+  const [showDeployment, setShowDeployment] = useState(false);
 
   const handleColorChange = (key: keyof ThemeColors, value: string) => {
     setColors({ ...colors, [key]: value });
@@ -128,9 +137,9 @@ const ThemeBuilder = () => {
             </div>
           </div>
           <div className="flex items-center gap-2">
-            <Button variant="outline" size="sm">
-              <Eye className="h-4 w-4 mr-2" />
-              Preview
+            <Button variant="outline" size="sm" onClick={() => setShowDeployment(true)}>
+              <Code2 className="h-4 w-4 mr-2" />
+              Get Code
             </Button>
             <Button onClick={handleSaveTheme} disabled={isSaving} size="sm">
               <Save className="h-4 w-4 mr-2" />
@@ -244,18 +253,45 @@ const ThemeBuilder = () => {
         {/* Center - Preview */}
         <div className="lg:col-span-9">
           <Card className="p-6 glass-card">
-            <div className="mb-4">
-              <h2 className="text-lg font-semibold">Live Preview</h2>
-              <p className="text-sm text-muted-foreground">
-                See your changes in real-time
-              </p>
+            <div className="mb-4 flex items-center justify-between">
+              <div>
+                <h2 className="text-lg font-semibold">Live Preview</h2>
+                <p className="text-sm text-muted-foreground">
+                  See your changes in real-time
+                </p>
+              </div>
+              <div className="flex items-center gap-2">
+                <Label className="text-sm">Page:</Label>
+                <Select value={previewPage} onValueChange={setPreviewPage}>
+                  <SelectTrigger className="w-48">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="login">Login Screen</SelectItem>
+                    <SelectItem value="dashboard">Dashboard</SelectItem>
+                    <SelectItem value="contacts">Contacts</SelectItem>
+                    <SelectItem value="calendar">Calendar</SelectItem>
+                    <SelectItem value="opportunities">Opportunities</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
             </div>
-            <div className="border rounded-lg overflow-hidden bg-background">
-              <GHLMockDashboard colors={colors} fonts={fonts} />
+            <div className="border rounded-lg overflow-hidden bg-background h-[600px]">
+              {previewPage === "login" && <GHLLoginScreen colors={colors} fonts={fonts} />}
+              {previewPage === "dashboard" && <GHLMockDashboard colors={colors} fonts={fonts} />}
+              {previewPage === "contacts" && <GHLContacts colors={colors} fonts={fonts} />}
+              {previewPage === "calendar" && <GHLCalendar colors={colors} fonts={fonts} />}
+              {previewPage === "opportunities" && <GHLOpportunities colors={colors} fonts={fonts} />}
             </div>
           </Card>
         </div>
       </div>
+
+      <DeploymentDialog 
+        open={showDeployment}
+        onOpenChange={setShowDeployment}
+        deploymentCode={generateDeploymentCode({ colors, fonts, customCSS, customJS })}
+      />
     </div>
   );
 };
