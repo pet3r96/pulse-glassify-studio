@@ -4,10 +4,8 @@ import { Navbar } from "@/components/Navbar";
 import { Palette, Sparkles, Shield, Code, TrendingUp } from "lucide-react";
 import heroImage from "@/assets/hero-dashboard.jpg";
 import logo from "@/assets/pulsegen-logo.png";
-
 const Index = () => {
-  return (
-    <div className="min-h-screen">
+  return <div className="min-h-screen">
       <Navbar />
       
       {/* Hero Section */}
@@ -61,11 +59,7 @@ const Index = () => {
 
             <div className="relative">
               <div className="glass-card p-4 animate-pulse-glow">
-                <img 
-                  src={heroImage} 
-                  alt="PulseStudio Dashboard" 
-                  className="rounded-xl w-full"
-                />
+                <img src={heroImage} alt="PulseStudio Dashboard" className="rounded-xl w-full" />
               </div>
             </div>
           </div>
@@ -167,7 +161,7 @@ const Index = () => {
               Join agencies worldwide building beautiful, custom-branded experiences
             </p>
             <Link to="/auth?mode=signup">
-              <Button size="lg" className="gradient-pulse hover-glow text-lg px-8 py-6 relative z-10">
+              <Button size="lg" className="gradient-pulse hover-glow text-lg px-8 py-6 relative z-10 my-[10px]">
                 <img src={logo} alt="" className="w-5 h-5 mr-2" />
                 Get Started Now
               </Button>
@@ -182,8 +176,6 @@ const Index = () => {
           <p>© 2025 PulseStudio by PulseGen Media. All rights reserved.</p>
         </div>
       </footer>
-    </div>
-  );
+    </div>;
 };
-
 export default Index;
