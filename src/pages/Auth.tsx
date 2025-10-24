@@ -6,7 +6,8 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { useToast } from "@/hooks/use-toast";
-import { Zap, Mail, Lock, User, Building2, Users } from "lucide-react";
+import { Mail, Lock, User, Building2, Users } from "lucide-react";
+import logo from "@/assets/pulsegen-logo.png";
 
 const Auth = () => {
   const [searchParams] = useSearchParams();
@@ -96,8 +97,8 @@ const Auth = () => {
         <div className="glass-card space-y-8">
           {/* Header */}
           <div className="text-center space-y-2">
-            <div className="gradient-pulse p-3 rounded-2xl w-fit mx-auto mb-4">
-              <Zap className="w-8 h-8 text-white" />
+            <div className="w-fit mx-auto mb-4">
+              <img src={logo} alt="PulseGen Media" className="w-16 h-16 mx-auto" />
             </div>
             <h1 className="font-heading text-3xl gradient-text">
               {isSignUp ? "Create Account" : "Welcome Back"}

@@ -3,7 +3,8 @@ import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
-import { Zap, Palette, Users, TrendingUp, LogOut } from "lucide-react";
+import { Palette, Users, TrendingUp, LogOut } from "lucide-react";
+import logo from "@/assets/pulsegen-logo.png";
 
 const Dashboard = () => {
   const navigate = useNavigate();
@@ -48,7 +49,7 @@ const Dashboard = () => {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="animate-pulse">
-          <Zap className="w-12 h-12 text-pulsePurple" />
+          <img src={logo} alt="Loading" className="w-12 h-12" />
         </div>
       </div>
     );
@@ -60,8 +61,8 @@ const Dashboard = () => {
       <div className="glass-card mb-6">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-4">
-            <div className="gradient-pulse p-3 rounded-2xl">
-              <Zap className="w-6 h-6 text-white" />
+            <div className="p-3">
+              <img src={logo} alt="PulseGen Media" className="w-10 h-10" />
             </div>
             <div>
               <h1 className="font-heading text-2xl gradient-text">Welcome to PulseStudio</h1>

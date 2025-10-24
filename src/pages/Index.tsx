@@ -1,8 +1,9 @@
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Navbar } from "@/components/Navbar";
-import { Palette, Zap, Sparkles, Shield, Code, TrendingUp } from "lucide-react";
+import { Palette, Sparkles, Shield, Code, TrendingUp } from "lucide-react";
 import heroImage from "@/assets/hero-dashboard.jpg";
+import logo from "@/assets/pulsegen-logo.png";
 
 const Index = () => {
   return (
@@ -37,7 +38,7 @@ const Index = () => {
               <div className="flex flex-wrap gap-4">
                 <Link to="/auth?mode=signup">
                   <Button size="lg" className="gradient-pulse hover-glow text-lg px-8 py-6">
-                    <Zap className="w-5 h-5 mr-2" />
+                    <img src={logo} alt="" className="w-5 h-5 mr-2" />
                     Start Building Free
                   </Button>
                 </Link>
@@ -131,7 +132,7 @@ const Index = () => {
 
             <div className="glass-card hover-glow group cursor-pointer">
               <div className="p-4 rounded-2xl bg-pulsePurple/20 w-fit mb-4 group-hover:scale-110 transition-transform">
-                <Zap className="w-8 h-8 text-pulsePurple" />
+                <img src={logo} alt="" className="w-8 h-8" />
               </div>
               <h3 className="font-heading text-2xl mb-3">Instant Deployment</h3>
               <p className="text-muted-foreground">
@@ -167,7 +168,7 @@ const Index = () => {
             </p>
             <Link to="/auth?mode=signup">
               <Button size="lg" className="gradient-pulse hover-glow text-lg px-8 py-6 relative z-10">
-                <Zap className="w-5 h-5 mr-2" />
+                <img src={logo} alt="" className="w-5 h-5 mr-2" />
                 Get Started Now
               </Button>
             </Link>
