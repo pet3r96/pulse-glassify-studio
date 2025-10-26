@@ -6,8 +6,8 @@ export const createClient = () => {
   const cookieStore = cookies()
 
         return createServerClient<Database>(
-          'https://bafqocuimkfjnuhvhsat.supabase.co',
-          'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJhZnFvY3VpbWtmam51aHZoc2F0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjE0NDQ2NTcsImV4cCI6MjA3NzAyMDY1N30.ary_R34tb_jAuM2QddZBpWZM7DktoISmDAtDDDSU0LM',
+          process.env.NEXT_PUBLIC_SUPABASE_URL!,
+          process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
     {
       cookies: {
         getAll() {
