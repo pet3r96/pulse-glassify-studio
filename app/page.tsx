@@ -1,8 +1,8 @@
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import Image from "next/image";
-import logo from "@/src/assets/pulsegen-logo.png";
-import heroDashboard from "@/src/assets/hero-dashboard.jpg";
+import logo from "./assets/pulsegen-logo.png";
+import heroDashboard from "./assets/hero-dashboard.jpg";
 
 export default function HomePage() {
   return (
