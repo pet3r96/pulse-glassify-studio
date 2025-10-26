@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import Image from "next/image";
-import logo from "@/src/assets/pulsegen-logo.png";
+import logo from "../assets/pulsegen-logo.png";
 
 export const Navbar = () => {
   return (
