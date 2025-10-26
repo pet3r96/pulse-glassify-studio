@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from "react";
+import { useState, Suspense } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -14,7 +14,7 @@ import Link from "next/link";
 import Image from "next/image";
 import logo from "../../../public/pulsegen-logo.png";
 
-export default function AuthPage() {
+function AuthForm() {
   const searchParams = useSearchParams();
   const router = useRouter();
   const { toast } = useToast();
@@ -173,5 +173,13 @@ export default function AuthPage() {
         </CardContent>
       </Card>
     </div>
+  );
+}
+
+export default function AuthPage() {
+  return (
+    <Suspense fallback={<div className="min-h-screen flex items-center justify-center">Loading...</div>}>
+      <AuthForm />
+    </Suspense>
   );
 }

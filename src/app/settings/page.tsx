@@ -1,0 +1,167 @@
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import { Button } from "@/components/ui/button"
+import { Input } from "@/components/ui/input"
+import { Label } from "@/components/ui/label"
+import { Switch } from "@/components/ui/switch"
+import { Separator } from "@/components/ui/separator"
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { User, Shield, Bell, Palette } from "lucide-react"
+
+export default function Settings() {
+  return (
+    <div className="min-h-screen bg-gray-50">
+      <div className="container mx-auto px-4 py-8">
+        <div className="mb-8">
+          <h1 className="text-3xl font-bold text-gray-900 mb-2">Settings</h1>
+          <p className="text-gray-600">Manage your account and preferences</p>
+        </div>
+
+        <div className="max-w-4xl">
+          <Tabs defaultValue="profile" className="w-full">
+            <TabsList className="grid w-full grid-cols-4">
+              <TabsTrigger value="profile">Profile</TabsTrigger>
+              <TabsTrigger value="security">Security</TabsTrigger>
+              <TabsTrigger value="notifications">Notifications</TabsTrigger>
+              <TabsTrigger value="themes">Themes</TabsTrigger>
+            </TabsList>
+            
+            <TabsContent value="profile" className="space-y-6">
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center">
+                    <User className="mr-2 h-5 w-5" />
+                    Profile Information
+                  </CardTitle>
+                  <CardDescription>
+                    Update your personal information
+                  </CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="space-y-2">
+                      <Label htmlFor="firstName">First Name</Label>
+                      <Input id="firstName" defaultValue="John" />
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="lastName">Last Name</Label>
+                      <Input id="lastName" defaultValue="Doe" />
+                    </div>
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="email">Email</Label>
+                    <Input id="email" type="email" defaultValue="john@example.com" />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="company">Company</Label>
+                    <Input id="company" defaultValue="Acme Agency" />
+                  </div>
+                  <Button>Save Changes</Button>
+                </CardContent>
+              </Card>
+            </TabsContent>
+            
+            <TabsContent value="security" className="space-y-6">
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center">
+                    <Shield className="mr-2 h-5 w-5" />
+                    Security Settings
+                  </CardTitle>
+                  <CardDescription>
+                    Manage your account security
+                  </CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="currentPassword">Current Password</Label>
+                    <Input id="currentPassword" type="password" />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="newPassword">New Password</Label>
+                    <Input id="newPassword" type="password" />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="confirmPassword">Confirm New Password</Label>
+                    <Input id="confirmPassword" type="password" />
+                  </div>
+                  <Button>Update Password</Button>
+                </CardContent>
+              </Card>
+            </TabsContent>
+            
+            <TabsContent value="notifications" className="space-y-6">
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center">
+                    <Bell className="mr-2 h-5 w-5" />
+                    Notification Preferences
+                  </CardTitle>
+                  <CardDescription>
+                    Choose what notifications you want to receive
+                  </CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <Label htmlFor="email-notifications">Email Notifications</Label>
+                      <p className="text-sm text-gray-500">Receive updates via email</p>
+                    </div>
+                    <Switch id="email-notifications" defaultChecked />
+                  </div>
+                  <Separator />
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <Label htmlFor="theme-updates">Theme Updates</Label>
+                      <p className="text-sm text-gray-500">Get notified when themes are updated</p>
+                    </div>
+                    <Switch id="theme-updates" defaultChecked />
+                  </div>
+                  <Separator />
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <Label htmlFor="deployment-alerts">Deployment Alerts</Label>
+                      <p className="text-sm text-gray-500">Alert when deployments complete</p>
+                    </div>
+                    <Switch id="deployment-alerts" />
+                  </div>
+                </CardContent>
+              </Card>
+            </TabsContent>
+            
+            <TabsContent value="themes" className="space-y-6">
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center">
+                    <Palette className="mr-2 h-5 w-5" />
+                    Theme Preferences
+                  </CardTitle>
+                  <CardDescription>
+                    Customize your default theme settings
+                  </CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="default-theme">Default Theme</Label>
+                    <Input id="default-theme" defaultValue="Modern Dashboard" />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="color-scheme">Color Scheme</Label>
+                    <Input id="color-scheme" defaultValue="Blue" />
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <Label htmlFor="auto-deploy">Auto Deploy</Label>
+                      <p className="text-sm text-gray-500">Automatically deploy theme changes</p>
+                    </div>
+                    <Switch id="auto-deploy" />
+                  </div>
+                  <Button>Save Preferences</Button>
+                </CardContent>
+              </Card>
+            </TabsContent>
+          </Tabs>
+        </div>
+      </div>
+    </div>
+  )
+}
