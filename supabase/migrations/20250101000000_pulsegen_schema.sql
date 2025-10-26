@@ -1,271 +1,318 @@
--- PulseGen Studio Database Schema
--- Complete database structure for the platform
-
 -- Enable necessary extensions
 CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
 CREATE EXTENSION IF NOT EXISTS "pgcrypto";
 
--- Create custom types
-CREATE TYPE user_role AS ENUM ('super_admin', 'agency', 'subaccount');
-CREATE TYPE subscription_status AS ENUM ('active', 'trial', 'past_due', 'canceled', 'unpaid');
-CREATE TYPE theme_status AS ENUM ('draft', 'published', 'archived');
-CREATE TYPE ticket_status AS ENUM ('open', 'in_progress', 'resolved', 'closed');
-CREATE TYPE task_status AS ENUM ('todo', 'in_progress', 'completed', 'cancelled');
+-- Create 'profiles' table
+CREATE TABLE profiles (
+  id UUID REFERENCES auth.users ON DELETE CASCADE NOT NULL PRIMARY KEY,
+  full_name TEXT,
+  avatar_url TEXT,
+  role TEXT CHECK (role IN ('super_admin', 'agency', 'subaccount')) DEFAULT 'subaccount' NOT NULL,
+  agency_id UUID REFERENCES public.agencies (id) ON DELETE SET NULL,
+  onboarding_completed BOOLEAN DEFAULT FALSE NOT NULL,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW() NOT NULL,
+  updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW() NOT NULL
+);
 
--- Agencies table
+-- Create 'agencies' table
 CREATE TABLE agencies (
-  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
   name TEXT NOT NULL,
-  owner_id UUID REFERENCES auth.users(id) ON DELETE CASCADE,
+  owner_id UUID REFERENCES auth.users ON DELETE CASCADE NOT NULL,
   ghl_api_key_encrypted TEXT,
-  ghl_api_key_valid BOOLEAN DEFAULT FALSE,
+  ghl_api_key_valid BOOLEAN DEFAULT FALSE NOT NULL,
   ghl_api_key_last_validated TIMESTAMP WITH TIME ZONE,
   logo_url TEXT,
   favicon_url TEXT,
-  base_theme TEXT DEFAULT 'dark',
-  embedded_mode_enabled BOOLEAN DEFAULT FALSE,
+  base_theme TEXT,
+  embedded_mode_enabled BOOLEAN DEFAULT FALSE NOT NULL,
   embedded_token TEXT UNIQUE,
   subscription_id TEXT,
-  subscription_status subscription_status DEFAULT 'trial',
-  trial_ends_at TIMESTAMP WITH TIME ZONE DEFAULT (NOW() + INTERVAL '14 days'),
-  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
-  updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+  subscription_status TEXT CHECK (subscription_status IN ('active', 'trial', 'past_due', 'canceled', 'unpaid')),
+  trial_ends_at TIMESTAMP WITH TIME ZONE,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW() NOT NULL,
+  updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW() NOT NULL
 );
 
--- User profiles table
-CREATE TABLE profiles (
-  id UUID PRIMARY KEY REFERENCES auth.users(id) ON DELETE CASCADE,
-  full_name TEXT,
-  avatar_url TEXT,
-  role user_role NOT NULL DEFAULT 'agency',
-  agency_id UUID REFERENCES agencies(id) ON DELETE CASCADE,
-  onboarding_completed BOOLEAN DEFAULT FALSE,
-  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
-  updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
-);
-
--- Subaccounts table
-CREATE TABLE subaccounts (
-  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-  agency_id UUID REFERENCES agencies(id) ON DELETE CASCADE,
-  name TEXT NOT NULL,
-  ghl_location_id TEXT,
-  ghl_api_key_encrypted TEXT,
-  ghl_api_key_valid BOOLEAN DEFAULT FALSE,
-  theme_id UUID,
-  is_active BOOLEAN DEFAULT TRUE,
-  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
-  updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
-);
-
--- Themes table
+-- Create 'themes' table
 CREATE TABLE themes (
-  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-  agency_id UUID REFERENCES agencies(id) ON DELETE CASCADE,
+  id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+  agency_id UUID REFERENCES public.agencies (id) ON DELETE CASCADE NOT NULL,
   name TEXT NOT NULL,
   description TEXT,
-  css_content TEXT,
-  js_content TEXT,
-  status theme_status DEFAULT 'draft',
-  is_public BOOLEAN DEFAULT FALSE,
-  version INTEGER DEFAULT 1,
-  parent_theme_id UUID REFERENCES themes(id),
-  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
-  updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+  css_code TEXT,
+  js_code TEXT,
+  version INTEGER DEFAULT 1 NOT NULL,
+  is_published BOOLEAN DEFAULT FALSE NOT NULL,
+  is_marketplace_item BOOLEAN DEFAULT FALSE NOT NULL,
+  marketplace_price NUMERIC(10, 2),
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW() NOT NULL,
+  updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW() NOT NULL
 );
 
--- Theme deployments table
+-- Create 'theme_deployments' table
 CREATE TABLE theme_deployments (
-  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-  theme_id UUID REFERENCES themes(id) ON DELETE CASCADE,
-  agency_id UUID REFERENCES agencies(id) ON DELETE CASCADE,
-  subaccount_id UUID REFERENCES subaccounts(id) ON DELETE CASCADE,
-  deployed_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
-  rollback_available_until TIMESTAMP WITH TIME ZONE DEFAULT (NOW() + INTERVAL '48 hours'),
-  deployment_data JSONB,
-  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+  id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+  theme_id UUID REFERENCES public.themes (id) ON DELETE CASCADE NOT NULL,
+  agency_id UUID REFERENCES public.agencies (id) ON DELETE CASCADE NOT NULL,
+  deployed_at TIMESTAMP WITH TIME ZONE DEFAULT NOW() NOT NULL,
+  rollback_available_until TIMESTAMP WITH TIME ZONE,
+  status TEXT CHECK (status IN ('active', 'rolled_back', 'failed')) DEFAULT 'active' NOT NULL,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW() NOT NULL
 );
 
--- Marketplace items table
+-- Create 'marketplace_items' table
 CREATE TABLE marketplace_items (
-  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-  agency_id UUID REFERENCES agencies(id) ON DELETE CASCADE,
+  id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+  theme_id UUID REFERENCES public.themes (id) ON DELETE CASCADE NOT NULL,
+  seller_id UUID REFERENCES public.profiles (id) ON DELETE CASCADE NOT NULL,
   name TEXT NOT NULL,
   description TEXT,
-  type TEXT NOT NULL, -- 'theme', 'component', 'template'
-  price_cents INTEGER DEFAULT 0,
-  preview_url TEXT,
-  download_url TEXT,
-  is_approved BOOLEAN DEFAULT FALSE,
-  download_count INTEGER DEFAULT 0,
-  rating DECIMAL(3,2) DEFAULT 0,
-  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
-  updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+  price NUMERIC(10, 2) NOT NULL,
+  is_approved BOOLEAN DEFAULT FALSE NOT NULL,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW() NOT NULL,
+  updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW() NOT NULL
 );
 
--- Support tickets table
+-- Create 'subscriptions' table (for Stripe integration)
+CREATE TABLE subscriptions (
+  id TEXT PRIMARY KEY, -- Stripe Subscription ID
+  user_id UUID REFERENCES auth.users ON DELETE CASCADE NOT NULL,
+  agency_id UUID REFERENCES public.agencies (id) ON DELETE CASCADE,
+  status TEXT NOT NULL, -- e.g., 'active', 'trialing', 'past_due', 'canceled'
+  plan_id TEXT NOT NULL,
+  current_period_start TIMESTAMP WITH TIME ZONE NOT NULL,
+  current_period_end TIMESTAMP WITH TIME ZONE NOT NULL,
+  trial_start TIMESTAMP WITH TIME ZONE,
+  trial_end TIMESTAMP WITH TIME ZONE,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW() NOT NULL,
+  updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW() NOT NULL
+);
+
+-- Create 'support_tickets' table
 CREATE TABLE support_tickets (
-  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-  agency_id UUID REFERENCES agencies(id) ON DELETE CASCADE,
-  subaccount_id UUID REFERENCES subaccounts(id),
-  title TEXT NOT NULL,
-  description TEXT,
-  status ticket_status DEFAULT 'open',
-  priority TEXT DEFAULT 'medium', -- 'low', 'medium', 'high', 'urgent'
-  assigned_to UUID REFERENCES profiles(id),
-  created_by UUID REFERENCES profiles(id),
-  resolved_at TIMESTAMP WITH TIME ZONE,
-  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
-  updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+  id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+  agency_id UUID REFERENCES public.agencies (id) ON DELETE CASCADE NOT NULL,
+  user_id UUID REFERENCES auth.users ON DELETE CASCADE NOT NULL,
+  subject TEXT NOT NULL,
+  description TEXT NOT NULL,
+  status TEXT CHECK (status IN ('open', 'in_progress', 'closed', 'pending')) DEFAULT 'open' NOT NULL,
+  priority TEXT CHECK (priority IN ('low', 'medium', 'high', 'urgent')) DEFAULT 'medium' NOT NULL,
+  assigned_to UUID REFERENCES public.profiles (id) ON DELETE SET NULL,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW() NOT NULL,
+  updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW() NOT NULL
 );
 
--- Tasks table
+-- Create 'tasks' table
 CREATE TABLE tasks (
-  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-  agency_id UUID REFERENCES agencies(id) ON DELETE CASCADE,
-  subaccount_id UUID REFERENCES subaccounts(id),
+  id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+  agency_id UUID REFERENCES public.agencies (id) ON DELETE CASCADE NOT NULL,
+  assigned_to UUID REFERENCES public.profiles (id) ON DELETE SET NULL,
   title TEXT NOT NULL,
   description TEXT,
-  status task_status DEFAULT 'todo',
-  priority TEXT DEFAULT 'medium',
-  assigned_to UUID REFERENCES profiles(id),
-  created_by UUID REFERENCES profiles(id),
+  status TEXT CHECK (status IN ('todo', 'in_progress', 'completed')) DEFAULT 'todo' NOT NULL,
+  priority TEXT CHECK (priority IN ('low', 'medium', 'high', 'urgent')) DEFAULT 'medium' NOT NULL,
   due_date TIMESTAMP WITH TIME ZONE,
-  completed_at TIMESTAMP WITH TIME ZONE,
-  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
-  updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+  project_id UUID,
+  estimated_hours INTEGER,
+  actual_hours INTEGER,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW() NOT NULL,
+  updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW() NOT NULL
 );
 
--- Webhooks table
+-- Create 'projects' table
+CREATE TABLE projects (
+  id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+  agency_id UUID REFERENCES public.agencies (id) ON DELETE CASCADE NOT NULL,
+  name TEXT NOT NULL,
+  description TEXT,
+  status TEXT CHECK (status IN ('active', 'completed', 'on_hold')) DEFAULT 'active' NOT NULL,
+  color TEXT DEFAULT '#3B82F6',
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW() NOT NULL,
+  updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW() NOT NULL
+);
+
+-- Create 'webhooks' table
 CREATE TABLE webhooks (
-  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-  agency_id UUID REFERENCES agencies(id) ON DELETE CASCADE,
+  id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+  agency_id UUID REFERENCES public.agencies (id) ON DELETE CASCADE NOT NULL,
   name TEXT NOT NULL,
   url TEXT NOT NULL,
-  events TEXT[] NOT NULL,
-  is_active BOOLEAN DEFAULT TRUE,
-  secret_key TEXT,
-  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
-  updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+  event_type TEXT NOT NULL,
+  is_active BOOLEAN DEFAULT TRUE NOT NULL,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW() NOT NULL,
+  updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW() NOT NULL
 );
 
--- Analytics table
-CREATE TABLE analytics (
-  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-  agency_id UUID REFERENCES agencies(id) ON DELETE CASCADE,
-  subaccount_id UUID REFERENCES subaccounts(id),
+-- Create 'analytics_events' table
+CREATE TABLE analytics_events (
+  id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+  agency_id UUID REFERENCES public.agencies (id) ON DELETE CASCADE NOT NULL,
   event_type TEXT NOT NULL,
   event_data JSONB,
-  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW() NOT NULL
 );
 
--- Create indexes for performance
-CREATE INDEX idx_agencies_owner_id ON agencies(owner_id);
-CREATE INDEX idx_profiles_agency_id ON profiles(agency_id);
-CREATE INDEX idx_subaccounts_agency_id ON subaccounts(agency_id);
-CREATE INDEX idx_themes_agency_id ON themes(agency_id);
-CREATE INDEX idx_theme_deployments_theme_id ON theme_deployments(theme_id);
-CREATE INDEX idx_theme_deployments_agency_id ON theme_deployments(agency_id);
-CREATE INDEX idx_support_tickets_agency_id ON support_tickets(agency_id);
-CREATE INDEX idx_tasks_agency_id ON tasks(agency_id);
-CREATE INDEX idx_analytics_agency_id ON analytics(agency_id);
-CREATE INDEX idx_analytics_created_at ON analytics(created_at);
+-- Create 'activity_log' table
+CREATE TABLE activity_log (
+  id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+  agency_id UUID REFERENCES public.agencies (id) ON DELETE CASCADE NOT NULL,
+  user_id UUID REFERENCES auth.users ON DELETE CASCADE NOT NULL,
+  action TEXT NOT NULL,
+  description TEXT NOT NULL,
+  metadata JSONB,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW() NOT NULL
+);
 
--- Row Level Security (RLS) policies
-ALTER TABLE agencies ENABLE ROW LEVEL SECURITY;
+-- Enable Row Level Security (RLS)
 ALTER TABLE profiles ENABLE ROW LEVEL SECURITY;
-ALTER TABLE subaccounts ENABLE ROW LEVEL SECURITY;
+ALTER TABLE agencies ENABLE ROW LEVEL SECURITY;
 ALTER TABLE themes ENABLE ROW LEVEL SECURITY;
 ALTER TABLE theme_deployments ENABLE ROW LEVEL SECURITY;
 ALTER TABLE marketplace_items ENABLE ROW LEVEL SECURITY;
+ALTER TABLE subscriptions ENABLE ROW LEVEL SECURITY;
 ALTER TABLE support_tickets ENABLE ROW LEVEL SECURITY;
 ALTER TABLE tasks ENABLE ROW LEVEL SECURITY;
+ALTER TABLE projects ENABLE ROW LEVEL SECURITY;
 ALTER TABLE webhooks ENABLE ROW LEVEL SECURITY;
-ALTER TABLE analytics ENABLE ROW LEVEL SECURITY;
+ALTER TABLE analytics_events ENABLE ROW LEVEL SECURITY;
+ALTER TABLE activity_log ENABLE ROW LEVEL SECURITY;
 
--- Agency policies
-CREATE POLICY "Users can view their own agency" ON agencies
-  FOR SELECT USING (auth.uid() = owner_id);
+-- Create RLS Policies for profiles
+CREATE POLICY "Public profiles are viewable by everyone." ON profiles FOR SELECT USING (TRUE);
+CREATE POLICY "Users can insert their own profile." ON profiles FOR INSERT WITH CHECK (auth.uid() = id);
+CREATE POLICY "Users can update their own profile." ON profiles FOR UPDATE USING (auth.uid() = id);
 
-CREATE POLICY "Users can update their own agency" ON agencies
-  FOR UPDATE USING (auth.uid() = owner_id);
+-- Create RLS Policies for agencies
+CREATE POLICY "Agencies are viewable by their members." ON agencies FOR SELECT USING (EXISTS (SELECT 1 FROM profiles WHERE profiles.agency_id = agencies.id AND profiles.id = auth.uid()));
+CREATE POLICY "Agency owners can insert their agency." ON agencies FOR INSERT WITH CHECK (auth.uid() = owner_id);
+CREATE POLICY "Agency members can update their agency." ON agencies FOR UPDATE USING (EXISTS (SELECT 1 FROM profiles WHERE profiles.agency_id = agencies.id AND profiles.id = auth.uid()));
+CREATE POLICY "Agency owners can delete their agency." ON agencies FOR DELETE USING (auth.uid() = owner_id);
 
--- Profile policies
-CREATE POLICY "Users can view their own profile" ON profiles
-  FOR SELECT USING (auth.uid() = id);
+-- Create RLS Policies for themes
+CREATE POLICY "Themes are viewable by agency members." ON themes FOR SELECT USING (EXISTS (SELECT 1 FROM profiles WHERE profiles.agency_id = themes.agency_id AND profiles.id = auth.uid()));
+CREATE POLICY "Agency members can insert themes." ON themes FOR INSERT WITH CHECK (EXISTS (SELECT 1 FROM profiles WHERE profiles.agency_id = themes.agency_id AND profiles.id = auth.uid()));
+CREATE POLICY "Agency members can update themes." ON themes FOR UPDATE USING (EXISTS (SELECT 1 FROM profiles WHERE profiles.agency_id = themes.agency_id AND profiles.id = auth.uid()));
+CREATE POLICY "Agency members can delete themes." ON themes FOR DELETE USING (EXISTS (SELECT 1 FROM profiles WHERE profiles.agency_id = themes.agency_id AND profiles.id = auth.uid()));
 
-CREATE POLICY "Users can update their own profile" ON profiles
-  FOR UPDATE USING (auth.uid() = id);
+-- Create RLS Policies for theme_deployments
+CREATE POLICY "Deployments are viewable by agency members." ON theme_deployments FOR SELECT USING (EXISTS (SELECT 1 FROM profiles WHERE profiles.agency_id = theme_deployments.agency_id AND profiles.id = auth.uid()));
+CREATE POLICY "Agency members can insert deployments." ON theme_deployments FOR INSERT WITH CHECK (EXISTS (SELECT 1 FROM profiles WHERE profiles.agency_id = theme_deployments.agency_id AND profiles.id = auth.uid()));
+CREATE POLICY "Agency members can update deployments." ON theme_deployments FOR UPDATE USING (EXISTS (SELECT 1 FROM profiles WHERE profiles.agency_id = theme_deployments.agency_id AND profiles.id = auth.uid()));
 
--- Subaccount policies
-CREATE POLICY "Agency members can view subaccounts" ON subaccounts
-  FOR SELECT USING (
-    EXISTS (
-      SELECT 1 FROM profiles 
-      WHERE profiles.id = auth.uid() 
-      AND profiles.agency_id = subaccounts.agency_id
-    )
-  );
+-- Create RLS Policies for marketplace_items
+CREATE POLICY "Marketplace items are public." ON marketplace_items FOR SELECT USING (TRUE);
+CREATE POLICY "Sellers can insert their items." ON marketplace_items FOR INSERT WITH CHECK (auth.uid() = seller_id);
+CREATE POLICY "Sellers can update their items." ON marketplace_items FOR UPDATE USING (auth.uid() = seller_id);
+CREATE POLICY "Sellers can delete their items." ON marketplace_items FOR DELETE USING (auth.uid() = seller_id);
 
-CREATE POLICY "Agency members can manage subaccounts" ON subaccounts
-  FOR ALL USING (
-    EXISTS (
-      SELECT 1 FROM profiles 
-      WHERE profiles.id = auth.uid() 
-      AND profiles.agency_id = subaccounts.agency_id
-    )
-  );
+-- Create RLS Policies for subscriptions
+CREATE POLICY "Subscriptions are viewable by owner." ON subscriptions FOR SELECT USING (auth.uid() = user_id);
+CREATE POLICY "Subscriptions can be inserted by auth." ON subscriptions FOR INSERT WITH CHECK (auth.uid() = user_id);
+CREATE POLICY "Subscriptions can be updated by owner." ON subscriptions FOR UPDATE USING (auth.uid() = user_id);
 
--- Theme policies
-CREATE POLICY "Agency members can view themes" ON themes
-  FOR SELECT USING (
-    is_public = true OR
-    EXISTS (
-      SELECT 1 FROM profiles 
-      WHERE profiles.id = auth.uid() 
-      AND profiles.agency_id = themes.agency_id
-    )
-  );
+-- Create RLS Policies for support_tickets
+CREATE POLICY "Tickets are viewable by agency members and assigned staff." ON support_tickets FOR SELECT USING (EXISTS (SELECT 1 FROM profiles WHERE profiles.agency_id = support_tickets.agency_id AND profiles.id = auth.uid()) OR auth.uid() = assigned_to);
+CREATE POLICY "Agency members can insert tickets." ON support_tickets FOR INSERT WITH CHECK (EXISTS (SELECT 1 FROM profiles WHERE profiles.agency_id = support_tickets.agency_id AND profiles.id = auth.uid()));
+CREATE POLICY "Agency members and assigned staff can update tickets." ON support_tickets FOR UPDATE USING (EXISTS (SELECT 1 FROM profiles WHERE profiles.agency_id = support_tickets.agency_id AND profiles.id = auth.uid()) OR auth.uid() = assigned_to);
 
-CREATE POLICY "Agency members can manage themes" ON themes
-  FOR ALL USING (
-    EXISTS (
-      SELECT 1 FROM profiles 
-      WHERE profiles.id = auth.uid() 
-      AND profiles.agency_id = themes.agency_id
-    )
-  );
+-- Create RLS Policies for tasks
+CREATE POLICY "Tasks are viewable by agency members and assigned staff." ON tasks FOR SELECT USING (EXISTS (SELECT 1 FROM profiles WHERE profiles.agency_id = tasks.agency_id AND profiles.id = auth.uid()) OR auth.uid() = assigned_to);
+CREATE POLICY "Agency members can insert tasks." ON tasks FOR INSERT WITH CHECK (EXISTS (SELECT 1 FROM profiles WHERE profiles.agency_id = tasks.agency_id AND profiles.id = auth.uid()));
+CREATE POLICY "Agency members and assigned staff can update tasks." ON tasks FOR UPDATE USING (EXISTS (SELECT 1 FROM profiles WHERE profiles.agency_id = tasks.agency_id AND profiles.id = auth.uid()) OR auth.uid() = assigned_to);
 
--- Create functions for updated_at timestamps
+-- Create RLS Policies for projects
+CREATE POLICY "Projects are viewable by agency members." ON projects FOR SELECT USING (EXISTS (SELECT 1 FROM profiles WHERE profiles.agency_id = projects.agency_id AND profiles.id = auth.uid()));
+CREATE POLICY "Agency members can insert projects." ON projects FOR INSERT WITH CHECK (EXISTS (SELECT 1 FROM profiles WHERE profiles.agency_id = projects.agency_id AND profiles.id = auth.uid()));
+CREATE POLICY "Agency members can update projects." ON projects FOR UPDATE USING (EXISTS (SELECT 1 FROM profiles WHERE profiles.agency_id = projects.agency_id AND profiles.id = auth.uid()));
+CREATE POLICY "Agency members can delete projects." ON projects FOR DELETE USING (EXISTS (SELECT 1 FROM profiles WHERE profiles.agency_id = projects.agency_id AND profiles.id = auth.uid()));
+
+-- Create RLS Policies for webhooks
+CREATE POLICY "Webhooks are viewable by agency members." ON webhooks FOR SELECT USING (EXISTS (SELECT 1 FROM profiles WHERE profiles.agency_id = webhooks.agency_id AND profiles.id = auth.uid()));
+CREATE POLICY "Agency members can insert webhooks." ON webhooks FOR INSERT WITH CHECK (EXISTS (SELECT 1 FROM profiles WHERE profiles.agency_id = webhooks.agency_id AND profiles.id = auth.uid()));
+CREATE POLICY "Agency members can update webhooks." ON webhooks FOR UPDATE USING (EXISTS (SELECT 1 FROM profiles WHERE profiles.agency_id = webhooks.agency_id AND profiles.id = auth.uid()));
+CREATE POLICY "Agency members can delete webhooks." ON webhooks FOR DELETE USING (EXISTS (SELECT 1 FROM profiles WHERE profiles.agency_id = webhooks.agency_id AND profiles.id = auth.uid()));
+
+-- Create RLS Policies for analytics_events
+CREATE POLICY "Analytics events are viewable by agency members." ON analytics_events FOR SELECT USING (EXISTS (SELECT 1 FROM profiles WHERE profiles.agency_id = analytics_events.agency_id AND profiles.id = auth.uid()));
+CREATE POLICY "Agency members can insert analytics events." ON analytics_events FOR INSERT WITH CHECK (EXISTS (SELECT 1 FROM profiles WHERE profiles.agency_id = analytics_events.agency_id AND profiles.id = auth.uid()));
+
+-- Create RLS Policies for activity_log
+CREATE POLICY "Activity log is viewable by agency members." ON activity_log FOR SELECT USING (EXISTS (SELECT 1 FROM profiles WHERE profiles.agency_id = activity_log.agency_id AND profiles.id = auth.uid()));
+CREATE POLICY "Agency members can insert activity log." ON activity_log FOR INSERT WITH CHECK (EXISTS (SELECT 1 FROM profiles WHERE profiles.agency_id = activity_log.agency_id AND profiles.id = auth.uid()));
+
+-- Set up trigger for updated_at column
 CREATE OR REPLACE FUNCTION update_updated_at_column()
 RETURNS TRIGGER AS $$
 BEGIN
   NEW.updated_at = NOW();
   RETURN NEW;
 END;
-$$ language 'plpgsql';
+$$ LANGUAGE plpgsql;
 
--- Add updated_at triggers
-CREATE TRIGGER update_agencies_updated_at BEFORE UPDATE ON agencies
-  FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
+-- Create triggers for updated_at
+CREATE TRIGGER update_profiles_updated_at
+  BEFORE UPDATE ON profiles
+  FOR EACH ROW
+  EXECUTE FUNCTION update_updated_at_column();
 
-CREATE TRIGGER update_profiles_updated_at BEFORE UPDATE ON profiles
-  FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
+CREATE TRIGGER update_agencies_updated_at
+  BEFORE UPDATE ON agencies
+  FOR EACH ROW
+  EXECUTE FUNCTION update_updated_at_column();
 
-CREATE TRIGGER update_subaccounts_updated_at BEFORE UPDATE ON subaccounts
-  FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
+CREATE TRIGGER update_themes_updated_at
+  BEFORE UPDATE ON themes
+  FOR EACH ROW
+  EXECUTE FUNCTION update_updated_at_column();
 
-CREATE TRIGGER update_themes_updated_at BEFORE UPDATE ON themes
-  FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
+CREATE TRIGGER update_marketplace_items_updated_at
+  BEFORE UPDATE ON marketplace_items
+  FOR EACH ROW
+  EXECUTE FUNCTION update_updated_at_column();
 
-CREATE TRIGGER update_marketplace_items_updated_at BEFORE UPDATE ON marketplace_items
-  FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
+CREATE TRIGGER update_subscriptions_updated_at
+  BEFORE UPDATE ON subscriptions
+  FOR EACH ROW
+  EXECUTE FUNCTION update_updated_at_column();
 
-CREATE TRIGGER update_support_tickets_updated_at BEFORE UPDATE ON support_tickets
-  FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
+CREATE TRIGGER update_support_tickets_updated_at
+  BEFORE UPDATE ON support_tickets
+  FOR EACH ROW
+  EXECUTE FUNCTION update_updated_at_column();
 
-CREATE TRIGGER update_tasks_updated_at BEFORE UPDATE ON tasks
-  FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
+CREATE TRIGGER update_tasks_updated_at
+  BEFORE UPDATE ON tasks
+  FOR EACH ROW
+  EXECUTE FUNCTION update_updated_at_column();
 
-CREATE TRIGGER update_webhooks_updated_at BEFORE UPDATE ON webhooks
-  FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
+CREATE TRIGGER update_projects_updated_at
+  BEFORE UPDATE ON projects
+  FOR EACH ROW
+  EXECUTE FUNCTION update_updated_at_column();
+
+CREATE TRIGGER update_webhooks_updated_at
+  BEFORE UPDATE ON webhooks
+  FOR EACH ROW
+  EXECUTE FUNCTION update_updated_at_column();
+
+-- Create indexes for better performance
+CREATE INDEX idx_profiles_agency_id ON profiles(agency_id);
+CREATE INDEX idx_themes_agency_id ON themes(agency_id);
+CREATE INDEX idx_theme_deployments_agency_id ON theme_deployments(agency_id);
+CREATE INDEX idx_theme_deployments_theme_id ON theme_deployments(theme_id);
+CREATE INDEX idx_marketplace_items_seller_id ON marketplace_items(seller_id);
+CREATE INDEX idx_marketplace_items_theme_id ON marketplace_items(theme_id);
+CREATE INDEX idx_subscriptions_user_id ON subscriptions(user_id);
+CREATE INDEX idx_subscriptions_agency_id ON subscriptions(agency_id);
+CREATE INDEX idx_support_tickets_agency_id ON support_tickets(agency_id);
+CREATE INDEX idx_support_tickets_user_id ON support_tickets(user_id);
+CREATE INDEX idx_support_tickets_assigned_to ON support_tickets(assigned_to);
+CREATE INDEX idx_tasks_agency_id ON tasks(agency_id);
+CREATE INDEX idx_tasks_assigned_to ON tasks(assigned_to);
+CREATE INDEX idx_tasks_project_id ON tasks(project_id);
+CREATE INDEX idx_projects_agency_id ON projects(agency_id);
+CREATE INDEX idx_webhooks_agency_id ON webhooks(agency_id);
+CREATE INDEX idx_analytics_events_agency_id ON analytics_events(agency_id);
+CREATE INDEX idx_activity_log_agency_id ON activity_log(agency_id);
+CREATE INDEX idx_activity_log_user_id ON activity_log(user_id);
