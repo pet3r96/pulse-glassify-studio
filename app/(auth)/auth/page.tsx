@@ -12,7 +12,7 @@ import { useToast } from "@/hooks/use-toast";
 import { signIn, signUp } from "./actions";
 import Link from "next/link";
 import Image from "next/image";
-import logo from "@/src/assets/pulsegen-logo.png";
+import logo from "../../src/assets/pulsegen-logo.png";
 
 export default function AuthPage() {
   const searchParams = useSearchParams();

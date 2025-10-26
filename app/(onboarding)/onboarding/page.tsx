@@ -6,11 +6,11 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { useToast } from "@/hooks/use-toast";
-import { StepGHLApiKey } from "@/components/onboarding/StepGHLApiKey";
-import { StepBaseTheme } from "@/components/onboarding/StepBaseTheme";
-import { StepBranding } from "@/components/onboarding/StepBranding";
-import { StepThemeSelection } from "@/components/onboarding/StepThemeSelection";
-import { StepEmbeddedMode } from "@/components/onboarding/StepEmbeddedMode";
+import { StepGHLApiKey } from "../../components/onboarding/StepGHLApiKey";
+import { StepBaseTheme } from "../../components/onboarding/StepBaseTheme";
+import { StepBranding } from "../../components/onboarding/StepBranding";
+import { StepThemeSelection } from "../../components/onboarding/StepThemeSelection";
+import { StepEmbeddedMode } from "../../components/onboarding/StepEmbeddedMode";
 import { completeOnboarding } from "./actions";
 
 export default function OnboardingPage() {
