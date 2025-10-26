@@ -5,7 +5,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
-import { validateGHLApiKey } from "@/app/(onboarding)/onboarding/actions";
+import { validateGHLApiKey } from "../../(onboarding)/onboarding/actions";
 import { Check, X } from "lucide-react";
 
 interface StepGHLApiKeyProps {
