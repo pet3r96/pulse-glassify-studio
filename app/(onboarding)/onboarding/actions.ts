@@ -1,6 +1,6 @@
 'use server';
 
-import { createClient, getUser } from '@/lib/supabase/server';
+import { createClient, getUser } from '../../lib/supabase/server';
 import { revalidatePath } from 'next/cache';
 
 export async function validateGHLApiKey(apiKey: string) {
