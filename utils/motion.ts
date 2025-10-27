@@ -52,3 +52,4 @@ export const pageTransition = {
   exit: { opacity: 0, y: -8 },
   transition: { duration: 0.2, ease: [0.21, 0.97, 0.46, 0.89] },
 };
+
