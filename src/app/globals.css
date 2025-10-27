@@ -1,8 +1,91 @@
-/* Test styles */
-body {
-  background-color: red !important;
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@import './tokens.css';
+
+/* Global Styles */
+:root {
+  --color-bg: #0a0a0a;
+  --color-surface: #111111;
+  --color-border: #1a1a1a;
+  --color-text: #ffffff;
+  --color-text-muted: #a0a0a0;
+  --color-accent: #a066ff;
+  --color-accent-hover: #8c5cf6;
+  --color-success: #10b981;
+  --color-warning: #f59e0b;
+  --color-error: #ef4444;
 }
 
-.test-class {
-  color: blue !important;
+/* Glass morphism effects */
+.glass {
+  background: rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(24px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.glass-card {
+  background: rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(24px);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 12px;
+}
+
+.glass-hover {
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(24px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+/* Gradient text effects */
+.gradient-text {
+  background: linear-gradient(135deg, #a066ff 0%, #ff4bcb 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* Button styles */
+.btn-primary {
+  background: linear-gradient(135deg, #a066ff 0%, #ff4bcb 100%);
+  border: none;
+  color: white;
+  font-weight: 600;
+  transition: all 0.3s ease;
+}
+
+.btn-primary:hover {
+  background: linear-gradient(135deg, #8c5cf6 0%, #e91e63 100%);
+  transform: translateY(-2px);
+  box-shadow: 0 10px 25px rgba(160, 102, 255, 0.3);
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.05);
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(160, 102, 255, 0.5);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(160, 102, 255, 0.7);
+}
+
+/* Responsive design helpers */
+@media (max-width: 768px) {
+  .glass {
+    backdrop-filter: blur(16px);
+  }
+  
+  .glass-card {
+    backdrop-filter: blur(16px);
+  }
 }
