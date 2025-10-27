@@ -6,6 +6,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { useToast } from '@/hooks/use-toast'
+import { SubscriptionStatus } from '@/components/subscription/SubscriptionStatus'
 import { 
   Palette,
   Store,
@@ -353,27 +354,9 @@ export default function DashboardPage() {
         </div>
 
         {/* Subscription Status */}
-        {stats.subscription_status !== 'active' && (
-          <Card className="glass-card mt-8 border-yellow-500/20 bg-yellow-500/5">
-            <CardContent className="p-6">
-              <div className="flex items-center justify-between">
-                <div>
-                  <h3 className="font-heading text-lg mb-2">Complete Your Setup</h3>
-                  <p className="text-muted-foreground">
-                    {stats.subscription_status === 'incomplete' 
-                      ? 'Set up billing to unlock all features'
-                      : 'Your trial is active - upgrade to continue after trial ends'
-                    }
-                  </p>
-                </div>
-                <Button className="btn-primary">
-                  <ArrowRight className="h-4 w-4 mr-2" />
-                  {stats.subscription_status === 'incomplete' ? 'Set Up Billing' : 'Upgrade Now'}
-                </Button>
-              </div>
-            </CardContent>
-          </Card>
-        )}
+        <div className="mb-8">
+          <SubscriptionStatus userId={user.id} />
+        </div>
       </div>
     </div>
   )

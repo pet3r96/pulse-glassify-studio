@@ -1,4 +1,62 @@
 export type UserRole = 'super_admin' | 'agency' | 'subaccount';
+
+// Database type for Supabase
+export interface Database {
+  public: {
+    Tables: {
+      users: {
+        Row: User;
+        Insert: Omit<User, 'id' | 'created_at' | 'updated_at'>;
+        Update: Partial<Omit<User, 'id' | 'created_at' | 'updated_at'>>;
+      };
+      agencies: {
+        Row: Agency;
+        Insert: Omit<Agency, 'id' | 'created_at' | 'updated_at'>;
+        Update: Partial<Omit<Agency, 'id' | 'created_at' | 'updated_at'>>;
+      };
+      subaccounts: {
+        Row: Subaccount;
+        Insert: Omit<Subaccount, 'id' | 'created_at' | 'updated_at'>;
+        Update: Partial<Omit<Subaccount, 'id' | 'created_at' | 'updated_at'>>;
+      };
+      themes: {
+        Row: Theme;
+        Insert: Omit<Theme, 'id' | 'created_at' | 'updated_at'>;
+        Update: Partial<Omit<Theme, 'id' | 'created_at' | 'updated_at'>>;
+      };
+      theme_versions: {
+        Row: ThemeVersion;
+        Insert: Omit<ThemeVersion, 'id' | 'created_at' | 'updated_at'>;
+        Update: Partial<Omit<ThemeVersion, 'id' | 'created_at' | 'updated_at'>>;
+      };
+      marketplace: {
+        Row: Marketplace;
+        Insert: Omit<Marketplace, 'id' | 'created_at' | 'updated_at'>;
+        Update: Partial<Omit<Marketplace, 'id' | 'created_at' | 'updated_at'>>;
+      };
+      licenses: {
+        Row: License;
+        Insert: Omit<License, 'id' | 'created_at' | 'updated_at'>;
+        Update: Partial<Omit<License, 'id' | 'created_at' | 'updated_at'>>;
+      };
+      project_manager: {
+        Row: ProjectManager;
+        Insert: Omit<ProjectManager, 'id' | 'created_at' | 'updated_at'>;
+        Update: Partial<Omit<ProjectManager, 'id' | 'created_at' | 'updated_at'>>;
+      };
+      tenant_config: {
+        Row: TenantConfig;
+        Insert: Omit<TenantConfig, 'id' | 'created_at' | 'updated_at'>;
+        Update: Partial<Omit<TenantConfig, 'id' | 'created_at' | 'updated_at'>>;
+      };
+      subscription_status: {
+        Row: SubscriptionStatus;
+        Insert: Omit<SubscriptionStatus, 'id' | 'created_at' | 'updated_at'>;
+        Update: Partial<Omit<SubscriptionStatus, 'id' | 'created_at' | 'updated_at'>>;
+      };
+    };
+  };
+}
 export type SubscriptionStatus = 'active' | 'trialing' | 'canceled' | 'past_due' | 'incomplete';
 export type ThemeVisibility = 'private' | 'marketplace';
 export type TaskStatus = 'open' | 'in_progress' | 'completed' | 'cancelled';

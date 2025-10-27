@@ -1,105 +1,81 @@
-import { createServerClient } from '@supabase/ssr'
-import { NextResponse, type NextRequest } from 'next/server'
-import { Database } from './lib/supabase/types'
+import { NextRequest, NextResponse } from 'next/server';
+import { createClient } from '@/lib/supabase/server';
+import { getUserSubscriptionStatus } from '@/lib/subscription/utils';
+
+// Routes that require active subscription
+const PROTECTED_ROUTES = [
+  '/theme-studio',
+  '/marketplace',
+  '/menu-builder',
+  '/project-manager',
+  '/analytics',
+];
+
+// Routes that are always accessible
+const PUBLIC_ROUTES = [
+  '/',
+  '/auth',
+  '/onboarding',
+  '/dashboard',
+  '/account',
+  '/support',
+];
 
 export async function middleware(request: NextRequest) {
-  let response = NextResponse.next({
-    request: {
-      headers: request.headers,
-    },
-  })
+  const { pathname } = request.nextUrl;
 
-  const supabase = createServerClient<Database>(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-    {
-      cookies: {
-        getAll() {
-          return request.cookies.getAll()
-        },
-        setAll(cookiesToSet) {
-          cookiesToSet.forEach(({ name, value, options }) => request.cookies.set(name, value))
-          response = NextResponse.next({
-            request: {
-              headers: request.headers,
-            },
-          })
-          cookiesToSet.forEach(({ name, value, options }) =>
-            response.cookies.set(name, value, options)
-          )
-        },
-      },
-    }
-  )
-
-  const {
-    data: { user },
-  } = await supabase.auth.getUser()
-
-  // Public routes that don't require authentication
-  const publicRoutes = ['/', '/auth', '/auth/login', '/auth/register']
-  const isPublicRoute = publicRoutes.some(route => request.nextUrl.pathname.startsWith(route))
-
-  // If user is not authenticated and trying to access protected route
-  if (!user && !isPublicRoute) {
-    return NextResponse.redirect(new URL('/auth', request.url))
+  // Skip middleware for API routes, static files, and public routes
+  if (
+    pathname.startsWith('/api/') ||
+    pathname.startsWith('/_next/') ||
+    pathname.startsWith('/favicon') ||
+    PUBLIC_ROUTES.some(route => pathname.startsWith(route))
+  ) {
+    return NextResponse.next();
   }
 
-  // If user is authenticated and trying to access auth pages
-  if (user && request.nextUrl.pathname.startsWith('/auth')) {
-    return NextResponse.redirect(new URL('/dashboard', request.url))
+  // Check if route requires subscription
+  const requiresSubscription = PROTECTED_ROUTES.some(route => pathname.startsWith(route));
+
+  if (!requiresSubscription) {
+    return NextResponse.next();
   }
 
-  // If user is authenticated, get their profile and check role-based access
-  if (user) {
-    const { data: profile } = await supabase
-      .from('profiles')
-      .select('role, agency_id, onboarding_completed')
-      .eq('id', user.id)
-      .single()
+  try {
+    const supabase = createClient();
+    const { data: { user }, error: authError } = await supabase.auth.getUser();
 
-    // Redirect to onboarding if not completed
-    if (profile && !profile.onboarding_completed && !request.nextUrl.pathname.startsWith('/onboarding')) {
-      return NextResponse.redirect(new URL('/onboarding', request.url))
+    // Redirect to auth if not logged in
+    if (authError || !user) {
+      return NextResponse.redirect(new URL('/auth', request.url));
     }
 
-    // Super admin routes
-    const superAdminRoutes = ['/admin']
-    if (superAdminRoutes.some(route => request.nextUrl.pathname.startsWith(route))) {
-      if (profile?.role !== 'super_admin') {
-        return NextResponse.redirect(new URL('/dashboard', request.url))
-      }
+    // Check subscription status
+    const subscription = await getUserSubscriptionStatus(user.id);
+
+    if (!subscription.hasAccess) {
+      // Redirect to dashboard with subscription required message
+      const url = new URL('/dashboard', request.url);
+      url.searchParams.set('subscription', 'required');
+      return NextResponse.redirect(url);
     }
 
-    // Agency owner routes
-    const agencyRoutes = ['/theme-studio', '/marketplace', '/menu-builder', '/webhook-builder']
-    if (agencyRoutes.some(route => request.nextUrl.pathname.startsWith(route))) {
-      if (profile?.role !== 'agency' && profile?.role !== 'super_admin') {
-        return NextResponse.redirect(new URL('/dashboard', request.url))
-      }
-    }
-
-    // Subaccount routes
-    const subaccountRoutes = ['/task-manager']
-    if (subaccountRoutes.some(route => request.nextUrl.pathname.startsWith(route))) {
-      if (profile?.role !== 'subaccount' && profile?.role !== 'agency' && profile?.role !== 'super_admin') {
-        return NextResponse.redirect(new URL('/dashboard', request.url))
-      }
-    }
+    return NextResponse.next();
+  } catch (error) {
+    console.error('Middleware error:', error);
+    return NextResponse.redirect(new URL('/auth', request.url));
   }
-
-  return response
 }
 
 export const config = {
   matcher: [
     /*
      * Match all request paths except for the ones starting with:
+     * - api (API routes)
      * - _next/static (static files)
      * - _next/image (image optimization files)
      * - favicon.ico (favicon file)
-     * - public folder
      */
-    '/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)',
+    '/((?!api|_next/static|_next/image|favicon.ico).*)',
   ],
-}
+};
