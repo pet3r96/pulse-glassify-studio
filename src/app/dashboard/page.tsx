@@ -8,6 +8,8 @@ import { Badge } from '@/components/ui/badge'
 import { useToast } from '@/hooks/use-toast'
 import { SubscriptionStatus } from '@/components/subscription/SubscriptionStatus'
 import { ThemeManager } from '@/components/theme/ThemeManager'
+import { GHLConnectionManager } from '@/components/injection/GHLConnectionManager'
+import { DeploymentDashboard } from '@/components/injection/DeploymentDashboard'
 import { 
   Palette,
   Store,
@@ -362,6 +364,16 @@ export default function DashboardPage() {
         {/* Theme Manager */}
         <div className="mb-8">
           <ThemeManager />
+        </div>
+
+        {/* GHL Connection Manager */}
+        <div className="mb-8">
+          <GHLConnectionManager />
+        </div>
+
+        {/* Deployment Dashboard */}
+        <div className="mb-8">
+          <DeploymentDashboard />
         </div>
       </div>
     </div>
