@@ -12,7 +12,8 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog'
 import { 
   Zap, 
-  Target, 
+  Target,
+  Search, 
   Palette, 
   MessageSquare, 
   Calendar,
@@ -37,7 +38,6 @@ import {
   RefreshCw,
   Play,
   Pause,
-  Stop,
   RotateCcw,
   Save,
   Send,
@@ -493,7 +493,7 @@ export function QuickActionPanel({ onActionExecute, className }: QuickActionPane
                   <Input
                     id="sequence-name"
                     value={actionData.name || ''}
-                    onChange={(e) => setActionData(prev => ({ ...prev, name: e.target.value }))}
+                    onChange={(e) => setActionData((prev: any) => ({ ...prev, name: e.target.value }))}
                     placeholder="Welcome New Contacts"
                     className="glass mt-2"
                   />
@@ -502,7 +502,7 @@ export function QuickActionPanel({ onActionExecute, className }: QuickActionPane
                   <Label htmlFor="trigger-event">Trigger Event</Label>
                   <Select
                     value={actionData.trigger || ''}
-                    onValueChange={(value) => setActionData(prev => ({ ...prev, trigger: value }))}
+                    onValueChange={(value) => setActionData((prev: any) => ({ ...prev, trigger: value }))}
                   >
                     <SelectTrigger className="glass mt-2">
                       <SelectValue placeholder="Select trigger" />
@@ -521,7 +521,7 @@ export function QuickActionPanel({ onActionExecute, className }: QuickActionPane
                     id="email-count"
                     type="number"
                     value={actionData.emailCount || ''}
-                    onChange={(e) => setActionData(prev => ({ ...prev, emailCount: e.target.value }))}
+                    onChange={(e) => setActionData((prev: any) => ({ ...prev, emailCount: e.target.value }))}
                     placeholder="3"
                     className="glass mt-2"
                   />
@@ -536,7 +536,7 @@ export function QuickActionPanel({ onActionExecute, className }: QuickActionPane
                   <Input
                     id="broadcast-subject"
                     value={actionData.subject || ''}
-                    onChange={(e) => setActionData(prev => ({ ...prev, subject: e.target.value }))}
+                    onChange={(e) => setActionData((prev: any) => ({ ...prev, subject: e.target.value }))}
                     placeholder="Broadcast subject"
                     className="glass mt-2"
                   />
@@ -546,7 +546,7 @@ export function QuickActionPanel({ onActionExecute, className }: QuickActionPane
                   <Textarea
                     id="broadcast-message"
                     value={actionData.message || ''}
-                    onChange={(e) => setActionData(prev => ({ ...prev, message: e.target.value }))}
+                    onChange={(e) => setActionData((prev: any) => ({ ...prev, message: e.target.value }))}
                     placeholder="Your message..."
                     className="glass mt-2"
                     rows={4}
@@ -556,7 +556,7 @@ export function QuickActionPanel({ onActionExecute, className }: QuickActionPane
                   <Label htmlFor="broadcast-audience">Audience</Label>
                   <Select
                     value={actionData.audience || ''}
-                    onValueChange={(value) => setActionData(prev => ({ ...prev, audience: value }))}
+                    onValueChange={(value) => setActionData((prev: any) => ({ ...prev, audience: value }))}
                   >
                     <SelectTrigger className="glass mt-2">
                       <SelectValue placeholder="Select audience" />
@@ -578,7 +578,7 @@ export function QuickActionPanel({ onActionExecute, className }: QuickActionPane
                   <Input
                     id="backup-name"
                     value={actionData.name || ''}
-                    onChange={(e) => setActionData(prev => ({ ...prev, name: e.target.value }))}
+                    onChange={(e) => setActionData((prev: any) => ({ ...prev, name: e.target.value }))}
                     placeholder="Backup_2024_01_22"
                     className="glass mt-2"
                   />
@@ -591,7 +591,7 @@ export function QuickActionPanel({ onActionExecute, className }: QuickActionPane
                         <input
                           type="checkbox"
                           checked={actionData[item] || false}
-                          onChange={(e) => setActionData(prev => ({ ...prev, [item]: e.target.checked }))}
+                          onChange={(e) => setActionData((prev: any) => ({ ...prev, [item]: e.target.checked }))}
                           className="rounded"
                         />
                         <span className="text-sm capitalize">{item}</span>

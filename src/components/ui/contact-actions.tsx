@@ -226,7 +226,7 @@ export function ContactActions({ contact, onActionComplete, className }: Contact
                   <Input
                     id="email-subject"
                     value={actionData.subject || ''}
-                    onChange={(e) => setActionData(prev => ({ ...prev, subject: e.target.value }))}
+                    onChange={(e) => setActionData((prev: any) => ({ ...prev, subject: e.target.value }))}
                     placeholder="Email subject"
                     className="glass mt-2"
                   />
@@ -236,7 +236,7 @@ export function ContactActions({ contact, onActionComplete, className }: Contact
                   <Textarea
                     id="email-body"
                     value={actionData.body || ''}
-                    onChange={(e) => setActionData(prev => ({ ...prev, body: e.target.value }))}
+                    onChange={(e) => setActionData((prev: any) => ({ ...prev, body: e.target.value }))}
                     placeholder="Email message"
                     className="glass mt-2"
                     rows={4}
@@ -251,7 +251,7 @@ export function ContactActions({ contact, onActionComplete, className }: Contact
                 <Textarea
                   id="sms-message"
                   value={actionData.message || ''}
-                  onChange={(e) => setActionData(prev => ({ ...prev, message: e.target.value }))}
+                  onChange={(e) => setActionData((prev: any) => ({ ...prev, message: e.target.value }))}
                   placeholder="SMS message"
                   className="glass mt-2"
                   rows={3}
@@ -266,7 +266,7 @@ export function ContactActions({ contact, onActionComplete, className }: Contact
                   <Input
                     id="meeting-title"
                     value={actionData.title || ''}
-                    onChange={(e) => setActionData(prev => ({ ...prev, title: e.target.value }))}
+                    onChange={(e) => setActionData((prev: any) => ({ ...prev, title: e.target.value }))}
                     placeholder="Meeting title"
                     className="glass mt-2"
                   />
@@ -275,7 +275,7 @@ export function ContactActions({ contact, onActionComplete, className }: Contact
                   <Label htmlFor="meeting-duration">Duration</Label>
                   <Select
                     value={actionData.duration || '30'}
-                    onValueChange={(value) => setActionData(prev => ({ ...prev, duration: value }))}
+                    onValueChange={(value) => setActionData((prev: any) => ({ ...prev, duration: value }))}
                   >
                     <SelectTrigger className="glass mt-2">
                       <SelectValue />
@@ -300,7 +300,7 @@ export function ContactActions({ contact, onActionComplete, className }: Contact
                   <Input
                     id="task-title"
                     value={actionData.title || ''}
-                    onChange={(e) => setActionData(prev => ({ ...prev, title: e.target.value }))}
+                    onChange={(e) => setActionData((prev: any) => ({ ...prev, title: e.target.value }))}
                     placeholder="Task title"
                     className="glass mt-2"
                   />
@@ -310,7 +310,7 @@ export function ContactActions({ contact, onActionComplete, className }: Contact
                   <Textarea
                     id="task-description"
                     value={actionData.description || ''}
-                    onChange={(e) => setActionData(prev => ({ ...prev, description: e.target.value }))}
+                    onChange={(e) => setActionData((prev: any) => ({ ...prev, description: e.target.value }))}
                     placeholder="Task description"
                     className="glass mt-2"
                     rows={3}
@@ -320,7 +320,7 @@ export function ContactActions({ contact, onActionComplete, className }: Contact
                   <Label htmlFor="task-priority">Priority</Label>
                   <Select
                     value={actionData.priority || 'medium'}
-                    onValueChange={(value) => setActionData(prev => ({ ...prev, priority: value }))}
+                    onValueChange={(value) => setActionData((prev: any) => ({ ...prev, priority: value }))}
                   >
                     <SelectTrigger className="glass mt-2">
                       <SelectValue />
@@ -342,7 +342,7 @@ export function ContactActions({ contact, onActionComplete, className }: Contact
                 <Textarea
                   id="note-content"
                   value={actionData.content || ''}
-                  onChange={(e) => setActionData(prev => ({ ...prev, content: e.target.value }))}
+                  onChange={(e) => setActionData((prev: any) => ({ ...prev, content: e.target.value }))}
                   placeholder="Add a note about this contact"
                   className="glass mt-2"
                   rows={4}
@@ -356,7 +356,7 @@ export function ContactActions({ contact, onActionComplete, className }: Contact
                 <Input
                   id="tag-name"
                   value={actionData.tag || ''}
-                  onChange={(e) => setActionData(prev => ({ ...prev, tag: e.target.value }))}
+                  onChange={(e) => setActionData((prev: any) => ({ ...prev, tag: e.target.value }))}
                   placeholder="Enter tag name"
                   className="glass mt-2"
                 />
@@ -368,7 +368,7 @@ export function ContactActions({ contact, onActionComplete, className }: Contact
                 <Label htmlFor="workflow-select">Select Workflow</Label>
                 <Select
                   value={actionData.workflow || ''}
-                  onValueChange={(value) => setActionData(prev => ({ ...prev, workflow: value }))}
+                  onValueChange={(value) => setActionData((prev: any) => ({ ...prev, workflow: value }))}
                 >
                   <SelectTrigger className="glass mt-2">
                     <SelectValue placeholder="Choose a workflow" />

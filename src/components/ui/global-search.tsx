@@ -22,7 +22,10 @@ import {
   Star,
   TrendingUp,
   ArrowRight,
-  Command as CommandIcon
+  Command as CommandIcon,
+  CheckCircle,
+  Plus,
+  Upload
 } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 

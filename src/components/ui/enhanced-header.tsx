@@ -50,7 +50,9 @@ import {
   Battery,
   BatteryLow,
   Signal,
-  SignalZero
+  SignalZero,
+  CheckCircle,
+  AlertCircle
 } from 'lucide-react'
 import { useToast } from '@/hooks/use-toast'
 import { GlobalSearch } from './global-search'

@@ -31,7 +31,6 @@ import {
   Phone,
   Calendar,
   Tag,
-  Priority,
   UserCheck,
   Reply,
   Archive,
@@ -101,7 +100,7 @@ export default function SupportPage() {
   const [newTicket, setNewTicket] = useState({
     subject: '',
     description: '',
-    priority: 'medium' as const,
+    priority: 'medium' as 'low' | 'medium' | 'high' | 'urgent',
     category: 'general' as const,
     tags: [] as string[]
   })

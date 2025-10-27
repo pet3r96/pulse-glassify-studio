@@ -329,6 +329,7 @@ export function updateModuleStatus(
       support: module === 'support' ? enabled : true,
       analytics: module === 'analytics' ? enabled : true
     },
+    branding: {},
     security: {
       allowed_domains: [],
       require_https: false

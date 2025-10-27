@@ -56,7 +56,6 @@ import {
   EyeOff,
   Play,
   Pause,
-  Stop,
   RotateCcw,
   Save,
   Activity,
