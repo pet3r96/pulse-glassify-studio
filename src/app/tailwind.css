@@ -1,0 +1,10 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Test content to see if Tailwind is processing */
+.test-class {
+  color: red;
+}
+
+/* Include shared custom utility layers here if needed */
