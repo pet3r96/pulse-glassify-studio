@@ -1,367 +1,419 @@
-'use client'
+'use client';
 
-import { useState, useEffect, useRef } from 'react'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
-import { Label } from '@/components/ui/label'
-import { Textarea } from '@/components/ui/textarea'
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
-import { Badge } from '@/components/ui/badge'
+import { useState, useEffect, useRef } from 'react';
+import { useRouter } from 'next/navigation';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Textarea } from '@/components/ui/textarea';
+import { Badge } from '@/components/ui/badge';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { 
   Palette, 
+  Save, 
   Eye, 
   Download, 
-  Upload, 
+  Upload,
+  Undo,
+  Redo,
   Settings,
-  Plus,
-  Copy,
-  Save,
-  RotateCcw,
-  Play,
-  Pause,
   Code,
   Monitor,
   Smartphone,
   Tablet,
+  Play,
+  Square,
+  Copy,
+  Trash2,
+  Plus,
+  ArrowLeft,
   Zap,
-  History,
-  GitBranch,
-  CheckCircle,
-  AlertCircle,
-  Clock,
-  RefreshCw
-} from 'lucide-react'
-import { useToast } from '@/hooks/use-toast'
-import { supabase } from '@/lib/supabase/client'
-import { CodeEditor } from '@/components/ui/code-editor'
-import { VersionControl } from '@/components/theme/VersionControl'
-import { DeploymentSystem } from '@/components/theme/DeploymentSystem'
+  Layers,
+  Type,
+  Image,
+  Layout
+} from 'lucide-react';
+import Link from 'next/link';
 
-interface ThemeData {
-  id?: string
-  name: string
-  description: string
-  css_content: string
-  js_content: string
-  status: 'draft' | 'published' | 'archived'
-  version: number
-  created_at?: string
-  updated_at?: string
+interface ThemeConfig {
+  id?: string;
+  name: string;
+  description: string;
+  css: string;
+  js: string;
+  colors: {
+    primary: string;
+    secondary: string;
+    accent: string;
+    background: string;
+    surface: string;
+    text: string;
+    textSecondary: string;
+  };
+  fonts: {
+    primary: string;
+    secondary: string;
+    sizes: {
+      xs: string;
+      sm: string;
+      md: string;
+      lg: string;
+      xl: string;
+    };
+  };
+  layout: {
+    sidebar: 'left' | 'right' | 'top' | 'bottom';
+    header: 'fixed' | 'static';
+    navigation: 'accordion' | 'list' | 'tabs';
+  };
+  animations: {
+    enabled: boolean;
+    duration: string;
+    easing: string;
+  };
 }
 
-interface DeploymentData {
-  id: string
-  theme_id: string
-  deployed_at: string
-  status: 'success' | 'failed' | 'pending'
-  rollback_available_until: string
+const DEFAULT_THEME: ThemeConfig = {
+  name: 'New Theme',
+  description: 'A custom theme for your GoHighLevel dashboard',
+  css: `/* PulseGen Studio Theme */
+:root {
+  --primary-color: #6366f1;
+  --secondary-color: #8b5cf6;
+  --accent-color: #06b6d4;
+  --background-color: #0f172a;
+  --surface-color: rgba(255, 255, 255, 0.05);
+  --text-color: #ffffff;
+  --text-secondary: rgba(255, 255, 255, 0.7);
 }
+
+body {
+  background: var(--background-color);
+  color: var(--text-color);
+  font-family: 'Inter', sans-serif;
+}
+
+.sidebar {
+  background: var(--surface-color);
+  backdrop-filter: blur(20px);
+  border-right: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.nav-item {
+  color: var(--text-secondary);
+  transition: all 0.3s ease;
+}
+
+.nav-item:hover {
+  color: var(--primary-color);
+  background: rgba(99, 102, 241, 0.1);
+}
+
+.btn-primary {
+  background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+  border: none;
+  color: white;
+  transition: all 0.3s ease;
+}
+
+.btn-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 25px rgba(99, 102, 241, 0.3);
+}`,
+  js: `// PulseGen Studio Theme JavaScript
+console.log('PulseGen Studio Theme Loaded');
+
+// Add smooth animations
+document.addEventListener('DOMContentLoaded', function() {
+  // Add hover effects to buttons
+  const buttons = document.querySelectorAll('.btn-primary');
+  buttons.forEach(button => {
+    button.addEventListener('mouseenter', function() {
+      this.style.transform = 'translateY(-2px)';
+    });
+    
+    button.addEventListener('mouseleave', function() {
+      this.style.transform = 'translateY(0)';
+    });
+  });
+  
+  // Add loading animation
+  const loadingElements = document.querySelectorAll('.loading');
+  loadingElements.forEach(element => {
+    element.style.opacity = '0';
+    element.style.transition = 'opacity 0.5s ease';
+    setTimeout(() => {
+      element.style.opacity = '1';
+    }, 100);
+  });
+});`,
+  colors: {
+    primary: '#6366f1',
+    secondary: '#8b5cf6',
+    accent: '#06b6d4',
+    background: '#0f172a',
+    surface: 'rgba(255, 255, 255, 0.05)',
+    text: '#ffffff',
+    textSecondary: 'rgba(255, 255, 255, 0.7)',
+  },
+  fonts: {
+    primary: 'Inter',
+    secondary: 'Poppins',
+    sizes: {
+      xs: '0.75rem',
+      sm: '0.875rem',
+      md: '1rem',
+      lg: '1.125rem',
+      xl: '1.25rem',
+    },
+  },
+  layout: {
+    sidebar: 'left',
+    header: 'fixed',
+    navigation: 'accordion',
+  },
+  animations: {
+    enabled: true,
+    duration: '0.3s',
+    easing: 'ease',
+  },
+};
 
 export default function ThemeStudioPage() {
-  const { toast } = useToast()
-  const [currentTheme, setCurrentTheme] = useState<ThemeData>({
-    name: 'New Theme',
-    description: '',
-    css_content: '',
-    js_content: '',
-    status: 'draft',
-    version: 1
-  })
-  const [themes, setThemes] = useState<ThemeData[]>([])
-  const [deployments, setDeployments] = useState<DeploymentData[]>([])
-  const [loading, setLoading] = useState(false)
-  const [saving, setSaving] = useState(false)
-  const [deploying, setDeploying] = useState(false)
-  const [previewMode, setPreviewMode] = useState<'desktop' | 'tablet' | 'mobile'>('desktop')
-  const [isLivePreview, setIsLivePreview] = useState(true)
-  const [activeTab, setActiveTab] = useState('css')
-  const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false)
-  
-  const cssEditorRef = useRef<HTMLTextAreaElement>(null)
-  const jsEditorRef = useRef<HTMLTextAreaElement>(null)
-  const previewFrameRef = useRef<HTMLIFrameElement>(null)
+  const router = useRouter();
+  const [theme, setTheme] = useState<ThemeConfig>(DEFAULT_THEME);
+  const [activeTab, setActiveTab] = useState('colors');
+  const [previewMode, setPreviewMode] = useState<'desktop' | 'tablet' | 'mobile'>('desktop');
+  const [isPreviewPlaying, setIsPreviewPlaying] = useState(false);
+  const [history, setHistory] = useState<ThemeConfig[]>([DEFAULT_THEME]);
+  const [historyIndex, setHistoryIndex] = useState(0);
+  const previewRef = useRef<HTMLIFrameElement>(null);
 
   useEffect(() => {
-    loadThemes()
-    loadDeployments()
-  }, [])
+    // Load user's current theme if exists
+    loadCurrentTheme();
+  }, []);
 
-  useEffect(() => {
-    if (isLivePreview && currentTheme.css_content) {
-      updatePreview()
-    }
-  }, [currentTheme.css_content, currentTheme.js_content, isLivePreview])
-
-  const loadThemes = async () => {
+  const loadCurrentTheme = async () => {
     try {
-      const { data, error } = await (supabase as any)
-        .from('themes')
-        .select('*')
-        .order('updated_at', { ascending: false })
-      
-      if (error) throw error
-      setThemes(data || [])
-      
-      if (data && data.length > 0) {
-        setCurrentTheme(data[0])
+      // In a real app, this would fetch from API
+      const savedTheme = localStorage.getItem('currentTheme');
+      if (savedTheme) {
+        const parsedTheme = JSON.parse(savedTheme);
+        setTheme(parsedTheme);
+        setHistory([parsedTheme]);
+        setHistoryIndex(0);
       }
     } catch (error) {
-      console.error('Error loading themes:', error)
-      toast({
-        title: "Error",
-        description: "Failed to load themes",
-        variant: "destructive",
-      })
+      console.error('Error loading theme:', error);
     }
-  }
+  };
 
-  const loadDeployments = async () => {
-    try {
-      const { data, error } = await (supabase as any)
-        .from('theme_deployments')
-        .select('*')
-        .order('deployed_at', { ascending: false })
-        .limit(10)
+  const updateTheme = (updates: Partial<ThemeConfig>) => {
+    const newTheme = { ...theme, ...updates };
+    setTheme(newTheme);
+    
+    // Add to history
+    const newHistory = history.slice(0, historyIndex + 1);
+    newHistory.push(newTheme);
+    setHistory(newHistory);
+    setHistoryIndex(newHistory.length - 1);
+    
+    // Update preview
+    updatePreview(newTheme);
+  };
+
+  const updatePreview = (themeConfig: ThemeConfig) => {
+    if (previewRef.current) {
+      const iframe = previewRef.current;
+      const doc = iframe.contentDocument || iframe.contentWindow?.document;
       
-      if (error) throw error
-      setDeployments(data || [])
-    } catch (error) {
-      console.error('Error loading deployments:', error)
+      if (doc) {
+        // Update CSS
+        let styleElement = doc.getElementById('pulsegen-theme-css');
+        if (!styleElement) {
+          styleElement = doc.createElement('style');
+          styleElement.id = 'pulsegen-theme-css';
+          doc.head.appendChild(styleElement);
+        }
+        styleElement.textContent = themeConfig.css;
+        
+        // Update JavaScript
+        let scriptElement = doc.getElementById('pulsegen-theme-js');
+        if (!scriptElement) {
+          scriptElement = doc.createElement('script');
+          scriptElement.id = 'pulsegen-theme-js';
+          doc.head.appendChild(scriptElement);
+        }
+        scriptElement.textContent = themeConfig.js;
+        
+        // Trigger re-render
+        doc.body.style.display = 'none';
+        doc.body.offsetHeight; // Trigger reflow
+        doc.body.style.display = '';
+      }
     }
-  }
+  };
 
   const saveTheme = async () => {
-    if (!currentTheme.name.trim()) {
-      toast({
-        title: "Error",
-        description: "Please enter a theme name",
-        variant: "destructive",
-      })
-      return
-    }
-
-    setSaving(true)
     try {
-      const themeData = {
-        ...currentTheme,
-        updated_at: new Date().toISOString()
+      // Save to localStorage for now
+      localStorage.setItem('currentTheme', JSON.stringify(theme));
+      
+      // In a real app, this would save to Supabase
+      const response = await fetch('/api/themes/save', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(theme),
+      });
+      
+      if (response.ok) {
+        // Show success message
+        console.log('Theme saved successfully');
       }
-
-      let result
-      if (currentTheme.id) {
-        // Update existing theme
-        const { data, error } = await (supabase as any)
-          .from('themes')
-          .update(themeData)
-          .eq('id', currentTheme.id)
-          .select()
-          .single()
-        
-        if (error) throw error
-        result = data
-      } else {
-        // Create new theme
-        const { data, error } = await (supabase as any)
-          .from('themes')
-          .insert({
-            ...themeData,
-            created_at: new Date().toISOString()
-          })
-          .select()
-          .single()
-        
-        if (error) throw error
-        result = data
-      }
-
-      setCurrentTheme(result)
-      setHasUnsavedChanges(false)
-      await loadThemes()
-      
-      toast({
-        title: "Success!",
-        description: "Theme saved successfully",
-      })
-    } catch (error: any) {
-      toast({
-        title: "Error",
-        description: error.message || "Failed to save theme",
-        variant: "destructive",
-      })
-    } finally {
-      setSaving(false)
+    } catch (error) {
+      console.error('Error saving theme:', error);
     }
-  }
+  };
 
-  const deployTheme = async () => {
-    if (!currentTheme.id) {
-      toast({
-        title: "Error",
-        description: "Please save the theme before deploying",
-        variant: "destructive",
-      })
-      return
+  const undo = () => {
+    if (historyIndex > 0) {
+      const newIndex = historyIndex - 1;
+      setHistoryIndex(newIndex);
+      setTheme(history[newIndex]);
+      updatePreview(history[newIndex]);
     }
+  };
 
-    setDeploying(true)
-    try {
-      // Simulate deployment process
-      await new Promise(resolve => setTimeout(resolve, 2000))
-      
-      const deploymentData = {
-        theme_id: currentTheme.id,
-        deployed_at: new Date().toISOString(),
-        status: 'success' as const,
-        rollback_available_until: new Date(Date.now() + 48 * 60 * 60 * 1000).toISOString()
-      }
-
-      const { data, error } = await (supabase as any)
-        .from('theme_deployments')
-        .insert(deploymentData)
-        .select()
-        .single()
-
-      if (error) throw error
-      
-      setDeployments(prev => [data, ...prev])
-      
-      toast({
-        title: "Deployed!",
-        description: "Theme deployed successfully to GoHighLevel",
-      })
-    } catch (error: any) {
-      toast({
-        title: "Error",
-        description: error.message || "Failed to deploy theme",
-        variant: "destructive",
-      })
-    } finally {
-      setDeploying(false)
+  const redo = () => {
+    if (historyIndex < history.length - 1) {
+      const newIndex = historyIndex + 1;
+      setHistoryIndex(newIndex);
+      setTheme(history[newIndex]);
+      updatePreview(history[newIndex]);
     }
-  }
+  };
 
-  const updatePreview = () => {
-    if (!previewFrameRef.current) return
+  const exportTheme = () => {
+    const dataStr = JSON.stringify(theme, null, 2);
+    const dataBlob = new Blob([dataStr], { type: 'application/json' });
+    const url = URL.createObjectURL(dataBlob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = `${theme.name.replace(/\s+/g, '-').toLowerCase()}-theme.json`;
+    link.click();
+    URL.revokeObjectURL(url);
+  };
 
-    const iframe = previewFrameRef.current
-    const iframeDoc = iframe.contentDocument || iframe.contentWindow?.document
-    
-    if (!iframeDoc) return
-
-    // Update CSS
-    let styleEl = iframeDoc.getElementById('pg-theme-css') as HTMLStyleElement
-    if (!styleEl) {
-      styleEl = iframeDoc.createElement('style')
-      styleEl.id = 'pg-theme-css'
-      iframeDoc.head.appendChild(styleEl)
-    }
-    styleEl.textContent = currentTheme.css_content
-
-    // Update JS
-    if (currentTheme.js_content) {
-      try {
-        // Remove existing script
-        const existingScript = iframeDoc.getElementById('pg-theme-js')
-        if (existingScript) {
-          existingScript.remove()
+  const importTheme = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        try {
+          const importedTheme = JSON.parse(e.target?.result as string);
+          setTheme(importedTheme);
+          setHistory([importedTheme]);
+          setHistoryIndex(0);
+          updatePreview(importedTheme);
+        } catch (error) {
+          console.error('Error importing theme:', error);
         }
-
-        // Add new script
-        const scriptEl = iframeDoc.createElement('script')
-        scriptEl.id = 'pg-theme-js'
-        scriptEl.textContent = currentTheme.js_content
-        iframeDoc.head.appendChild(scriptEl)
-      } catch (error) {
-        console.error('Error executing JavaScript:', error)
-      }
+      };
+      reader.readAsText(file);
     }
-  }
+  };
 
-  const handleThemeChange = (field: keyof ThemeData, value: string) => {
-    setCurrentTheme(prev => ({ ...prev, [field]: value }))
-    setHasUnsavedChanges(true)
-  }
-
-  const createNewTheme = () => {
-    setCurrentTheme({
-      name: 'New Theme',
-      description: '',
-      css_content: '',
-      js_content: '',
-      status: 'draft',
-      version: 1
-    })
-    setHasUnsavedChanges(false)
-  }
-
-  const copyToClipboard = (text: string) => {
-    navigator.clipboard.writeText(text)
-    toast({
-      title: "Copied!",
-      description: "Code copied to clipboard",
-    })
-  }
-
-  const getPreviewDimensions = () => {
-    switch (previewMode) {
-      case 'mobile':
-        return { width: '375px', height: '667px' }
-      case 'tablet':
-        return { width: '768px', height: '1024px' }
-      default:
-        return { width: '100%', height: '600px' }
-    }
-  }
+  const generatePreviewHTML = () => {
+    return `
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GHL Preview - ${theme.name}</title>
+    <style>
+        body { margin: 0; padding: 0; font-family: 'Inter', sans-serif; }
+        .ghl-preview { height: 100vh; display: flex; }
+        .sidebar { width: 250px; background: var(--surface-color, rgba(255,255,255,0.05)); padding: 20px; }
+        .main-content { flex: 1; padding: 20px; }
+        .nav-item { padding: 10px; margin: 5px 0; border-radius: 8px; cursor: pointer; }
+        .nav-item:hover { background: rgba(99, 102, 241, 0.1); }
+        .btn-primary { background: linear-gradient(135deg, var(--primary-color, #6366f1), var(--secondary-color, #8b5cf6)); color: white; border: none; padding: 12px 24px; border-radius: 8px; cursor: pointer; }
+        .card { background: var(--surface-color, rgba(255,255,255,0.05)); padding: 20px; border-radius: 12px; margin: 10px 0; }
+    </style>
+</head>
+<body>
+    <div class="ghl-preview">
+        <div class="sidebar">
+            <h3>Navigation</h3>
+            <div class="nav-item">Dashboard</div>
+            <div class="nav-item">Contacts</div>
+            <div class="nav-item">Calendar</div>
+            <div class="nav-item">Opportunities</div>
+            <div class="nav-item">Settings</div>
+        </div>
+        <div class="main-content">
+            <h1>GoHighLevel Dashboard</h1>
+            <div class="card">
+                <h3>Welcome to your customized dashboard</h3>
+                <p>This is how your theme will look in GoHighLevel</p>
+                <button class="btn-primary">Get Started</button>
+            </div>
+            <div class="card">
+                <h3>Recent Activity</h3>
+                <p>Your recent activities will appear here</p>
+            </div>
+        </div>
+    </div>
+</body>
+</html>`;
+  };
 
   return (
     <div className="min-h-screen bg-[var(--color-bg)]">
       {/* Header */}
-      <div className="glass border-b border-white/10">
+      <div className="border-b border-white/10 glass">
         <div className="container mx-auto px-6 py-4">
           <div className="flex items-center justify-between">
-            <div>
-              <h1 className="text-3xl font-heading gradient-text">Theme Studio</h1>
-              <p className="text-muted-foreground">Create and customize your GoHighLevel themes</p>
-            </div>
             <div className="flex items-center gap-4">
-              <div className="flex items-center gap-2">
-                <Button
-                  variant={isLivePreview ? "default" : "outline"}
-                  size="sm"
-                  onClick={() => setIsLivePreview(!isLivePreview)}
-                  className={isLivePreview ? "btn-primary" : "glass"}
-                >
-                  <Play className="h-4 w-4 mr-2" />
-                  Live Preview
+              <Link href="/dashboard">
+                <Button variant="ghost" size="sm" className="text-white/70 hover:text-white">
+                  <ArrowLeft className="h-4 w-4 mr-2" />
+                  Back to Dashboard
                 </Button>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={updatePreview}
-                  className="glass"
-                >
-                  <RefreshCw className="h-4 w-4 mr-2" />
-                  Refresh
-                </Button>
+              </Link>
+              <div>
+                <h1 className="text-2xl font-heading gradient-text">Theme Studio</h1>
+                <p className="text-muted-foreground">Customize your GoHighLevel theme with real-time preview</p>
               </div>
+            </div>
+            <div className="flex items-center gap-2">
               <Button
+                onClick={undo}
+                disabled={historyIndex === 0}
                 variant="outline"
-                onClick={saveTheme}
-                disabled={saving}
-                className="glass"
+                size="sm"
+                className="border-white/20 text-white hover:bg-white/10"
               >
-                <Save className="h-4 w-4 mr-2" />
-                {saving ? 'Saving...' : 'Save'}
+                <Undo className="h-4 w-4" />
               </Button>
               <Button
-                onClick={deployTheme}
-                disabled={deploying || !currentTheme.id}
-                className="btn-primary"
+                onClick={redo}
+                disabled={historyIndex === history.length - 1}
+                variant="outline"
+                size="sm"
+                className="border-white/20 text-white hover:bg-white/10"
               >
-                <Zap className="h-4 w-4 mr-2" />
-                {deploying ? 'Deploying...' : 'Deploy'}
+                <Redo className="h-4 w-4" />
+              </Button>
+              <Button
+                onClick={saveTheme}
+                className="bg-gradient-primary hover:opacity-90"
+              >
+                <Save className="h-4 w-4 mr-2" />
+                Save Theme
               </Button>
             </div>
           </div>
@@ -369,265 +421,378 @@ export default function ThemeStudioPage() {
       </div>
 
       <div className="container mx-auto px-6 py-8">
-        <div className="grid lg:grid-cols-4 gap-8">
-          {/* Theme Controls */}
-          <div className="lg:col-span-1">
+        <div className="grid lg:grid-cols-3 gap-6">
+          {/* Theme Configuration Panel */}
+          <div className="lg:col-span-1 space-y-6">
+            {/* Theme Info */}
             <Card className="glass-card">
               <CardHeader>
-                <CardTitle className="flex items-center">
-                  <Palette className="mr-2 h-5 w-5" />
+                <CardTitle className="flex items-center gap-2">
+                  <Settings className="h-5 w-5" />
                   Theme Settings
                 </CardTitle>
-                <CardDescription>
-                  Configure your theme properties
-                </CardDescription>
               </CardHeader>
-              <CardContent>
-                <div className="space-y-4">
-                  <div>
-                    <Label htmlFor="theme-name">Theme Name</Label>
-                    <Input
-                      id="theme-name"
-                      value={currentTheme.name}
-                      onChange={(e) => handleThemeChange('name', e.target.value)}
-                      className="glass mt-2"
-                    />
-                  </div>
-                  
-                  <div>
-                    <Label htmlFor="theme-description">Description</Label>
-                    <Textarea
-                      id="theme-description"
-                      value={currentTheme.description}
-                      onChange={(e) => handleThemeChange('description', e.target.value)}
-                      className="glass mt-2"
-                      rows={3}
-                    />
-                  </div>
-                  
-                  <div>
-                    <Label htmlFor="theme-status">Status</Label>
-                    <Select
-                      value={currentTheme.status}
-                      onValueChange={(value) => handleThemeChange('status', value)}
-                    >
-                      <SelectTrigger className="glass mt-2">
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="draft">Draft</SelectItem>
-                        <SelectItem value="published">Published</SelectItem>
-                        <SelectItem value="archived">Archived</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
-
-                  <div className="flex items-center justify-between text-sm">
-                    <span>Version</span>
-                    <Badge variant="secondary">{currentTheme.version}</Badge>
-                  </div>
-
-                  {hasUnsavedChanges && (
-                    <div className="flex items-center text-yellow-400 text-sm">
-                      <AlertCircle className="h-4 w-4 mr-2" />
-                      Unsaved changes
-                    </div>
-                  )}
+              <CardContent className="space-y-4">
+                <div>
+                  <Label htmlFor="theme-name">Theme Name</Label>
+                  <Input
+                    id="theme-name"
+                    value={theme.name}
+                    onChange={(e) => updateTheme({ name: e.target.value })}
+                    className="glass"
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="theme-description">Description</Label>
+                  <Textarea
+                    id="theme-description"
+                    value={theme.description}
+                    onChange={(e) => updateTheme({ description: e.target.value })}
+                    className="glass"
+                    rows={3}
+                  />
+                </div>
+                <div className="flex gap-2">
+                  <Button
+                    onClick={() => document.getElementById('import-theme')?.click()}
+                    variant="outline"
+                    size="sm"
+                    className="flex-1 border-white/20 text-white hover:bg-white/10"
+                  >
+                    <Upload className="h-4 w-4 mr-2" />
+                    Import
+                  </Button>
+                  <Button
+                    onClick={exportTheme}
+                    variant="outline"
+                    size="sm"
+                    className="flex-1 border-white/20 text-white hover:bg-white/10"
+                  >
+                    <Download className="h-4 w-4 mr-2" />
+                    Export
+                  </Button>
+                  <input
+                    id="import-theme"
+                    type="file"
+                    accept=".json"
+                    onChange={importTheme}
+                    className="hidden"
+                  />
                 </div>
               </CardContent>
             </Card>
 
-            {/* Recent Themes */}
-            <Card className="glass-card mt-6">
+            {/* Theme Customization Tabs */}
+            <Card className="glass-card">
               <CardHeader>
-                <CardTitle className="flex items-center justify-between">
-                  <span className="flex items-center">
-                    <History className="mr-2 h-5 w-5" />
-                    Recent Themes
-                  </span>
-                  <Button size="sm" variant="outline" onClick={createNewTheme}>
-                    <Plus className="h-4 w-4" />
-                  </Button>
+                <CardTitle className="flex items-center gap-2">
+                  <Palette className="h-5 w-5" />
+                  Customization
                 </CardTitle>
               </CardHeader>
               <CardContent>
-                <div className="space-y-2">
-                  {themes.slice(0, 5).map((theme) => (
-                    <div
-                      key={theme.id}
-                      className={`p-3 glass rounded-lg cursor-pointer transition-all ${
-                        currentTheme.id === theme.id ? 'ring-2 ring-purple-500' : ''
-                      }`}
-                      onClick={() => setCurrentTheme(theme)}
-                    >
-                      <div className="flex items-center justify-between">
-                        <div>
-                          <p className="font-medium text-sm">{theme.name}</p>
-                          <p className="text-xs text-muted-foreground">
-                            v{theme.version} • {theme.status}
-                          </p>
+                <Tabs value={activeTab} onValueChange={setActiveTab}>
+                  <TabsList className="grid w-full grid-cols-4 glass">
+                    <TabsTrigger value="colors" className="text-xs">
+                      <Palette className="h-3 w-3 mr-1" />
+                      Colors
+                    </TabsTrigger>
+                    <TabsTrigger value="fonts" className="text-xs">
+                      <Type className="h-3 w-3 mr-1" />
+                      Fonts
+                    </TabsTrigger>
+                    <TabsTrigger value="layout" className="text-xs">
+                      <Layout className="h-3 w-3 mr-1" />
+                      Layout
+                    </TabsTrigger>
+                    <TabsTrigger value="code" className="text-xs">
+                      <Code className="h-3 w-3 mr-1" />
+                      Code
+                    </TabsTrigger>
+                  </TabsList>
+
+                  <TabsContent value="colors" className="space-y-4 mt-4">
+                    <div className="grid grid-cols-2 gap-4">
+                      <div>
+                        <Label htmlFor="primary-color">Primary</Label>
+                        <div className="flex gap-2">
+                          <Input
+                            id="primary-color"
+                            type="color"
+                            value={theme.colors.primary}
+                            onChange={(e) => updateTheme({ 
+                              colors: { ...theme.colors, primary: e.target.value }
+                            })}
+                            className="w-12 h-10 p-1"
+                          />
+                          <Input
+                            value={theme.colors.primary}
+                            onChange={(e) => updateTheme({ 
+                              colors: { ...theme.colors, primary: e.target.value }
+                            })}
+                            className="flex-1 glass"
+                          />
                         </div>
-                        <Badge variant="secondary" className="text-xs">
-                          {theme.version}
-                        </Badge>
+                      </div>
+                      <div>
+                        <Label htmlFor="secondary-color">Secondary</Label>
+                        <div className="flex gap-2">
+                          <Input
+                            id="secondary-color"
+                            type="color"
+                            value={theme.colors.secondary}
+                            onChange={(e) => updateTheme({ 
+                              colors: { ...theme.colors, secondary: e.target.value }
+                            })}
+                            className="w-12 h-10 p-1"
+                          />
+                          <Input
+                            value={theme.colors.secondary}
+                            onChange={(e) => updateTheme({ 
+                              colors: { ...theme.colors, secondary: e.target.value }
+                            })}
+                            className="flex-1 glass"
+                          />
+                        </div>
+                      </div>
+                      <div>
+                        <Label htmlFor="accent-color">Accent</Label>
+                        <div className="flex gap-2">
+                          <Input
+                            id="accent-color"
+                            type="color"
+                            value={theme.colors.accent}
+                            onChange={(e) => updateTheme({ 
+                              colors: { ...theme.colors, accent: e.target.value }
+                            })}
+                            className="w-12 h-10 p-1"
+                          />
+                          <Input
+                            value={theme.colors.accent}
+                            onChange={(e) => updateTheme({ 
+                              colors: { ...theme.colors, accent: e.target.value }
+                            })}
+                            className="flex-1 glass"
+                          />
+                        </div>
+                      </div>
+                      <div>
+                        <Label htmlFor="background-color">Background</Label>
+                        <div className="flex gap-2">
+                          <Input
+                            id="background-color"
+                            type="color"
+                            value={theme.colors.background}
+                            onChange={(e) => updateTheme({ 
+                              colors: { ...theme.colors, background: e.target.value }
+                            })}
+                            className="w-12 h-10 p-1"
+                          />
+                          <Input
+                            value={theme.colors.background}
+                            onChange={(e) => updateTheme({ 
+                              colors: { ...theme.colors, background: e.target.value }
+                            })}
+                            className="flex-1 glass"
+                          />
+                        </div>
                       </div>
                     </div>
-                  ))}
-                </div>
+                  </TabsContent>
+
+                  <TabsContent value="fonts" className="space-y-4 mt-4">
+                    <div>
+                      <Label htmlFor="primary-font">Primary Font</Label>
+                      <Input
+                        id="primary-font"
+                        value={theme.fonts.primary}
+                        onChange={(e) => updateTheme({ 
+                          fonts: { ...theme.fonts, primary: e.target.value }
+                        })}
+                        className="glass"
+                      />
+                    </div>
+                    <div>
+                      <Label htmlFor="secondary-font">Secondary Font</Label>
+                      <Input
+                        id="secondary-font"
+                        value={theme.fonts.secondary}
+                        onChange={(e) => updateTheme({ 
+                          fonts: { ...theme.fonts, secondary: e.target.value }
+                        })}
+                        className="glass"
+                      />
+                    </div>
+                  </TabsContent>
+
+                  <TabsContent value="layout" className="space-y-4 mt-4">
+                    <div>
+                      <Label htmlFor="sidebar-position">Sidebar Position</Label>
+                      <select
+                        id="sidebar-position"
+                        value={theme.layout.sidebar}
+                        onChange={(e) => updateTheme({ 
+                          layout: { ...theme.layout, sidebar: e.target.value as any }
+                        })}
+                        className="w-full p-2 rounded-lg glass border border-white/20 bg-transparent text-white"
+                      >
+                        <option value="left">Left</option>
+                        <option value="right">Right</option>
+                        <option value="top">Top</option>
+                        <option value="bottom">Bottom</option>
+                      </select>
+                    </div>
+                    <div>
+                      <Label htmlFor="header-type">Header Type</Label>
+                      <select
+                        id="header-type"
+                        value={theme.layout.header}
+                        onChange={(e) => updateTheme({ 
+                          layout: { ...theme.layout, header: e.target.value as any }
+                        })}
+                        className="w-full p-2 rounded-lg glass border border-white/20 bg-transparent text-white"
+                      >
+                        <option value="fixed">Fixed</option>
+                        <option value="static">Static</option>
+                      </select>
+                    </div>
+                    <div>
+                      <Label htmlFor="navigation-type">Navigation Type</Label>
+                      <select
+                        id="navigation-type"
+                        value={theme.layout.navigation}
+                        onChange={(e) => updateTheme({ 
+                          layout: { ...theme.layout, navigation: e.target.value as any }
+                        })}
+                        className="w-full p-2 rounded-lg glass border border-white/20 bg-transparent text-white"
+                      >
+                        <option value="accordion">Accordion</option>
+                        <option value="list">List</option>
+                        <option value="tabs">Tabs</option>
+                      </select>
+                    </div>
+                  </TabsContent>
+
+                  <TabsContent value="code" className="space-y-4 mt-4">
+                    <div>
+                      <Label htmlFor="css-code">CSS Code</Label>
+                      <Textarea
+                        id="css-code"
+                        value={theme.css}
+                        onChange={(e) => updateTheme({ css: e.target.value })}
+                        className="glass font-mono text-sm"
+                        rows={8}
+                      />
+                    </div>
+                    <div>
+                      <Label htmlFor="js-code">JavaScript Code</Label>
+                      <Textarea
+                        id="js-code"
+                        value={theme.js}
+                        onChange={(e) => updateTheme({ js: e.target.value })}
+                        className="glass font-mono text-sm"
+                        rows={6}
+                      />
+                    </div>
+                  </TabsContent>
+                </Tabs>
               </CardContent>
             </Card>
           </div>
 
-          {/* Editor and Preview */}
-          <div className="lg:col-span-3">
-            <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
-              <TabsList className="grid w-full grid-cols-5 glass">
-                <TabsTrigger value="css" className="flex items-center">
-                  <Code className="h-4 w-4 mr-2" />
-                  CSS
-                </TabsTrigger>
-                <TabsTrigger value="js" className="flex items-center">
-                  <Code className="h-4 w-4 mr-2" />
-                  JavaScript
-                </TabsTrigger>
-                <TabsTrigger value="preview" className="flex items-center">
-                  <Eye className="h-4 w-4 mr-2" />
-                  Preview
-                </TabsTrigger>
-                <TabsTrigger value="versions" className="flex items-center">
-                  <GitBranch className="h-4 w-4 mr-2" />
-                  Versions
-                </TabsTrigger>
-                <TabsTrigger value="deploy" className="flex items-center">
-                  <Zap className="h-4 w-4 mr-2" />
-                  Deploy
-                </TabsTrigger>
-              </TabsList>
-
-              <TabsContent value="css" className="space-y-4">
-                <CodeEditor
-                  value={currentTheme.css_content}
-                  onChange={(value) => handleThemeChange('css_content', value)}
-                  language="css"
-                  placeholder="/* Add your custom CSS here */"
-                  height="500px"
-                />
-              </TabsContent>
-
-              <TabsContent value="js" className="space-y-4">
-                <CodeEditor
-                  value={currentTheme.js_content}
-                  onChange={(value) => handleThemeChange('js_content', value)}
-                  language="javascript"
-                  placeholder="// Add your custom JavaScript here"
-                  height="500px"
-                />
-              </TabsContent>
-
-              <TabsContent value="preview" className="space-y-4">
-                <Card className="glass-card">
-                  <CardHeader>
-                    <div className="flex items-center justify-between">
-                      <CardTitle>Live Preview</CardTitle>
-                      <div className="flex items-center gap-2">
-                        <div className="flex items-center gap-1">
-                          <Button
-                            size="sm"
-                            variant={previewMode === 'desktop' ? 'default' : 'outline'}
-                            onClick={() => setPreviewMode('desktop')}
-                            className={previewMode === 'desktop' ? 'btn-primary' : 'glass'}
-                          >
-                            <Monitor className="h-4 w-4" />
-                          </Button>
-                          <Button
-                            size="sm"
-                            variant={previewMode === 'tablet' ? 'default' : 'outline'}
-                            onClick={() => setPreviewMode('tablet')}
-                            className={previewMode === 'tablet' ? 'btn-primary' : 'glass'}
-                          >
-                            <Tablet className="h-4 w-4" />
-                          </Button>
-                          <Button
-                            size="sm"
-                            variant={previewMode === 'mobile' ? 'default' : 'outline'}
-                            onClick={() => setPreviewMode('mobile')}
-                            className={previewMode === 'mobile' ? 'btn-primary' : 'glass'}
-                          >
-                            <Smartphone className="h-4 w-4" />
-                          </Button>
-                        </div>
-                      </div>
+          {/* Preview Panel */}
+          <div className="lg:col-span-2">
+            <Card className="glass-card">
+              <CardHeader>
+                <div className="flex items-center justify-between">
+                  <CardTitle className="flex items-center gap-2">
+                    <Eye className="h-5 w-5" />
+                    Live Preview
+                  </CardTitle>
+                  <div className="flex items-center gap-2">
+                    <div className="flex items-center gap-1 glass rounded-lg p-1">
+                      <Button
+                        onClick={() => setPreviewMode('desktop')}
+                        variant={previewMode === 'desktop' ? 'default' : 'ghost'}
+                        size="sm"
+                        className="h-8 w-8 p-0"
+                      >
+                        <Monitor className="h-4 w-4" />
+                      </Button>
+                      <Button
+                        onClick={() => setPreviewMode('tablet')}
+                        variant={previewMode === 'tablet' ? 'default' : 'ghost'}
+                        size="sm"
+                        className="h-8 w-8 p-0"
+                      >
+                        <Tablet className="h-4 w-4" />
+                      </Button>
+                      <Button
+                        onClick={() => setPreviewMode('mobile')}
+                        variant={previewMode === 'mobile' ? 'default' : 'ghost'}
+                        size="sm"
+                        className="h-8 w-8 p-0"
+                      >
+                        <Smartphone className="h-4 w-4" />
+                      </Button>
                     </div>
-                    <CardDescription>
-                      See how your theme looks in real-time
-                    </CardDescription>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="border rounded-lg overflow-hidden bg-white/5">
-                      <iframe
-                        ref={previewFrameRef}
-                        src="/preview-frame"
-                        className="w-full border-0"
-                        style={getPreviewDimensions()}
-                        title="Theme Preview"
-                      />
-                    </div>
-                  </CardContent>
-                </Card>
-              </TabsContent>
-
-              <TabsContent value="versions" className="space-y-4">
-                <VersionControl
-                  themeId={currentTheme.id || ''}
-                  currentVersion={currentTheme.version}
-                  onVersionSelect={(version) => {
-                    setCurrentTheme(prev => ({
-                      ...prev,
-                      css_content: version.css_content,
-                      js_content: version.js_content,
-                      version: version.version
-                    }))
-                  }}
-                  onVersionCreate={(name, description) => {
-                    const newVersion = currentTheme.version + 1
-                    setCurrentTheme(prev => ({
-                      ...prev,
-                      version: newVersion,
-                      name: `${prev.name} - ${name}`
-                    }))
-                    toast({
-                      title: "Version Created",
-                      description: `Version ${newVersion} created successfully`,
-                    })
-                  }}
-                  onVersionRestore={(versionId) => {
-                    toast({
-                      title: "Version Restored",
-                      description: "Theme has been restored to selected version",
-                    })
-                  }}
-                />
-              </TabsContent>
-
-              <TabsContent value="deploy" className="space-y-4">
-                <DeploymentSystem
-                  themeId={currentTheme.id || ''}
-                  themeName={currentTheme.name}
-                  onDeploy={async (subaccountId) => {
-                    await deployTheme()
-                  }}
-                  onRollback={async (deploymentId) => {
-                    toast({
-                      title: "Rollback Initiated",
-                      description: "Theme rollback has been initiated",
-                    })
-                  }}
-                />
-              </TabsContent>
-            </Tabs>
+                    <Button
+                      onClick={() => setIsPreviewPlaying(!isPreviewPlaying)}
+                      variant="outline"
+                      size="sm"
+                      className="border-white/20 text-white hover:bg-white/10"
+                    >
+                      {isPreviewPlaying ? <Square className="h-4 w-4" /> : <Play className="h-4 w-4" />}
+                    </Button>
+                  </div>
+                </div>
+                <CardDescription>
+                  See how your theme will look in GoHighLevel
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div 
+                  className={`border border-white/20 rounded-lg overflow-hidden ${
+                    previewMode === 'desktop' ? 'w-full' :
+                    previewMode === 'tablet' ? 'w-full max-w-md mx-auto' :
+                    'w-full max-w-sm mx-auto'
+                  }`}
+                >
+                  <iframe
+                    ref={previewRef}
+                    srcDoc={generatePreviewHTML()}
+                    className="w-full h-96 border-0"
+                    title="Theme Preview"
+                  />
+                </div>
+                <div className="mt-4 flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <Badge variant="outline" className="glass">
+                      <Zap className="h-3 w-3 mr-1" />
+                      Live Updates
+                    </Badge>
+                    <Badge variant="outline" className="glass">
+                      <Layers className="h-3 w-3 mr-1" />
+                      {previewMode === 'desktop' ? 'Desktop' : previewMode === 'tablet' ? 'Tablet' : 'Mobile'}
+                    </Badge>
+                  </div>
+                  <Button
+                    onClick={() => {
+                      navigator.clipboard.writeText(theme.css);
+                    }}
+                    variant="outline"
+                    size="sm"
+                    className="border-white/20 text-white hover:bg-white/10"
+                  >
+                    <Copy className="h-4 w-4 mr-2" />
+                    Copy CSS
+                  </Button>
+                </div>
+              </CardContent>
+            </Card>
           </div>
         </div>
       </div>
     </div>
-  )
+  );
 }
