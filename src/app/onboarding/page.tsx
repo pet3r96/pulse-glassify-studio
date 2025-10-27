@@ -9,6 +9,7 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group'
 import { Switch } from '@/components/ui/switch'
+import { useToast } from '@/hooks/use-toast'
 import { 
   Check, 
   X, 
@@ -18,18 +19,19 @@ import {
   Palette,
   Upload,
   Settings,
-  Zap
+  Zap,
+  CreditCard,
+  Shield
 } from 'lucide-react'
-import { supabase, getCurrentUser, validateGHLApiKey, encryptApiKey } from '@/lib/supabase/client'
-import { useToast } from '@/hooks/use-toast'
 
 interface OnboardingData {
-  apiKey: string
-  apiKeyValid: boolean
-  baseTheme: 'light' | 'dark'
-  logoUrl: string
-  faviconUrl: string
-  embeddedMode: boolean
+  stripe_customer_id?: string
+  subscription_status: 'incomplete' | 'active' | 'trialing'
+  base_theme: 'light' | 'dark' | 'glass'
+  logo_url: string
+  favicon_url: string
+  embedded_mode: boolean
+  navigation_config: Record<string, any>
 }
 
 export default function OnboardingPage() {
@@ -37,19 +39,18 @@ export default function OnboardingPage() {
   const { toast } = useToast()
   const [currentStep, setCurrentStep] = useState(1)
   const [loading, setLoading] = useState(false)
-  const [validating, setValidating] = useState(false)
   const [user, setUser] = useState<any>(null)
   
   const [formData, setFormData] = useState<OnboardingData>({
-    apiKey: '',
-    apiKeyValid: false,
-    baseTheme: 'dark',
-    logoUrl: '',
-    faviconUrl: '',
-    embeddedMode: false
+    subscription_status: 'incomplete',
+    base_theme: 'glass',
+    logo_url: '',
+    favicon_url: '',
+    embedded_mode: false,
+    navigation_config: {}
   })
 
-  const totalSteps = 5
+  const totalSteps = 4
   const progress = (currentStep / totalSteps) * 100
 
   useEffect(() => {
@@ -58,12 +59,20 @@ export default function OnboardingPage() {
 
   const loadUser = async () => {
     try {
-      const currentUser = await getCurrentUser()
-      if (!currentUser) {
+      const userData = localStorage.getItem('user')
+      if (!userData) {
         router.push('/auth')
         return
       }
-      setUser(currentUser)
+      
+      const parsedUser = JSON.parse(userData)
+      setUser(parsedUser)
+      
+      // Check if user already has active subscription
+      if (parsedUser.subscription_status?.status === 'active') {
+        router.push('/dashboard')
+        return
+      }
     } catch (error) {
       console.error('Error loading user:', error)
       router.push('/auth')
@@ -86,99 +95,88 @@ export default function OnboardingPage() {
     }
   }
 
-  const validateApiKey = async () => {
-    if (!formData.apiKey) {
-      toast({
-        title: "Error",
-        description: "Please enter an API key",
-        variant: "destructive",
-      })
-      return
-    }
-
-    setValidating(true)
+  const createStripeCustomer = async () => {
     try {
-      const result = await validateGHLApiKey(formData.apiKey)
-      if (result.valid) {
-        updateFormData({ apiKeyValid: true })
-        toast({
-          title: "Success!",
-          description: "API key is valid",
-        })
-      } else {
-        updateFormData({ apiKeyValid: false })
-        toast({
-          title: "Invalid API Key",
-          description: "Please check your API key and try again",
-          variant: "destructive",
-        })
-      }
-    } catch (error) {
-      updateFormData({ apiKeyValid: false })
-      toast({
-        title: "Error",
-        description: "Failed to validate API key",
-        variant: "destructive",
+      const response = await fetch('/api/stripe/create-customer', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          email: user.email,
+          name: user.name,
+        }),
       })
-    } finally {
-      setValidating(false)
+
+      const data = await response.json()
+      
+      if (data.error) {
+        throw new Error(data.error)
+      }
+
+      return data.customer_id
+    } catch (error: any) {
+      throw new Error(`Failed to create Stripe customer: ${error.message}`)
     }
   }
 
   const completeOnboarding = async () => {
-    if (!formData.apiKeyValid) {
-      toast({
-        title: "Invalid API Key",
-        description: "Please enter a valid GoHighLevel API key",
-        variant: "destructive",
-      })
-      return
-    }
-
     setLoading(true)
+    
     try {
-      // Create or update agency
-      const encryptedApiKey = await encryptApiKey(formData.apiKey)
+      // Create Stripe customer
+      const stripe_customer_id = await createStripeCustomer()
       
-      const { data: agency, error: agencyError } = await (supabase as any)
-        .from('agencies')
-        .upsert({
-          owner_id: user.id,
-          name: user.email?.split('@')[0] || 'My Agency',
-          ghl_api_key_encrypted: encryptedApiKey,
-          ghl_api_key_valid: true,
-          ghl_api_key_last_validated: new Date().toISOString(),
-          logo_url: formData.logoUrl,
-          favicon_url: formData.faviconUrl,
-          base_theme: formData.baseTheme,
-          embedded_mode_enabled: formData.embeddedMode,
-          embedded_token: formData.embeddedMode ? crypto.randomUUID() : null
-        })
-        .select()
-        .single()
-
-      if (agencyError) throw agencyError
-
-      // Update user profile
-      const { error: profileError } = await (supabase as any)
-        .from('profiles')
-        .update({
-          agency_id: (agency as any).id,
-          onboarding_completed: true
-        })
-        .eq('id', user.id)
-
-      if (profileError) throw profileError
-
-      toast({
-        title: "Welcome to PulseStudio!",
-        description: "Your account is ready. Redirecting to dashboard...",
+      // Update subscription status
+      const response = await fetch('/api/subscription/update', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          user_id: user.id,
+          stripe_customer_id,
+          status: 'trialing', // Start with trial
+        }),
       })
 
-      router.push('/dashboard')
+      if (!response.ok) {
+        throw new Error('Failed to update subscription status')
+      }
+
+      // Create tenant config
+      const configResponse = await fetch('/api/tenant-config/create', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          owner_type: user.role === 'agency' ? 'agency' : 'subaccount',
+          owner_id: user.role === 'agency' ? user.agency_id : user.subaccount_id,
+          navigation_config: formData.navigation_config,
+          ui_flags: {
+            base_theme: formData.base_theme,
+            logo_url: formData.logo_url,
+            favicon_url: formData.favicon_url,
+            embedded_mode: formData.embedded_mode,
+          },
+        }),
+      })
+
+      if (!configResponse.ok) {
+        throw new Error('Failed to create tenant configuration')
+      }
+
+      toast({
+        title: "Welcome to PulseGen Studio!",
+        description: "Your account is ready. Redirecting to billing...",
+      })
+
+      // Redirect to billing setup
+      router.push('/account/billing')
     } catch (error: any) {
       toast({
-        title: "Error",
+        title: "Setup Error",
         description: error.message || "Failed to complete onboarding",
         variant: "destructive",
       })
@@ -194,54 +192,47 @@ export default function OnboardingPage() {
           <div className="space-y-6">
             <div className="text-center">
               <div className="w-16 h-16 bg-gradient-to-r from-pink-500 to-purple-500 rounded-full flex items-center justify-center mx-auto mb-4">
-                <Key className="h-8 w-8 text-white" />
+                <Shield className="h-8 w-8 text-white" />
               </div>
-              <h3 className="text-2xl font-heading gradient-text mb-2">GoHighLevel API Key</h3>
+              <h3 className="text-2xl font-heading gradient-text mb-2">Welcome to PulseGen Studio</h3>
               <p className="text-muted-foreground">
-                Connect your GoHighLevel account to get started
+                Let's set up your GoHighLevel operating system overlay
               </p>
             </div>
 
-            <div className="space-y-4">
-              <div>
-                <Label htmlFor="api-key">API Key</Label>
-                <div className="flex gap-2 mt-2">
-                  <Input
-                    id="api-key"
-                    type="password"
-                    value={formData.apiKey}
-                    onChange={(e) => updateFormData({ apiKey: e.target.value, apiKeyValid: false })}
-                    placeholder="Enter your GHL API key"
-                    className="glass"
-                  />
-                  <Button
-                    onClick={validateApiKey}
-                    disabled={validating || !formData.apiKey}
-                    className="btn-primary"
-                  >
-                    {validating ? "Validating..." : "Validate"}
-                  </Button>
+            <div className="glass-card p-6">
+              <h4 className="font-medium mb-4">What you'll get:</h4>
+              <div className="space-y-3 text-sm">
+                <div className="flex items-center gap-2">
+                  <Check className="w-4 h-4 text-green-400" />
+                  <span>Complete UI theme control for GoHighLevel</span>
                 </div>
-                {formData.apiKeyValid && (
-                  <p className="text-sm text-green-400 flex items-center gap-1 mt-2">
-                    <Check className="w-4 h-4" /> API key is valid
-                  </p>
-                )}
-                {formData.apiKey && !formData.apiKeyValid && !validating && (
-                  <p className="text-sm text-red-400 flex items-center gap-1 mt-2">
-                    <X className="w-4 h-4" /> Please validate your API key
-                  </p>
-                )}
+                <div className="flex items-center gap-2">
+                  <Check className="w-4 h-4 text-green-400" />
+                  <span>Real-time theme preview and deployment</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <Check className="w-4 h-4 text-green-400" />
+                  <span>Marketplace to buy/sell themes</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <Check className="w-4 h-4 text-green-400" />
+                  <span>Project management and support tools</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <Check className="w-4 h-4 text-green-400" />
+                  <span>Embedded apps inside GoHighLevel</span>
+                </div>
               </div>
+            </div>
 
-              <div className="glass-card p-4">
-                <p className="text-sm text-muted-foreground">
-                  <strong>Where to find your API key:</strong><br />
-                  1. Log into GoHighLevel<br />
-                  2. Go to Settings → API Keys<br />
-                  3. Create or copy your API key
-                </p>
-              </div>
+            <div className="glass-card p-4 bg-blue-500/10 border-blue-500/20">
+              <p className="text-sm text-blue-400">
+                <strong>Account Type:</strong> {user?.role === 'agency' ? 'Agency Owner' : 'Subaccount User'}
+              </p>
+              <p className="text-sm text-blue-400 mt-1">
+                <strong>Name:</strong> {user?.name}
+              </p>
             </div>
           </div>
         )
@@ -260,10 +251,24 @@ export default function OnboardingPage() {
             </div>
 
             <RadioGroup
-              value={formData.baseTheme}
-              onValueChange={(value) => updateFormData({ baseTheme: value as 'light' | 'dark' })}
+              value={formData.base_theme}
+              onValueChange={(value) => updateFormData({ base_theme: value as 'light' | 'dark' | 'glass' })}
               className="space-y-4"
             >
+              <div className="flex items-center space-x-2">
+                <RadioGroupItem value="glass" id="glass" />
+                <Label htmlFor="glass" className="flex-1 cursor-pointer">
+                  <div className="glass-card p-4">
+                    <div className="flex items-center space-x-3">
+                      <div className="w-8 h-8 bg-gradient-to-r from-pink-500/20 to-purple-500/20 rounded backdrop-blur-sm border border-white/10"></div>
+                      <div>
+                        <p className="font-medium">Glass Theme</p>
+                        <p className="text-sm text-muted-foreground">Modern glassmorphism design</p>
+                      </div>
+                    </div>
+                  </div>
+                </Label>
+              </div>
               <div className="flex items-center space-x-2">
                 <RadioGroupItem value="dark" id="dark" />
                 <Label htmlFor="dark" className="flex-1 cursor-pointer">
@@ -272,7 +277,7 @@ export default function OnboardingPage() {
                       <div className="w-8 h-8 bg-gray-800 rounded"></div>
                       <div>
                         <p className="font-medium">Dark Theme</p>
-                        <p className="text-sm text-muted-foreground">Modern, sleek dark interface</p>
+                        <p className="text-sm text-muted-foreground">Sleek dark interface</p>
                       </div>
                     </div>
                   </div>
@@ -305,7 +310,7 @@ export default function OnboardingPage() {
               </div>
               <h3 className="text-2xl font-heading gradient-text mb-2">Branding</h3>
               <p className="text-muted-foreground">
-                Upload your logo and favicon
+                Upload your logo and favicon (optional)
               </p>
             </div>
 
@@ -314,37 +319,28 @@ export default function OnboardingPage() {
                 <Label htmlFor="logo-url">Logo URL</Label>
                 <Input
                   id="logo-url"
-                  value={formData.logoUrl}
-                  onChange={(e) => updateFormData({ logoUrl: e.target.value })}
+                  value={formData.logo_url}
+                  onChange={(e) => updateFormData({ logo_url: e.target.value })}
                   placeholder="https://example.com/logo.png"
                   className="glass mt-2"
                 />
+                <p className="text-xs text-muted-foreground mt-1">
+                  This will replace the default PulseGen logo in your themes
+                </p>
               </div>
               <div>
                 <Label htmlFor="favicon-url">Favicon URL</Label>
                 <Input
                   id="favicon-url"
-                  value={formData.faviconUrl}
-                  onChange={(e) => updateFormData({ faviconUrl: e.target.value })}
+                  value={formData.favicon_url}
+                  onChange={(e) => updateFormData({ favicon_url: e.target.value })}
                   placeholder="https://example.com/favicon.ico"
                   className="glass mt-2"
                 />
+                <p className="text-xs text-muted-foreground mt-1">
+                  This will be used as the browser tab icon
+                </p>
               </div>
-            </div>
-          </div>
-        )
-
-      case 4:
-        return (
-          <div className="space-y-6">
-            <div className="text-center">
-              <div className="w-16 h-16 bg-gradient-to-r from-green-500 to-blue-500 rounded-full flex items-center justify-center mx-auto mb-4">
-                <Settings className="h-8 w-8 text-white" />
-              </div>
-              <h3 className="text-2xl font-heading gradient-text mb-2">Embedded Mode</h3>
-              <p className="text-muted-foreground">
-                Enable embedded apps inside GoHighLevel
-              </p>
             </div>
 
             <div className="glass-card p-6">
@@ -352,24 +348,24 @@ export default function OnboardingPage() {
                 <div>
                   <h4 className="font-medium">Enable Embedded Mode</h4>
                   <p className="text-sm text-muted-foreground">
-                    Allow PulseStudio apps to run inside GoHighLevel
+                    Allow PulseGen apps to run inside GoHighLevel
                   </p>
                 </div>
                 <Switch
-                  checked={formData.embeddedMode}
-                  onCheckedChange={(checked) => updateFormData({ embeddedMode: checked })}
+                  checked={formData.embedded_mode}
+                  onCheckedChange={(checked) => updateFormData({ embedded_mode: checked })}
                 />
               </div>
             </div>
 
-            {formData.embeddedMode && (
+            {formData.embedded_mode && (
               <div className="glass-card p-4 bg-blue-500/10 border-blue-500/20">
-                <p className="text-sm text-blue-400">
+                <p className="text-sm text-blue-400 mb-2">
                   <strong>Embed Code:</strong> Add this to your GoHighLevel custom CSS:
                 </p>
-                <code className="block mt-2 p-2 bg-black/20 rounded text-xs font-mono">
+                <code className="block p-3 bg-black/20 rounded text-xs font-mono overflow-x-auto">
                   {`window.addEventListener("message",(e)=>{
-if(e.origin.includes("pulsegenstudio.app")&&e.data?.type==="PG_THEME"){
+if(e.origin.includes("pulsegenstudio")&&e.data?.type==="PG_THEME"){
 const{css,js}=e.data.payload;
 let style=document.querySelector("#pgTheme")||document.createElement("style");
 style.id="pgTheme";style.textContent=css;
@@ -382,12 +378,12 @@ if(js)eval(js);
           </div>
         )
 
-      case 5:
+      case 4:
         return (
           <div className="space-y-6">
             <div className="text-center">
-              <div className="w-16 h-16 bg-gradient-to-r from-pink-500 to-purple-500 rounded-full flex items-center justify-center mx-auto mb-4">
-                <Zap className="h-8 w-8 text-white" />
+              <div className="w-16 h-16 bg-gradient-to-r from-green-500 to-blue-500 rounded-full flex items-center justify-center mx-auto mb-4">
+                <CreditCard className="h-8 w-8 text-white" />
               </div>
               <h3 className="text-2xl font-heading gradient-text mb-2">Ready to Go!</h3>
               <p className="text-muted-foreground">
@@ -399,26 +395,32 @@ if(js)eval(js);
               <h4 className="font-medium mb-4">Setup Summary</h4>
               <div className="space-y-2 text-sm">
                 <div className="flex justify-between">
-                  <span>API Key:</span>
-                  <span className="text-green-400">✓ Valid</span>
+                  <span>Account Type:</span>
+                  <span className="capitalize">{user?.role}</span>
                 </div>
                 <div className="flex justify-between">
                   <span>Base Theme:</span>
-                  <span className="capitalize">{formData.baseTheme}</span>
+                  <span className="capitalize">{formData.base_theme}</span>
                 </div>
                 <div className="flex justify-between">
                   <span>Logo:</span>
-                  <span>{formData.logoUrl ? '✓ Set' : 'Not set'}</span>
+                  <span>{formData.logo_url ? '✓ Set' : 'Not set'}</span>
                 </div>
                 <div className="flex justify-between">
                   <span>Favicon:</span>
-                  <span>{formData.faviconUrl ? '✓ Set' : 'Not set'}</span>
+                  <span>{formData.favicon_url ? '✓ Set' : 'Not set'}</span>
                 </div>
                 <div className="flex justify-between">
                   <span>Embedded Mode:</span>
-                  <span>{formData.embeddedMode ? '✓ Enabled' : 'Disabled'}</span>
+                  <span>{formData.embedded_mode ? '✓ Enabled' : 'Disabled'}</span>
                 </div>
               </div>
+            </div>
+
+            <div className="glass-card p-4 bg-yellow-500/10 border-yellow-500/20">
+              <p className="text-sm text-yellow-400">
+                <strong>Next:</strong> You'll be redirected to set up billing and start your trial.
+              </p>
             </div>
           </div>
         )
@@ -428,13 +430,26 @@ if(js)eval(js);
     }
   }
 
+  if (!user) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-[var(--color-bg)]">
+        <div className="glass-card p-8 text-center">
+          <div className="animate-pulse-glow mb-4">
+            <div className="w-12 h-12 bg-gradient-to-r from-pink-500 to-purple-500 rounded-full mx-auto"></div>
+          </div>
+          <h2 className="text-xl font-heading gradient-text">Loading...</h2>
+        </div>
+      </div>
+    )
+  }
+
   return (
     <div className="min-h-screen bg-[var(--color-bg)] flex items-center justify-center p-6">
       <Card className="w-full max-w-2xl glass-card">
         <CardHeader>
           <div className="text-center">
             <h1 className="text-3xl font-heading gradient-text mb-2">
-              Welcome to PulseStudio
+              Welcome to PulseGen Studio
             </h1>
             <p className="text-muted-foreground">
               Step {currentStep} of {totalSteps}: Let's set up your account
@@ -459,7 +474,6 @@ if(js)eval(js);
               <Button
                 onClick={nextStep}
                 className="btn-primary"
-                disabled={currentStep === 1 && !formData.apiKeyValid}
               >
                 Next
                 <ArrowRight className="h-4 w-4 ml-2" />
@@ -468,7 +482,7 @@ if(js)eval(js);
               <Button
                 onClick={completeOnboarding}
                 className="btn-primary"
-                disabled={loading || !formData.apiKeyValid}
+                disabled={loading}
               >
                 {loading ? "Completing..." : "Complete Setup"}
                 <Zap className="h-4 w-4 ml-2" />
