@@ -3,7 +3,7 @@
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"
-import { Menu, X, Palette, Home, BarChart3, Settings, User, CreditCard } from "lucide-react"
+import { Menu, X, Palette, Home, BarChart3, Settings, User, CreditCard, Store } from "lucide-react"
 import { useState } from "react"
 
 export function Navigation() {
@@ -13,6 +13,7 @@ export function Navigation() {
     { name: "Home", href: "/", icon: Home },
     { name: "Dashboard", href: "/dashboard", icon: BarChart3 },
     { name: "Theme Builder", href: "/theme-builder", icon: Palette },
+    { name: "Marketplace", href: "/marketplace", icon: Store },
     { name: "Billing", href: "/billing", icon: CreditCard },
     { name: "Settings", href: "/settings", icon: Settings },
   ]
