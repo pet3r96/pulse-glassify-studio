@@ -14,7 +14,7 @@ import {
   Save, 
   Eye, 
   Download, 
-  Upload,
+  Upload, 
   Undo,
   Redo,
   Settings,
@@ -390,15 +390,15 @@ export default function ThemeStudioPage() {
               </div>
             </div>
             <div className="flex items-center gap-2">
-              <Button
+                <Button
                 onClick={undo}
                 disabled={historyIndex === 0}
-                variant="outline"
-                size="sm"
+                  variant="outline"
+                  size="sm"
                 className="border-white/20 text-white hover:bg-white/10"
-              >
+                >
                 <Undo className="h-4 w-4" />
-              </Button>
+                </Button>
               <Button
                 onClick={redo}
                 disabled={historyIndex === history.length - 1}
@@ -433,25 +433,25 @@ export default function ThemeStudioPage() {
                 </CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
-                <div>
-                  <Label htmlFor="theme-name">Theme Name</Label>
-                  <Input
-                    id="theme-name"
+                  <div>
+                    <Label htmlFor="theme-name">Theme Name</Label>
+                    <Input
+                      id="theme-name"
                     value={theme.name}
                     onChange={(e) => updateTheme({ name: e.target.value })}
                     className="glass"
-                  />
-                </div>
-                <div>
-                  <Label htmlFor="theme-description">Description</Label>
-                  <Textarea
-                    id="theme-description"
+                    />
+                  </div>
+                  <div>
+                    <Label htmlFor="theme-description">Description</Label>
+                    <Textarea
+                      id="theme-description"
                     value={theme.description}
                     onChange={(e) => updateTheme({ description: e.target.value })}
                     className="glass"
-                    rows={3}
-                  />
-                </div>
+                      rows={3}
+                    />
+                  </div>
                 <div className="flex gap-2">
                   <Button
                     onClick={() => document.getElementById('import-theme')?.click()}
@@ -576,7 +576,7 @@ export default function ThemeStudioPage() {
                           />
                         </div>
                       </div>
-                      <div>
+                        <div>
                         <Label htmlFor="background-color">Background</Label>
                         <div className="flex gap-2">
                           <Input
@@ -693,7 +693,7 @@ export default function ThemeStudioPage() {
                         className="glass font-mono text-sm"
                         rows={6}
                       />
-                    </div>
+                </div>
                   </TabsContent>
                 </Tabs>
               </CardContent>
@@ -702,40 +702,40 @@ export default function ThemeStudioPage() {
 
           {/* Preview Panel */}
           <div className="lg:col-span-2">
-            <Card className="glass-card">
-              <CardHeader>
-                <div className="flex items-center justify-between">
+                <Card className="glass-card">
+                  <CardHeader>
+                    <div className="flex items-center justify-between">
                   <CardTitle className="flex items-center gap-2">
                     <Eye className="h-5 w-5" />
                     Live Preview
                   </CardTitle>
-                  <div className="flex items-center gap-2">
+                      <div className="flex items-center gap-2">
                     <div className="flex items-center gap-1 glass rounded-lg p-1">
-                      <Button
+                          <Button
                         onClick={() => setPreviewMode('desktop')}
                         variant={previewMode === 'desktop' ? 'default' : 'ghost'}
-                        size="sm"
+                            size="sm"
                         className="h-8 w-8 p-0"
-                      >
-                        <Monitor className="h-4 w-4" />
-                      </Button>
-                      <Button
+                          >
+                            <Monitor className="h-4 w-4" />
+                          </Button>
+                          <Button
                         onClick={() => setPreviewMode('tablet')}
                         variant={previewMode === 'tablet' ? 'default' : 'ghost'}
-                        size="sm"
+                            size="sm"
                         className="h-8 w-8 p-0"
-                      >
-                        <Tablet className="h-4 w-4" />
-                      </Button>
-                      <Button
+                          >
+                            <Tablet className="h-4 w-4" />
+                          </Button>
+                          <Button
                         onClick={() => setPreviewMode('mobile')}
                         variant={previewMode === 'mobile' ? 'default' : 'ghost'}
-                        size="sm"
+                            size="sm"
                         className="h-8 w-8 p-0"
-                      >
-                        <Smartphone className="h-4 w-4" />
-                      </Button>
-                    </div>
+                          >
+                            <Smartphone className="h-4 w-4" />
+                          </Button>
+                        </div>
                     <Button
                       onClick={() => setIsPreviewPlaying(!isPreviewPlaying)}
                       variant="outline"
@@ -744,13 +744,13 @@ export default function ThemeStudioPage() {
                     >
                       {isPreviewPlaying ? <Square className="h-4 w-4" /> : <Play className="h-4 w-4" />}
                     </Button>
-                  </div>
-                </div>
-                <CardDescription>
+                      </div>
+                    </div>
+                    <CardDescription>
                   See how your theme will look in GoHighLevel
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
+                    </CardDescription>
+                  </CardHeader>
+                  <CardContent>
                 <div 
                   className={`border border-white/20 rounded-lg overflow-hidden ${
                     previewMode === 'desktop' ? 'w-full' :
@@ -758,13 +758,13 @@ export default function ThemeStudioPage() {
                     'w-full max-w-sm mx-auto'
                   }`}
                 >
-                  <iframe
+                      <iframe
                     ref={previewRef}
                     srcDoc={generatePreviewHTML()}
                     className="w-full h-96 border-0"
-                    title="Theme Preview"
-                  />
-                </div>
+                        title="Theme Preview"
+                      />
+                    </div>
                 <div className="mt-4 flex items-center justify-between">
                   <div className="flex items-center gap-2">
                     <Badge variant="outline" className="glass">
@@ -787,9 +787,9 @@ export default function ThemeStudioPage() {
                     <Copy className="h-4 w-4 mr-2" />
                     Copy CSS
                   </Button>
-                </div>
-              </CardContent>
-            </Card>
+                    </div>
+                  </CardContent>
+                </Card>
           </div>
         </div>
       </div>

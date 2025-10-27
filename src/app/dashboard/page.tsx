@@ -7,6 +7,7 @@ import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { useToast } from '@/hooks/use-toast'
 import { SubscriptionStatus } from '@/components/subscription/SubscriptionStatus'
+import { ThemeManager } from '@/components/theme/ThemeManager'
 import { 
   Palette,
   Store,
@@ -356,6 +357,11 @@ export default function DashboardPage() {
         {/* Subscription Status */}
         <div className="mb-8">
           <SubscriptionStatus userId={user.id} />
+        </div>
+
+        {/* Theme Manager */}
+        <div className="mb-8">
+          <ThemeManager />
         </div>
       </div>
     </div>
