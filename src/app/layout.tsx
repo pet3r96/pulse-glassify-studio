@@ -1,8 +1,14 @@
 import type { Metadata } from 'next'
-import { Inter } from 'next/font/google'
+import { Inter, Poppins } from 'next/font/google'
 import { Navigation } from '@/components/Navigation'
+import './globals.css'
 
 const inter = Inter({ subsets: ['latin'] })
+const poppins = Poppins({ 
+  subsets: ['latin'],
+  weight: ['400', '500', '600', '700'],
+  variable: '--pg-font-heading'
+})
 
 export const metadata: Metadata = {
   title: 'PulseStudio - Custom GoHighLevel Dashboard Themes',
@@ -16,7 +22,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body className={inter.className}>
+      <body className={`${inter.className} ${poppins.variable}`}>
         <Navigation />
         {children}
       </body>
