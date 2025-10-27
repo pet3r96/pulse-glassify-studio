@@ -3,7 +3,7 @@
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"
-import { Menu, X, Palette, Home, BarChart3, Settings, User, CreditCard, Store } from "lucide-react"
+import { Menu, X, Palette, Home, BarChart3, Settings, User, CreditCard, Store, Shield } from "lucide-react"
 import { useState } from "react"
 
 export function Navigation() {
@@ -17,6 +17,12 @@ export function Navigation() {
     { name: "Billing", href: "/billing", icon: CreditCard },
     { name: "Settings", href: "/settings", icon: Settings },
   ]
+
+  // Add admin link for super admins (this would be dynamic in a real app)
+  const isSuperAdmin = true; // In a real app, this would come from user context
+  if (isSuperAdmin) {
+    navigation.push({ name: "Admin", href: "/admin", icon: Shield });
+  }
 
   return (
     <nav className="bg-white shadow-sm border-b">

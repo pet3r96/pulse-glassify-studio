@@ -21,6 +21,11 @@ const PUBLIC_ROUTES = [
   '/support',
 ];
 
+// Admin routes (super admin only)
+const ADMIN_ROUTES = [
+  '/admin',
+];
+
 export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
@@ -34,10 +39,13 @@ export async function middleware(request: NextRequest) {
     return NextResponse.next();
   }
 
+  // Check if route is admin route
+  const isAdminRoute = ADMIN_ROUTES.some(route => pathname.startsWith(route));
+  
   // Check if route requires subscription
   const requiresSubscription = PROTECTED_ROUTES.some(route => pathname.startsWith(route));
 
-  if (!requiresSubscription) {
+  if (!requiresSubscription && !isAdminRoute) {
     return NextResponse.next();
   }
 
@@ -50,7 +58,23 @@ export async function middleware(request: NextRequest) {
       return NextResponse.redirect(new URL('/auth', request.url));
     }
 
-    // Check subscription status
+    // Handle admin routes
+    if (isAdminRoute) {
+      const { data: userData, error: userError } = await supabase
+        .from('users')
+        .select('role')
+        .eq('id', user.id)
+        .single();
+
+      if (userError || userData?.role !== 'super_admin') {
+        return NextResponse.redirect(new URL('/dashboard', request.url));
+      }
+      
+      // Super admins can access admin routes regardless of subscription
+      return NextResponse.next();
+    }
+
+    // Check subscription status for protected routes
     const subscription = await getUserSubscriptionStatus(user.id);
 
     if (!subscription.hasAccess) {
