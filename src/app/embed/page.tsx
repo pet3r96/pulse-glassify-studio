@@ -232,7 +232,7 @@ export default function EmbedPage() {
       const config: EmbedConfig = {
         agency_id: 'agency-1',
         modules: newConfig.modules!,
-        branding: newConfig.branding,
+        branding: newConfig.branding ?? {},
         security: newConfig.security!
       }
       setConfigs(prev => [config, ...prev])
