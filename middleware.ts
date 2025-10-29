@@ -1,100 +1,62 @@
-import { createServerClient, type CookieOptions } from '@supabase/ssr'
-import { NextResponse, type NextRequest } from 'next/server'
+import { NextRequest, NextResponse } from 'next/server';
+import jwt from 'jsonwebtoken';
 
 export async function middleware(request: NextRequest) {
-  let response = NextResponse.next({
-    request: {
-      headers: request.headers,
-    },
-  })
-
-  const supabase = createServerClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-    {
-      cookies: {
-        get(name: string) {
-          return request.cookies.get(name)?.value
-        },
-        set(name: string, value: string, options: CookieOptions) {
-          request.cookies.set({
-            name,
-            value,
-            ...options,
-          })
-          response = NextResponse.next({
-            request: {
-              headers: request.headers,
-            },
-          })
-          response.cookies.set({
-            name,
-            value,
-            ...options,
-          })
-        },
-        remove(name: string, options: CookieOptions) {
-          request.cookies.set({
-            name,
-            value: '',
-            ...options,
-          })
-          response = NextResponse.next({
-            request: {
-              headers: request.headers,
-            },
-          })
-          response.cookies.set({
-            name,
-            value: '',
-            ...options,
-          })
-        },
-      },
-    }
-  )
-
-  const { data: { user } } = await supabase.auth.getUser()
+  const { pathname } = request.nextUrl;
+  
+  // Skip middleware for API routes and static files
+  if (
+    pathname.startsWith('/api/') ||
+    pathname.startsWith('/_next/') ||
+    pathname.startsWith('/favicon')
+  ) {
+    return NextResponse.next();
+  }
 
   // Public routes that don't require auth
-  if (request.nextUrl.pathname === '/' || 
-      request.nextUrl.pathname.startsWith('/auth')) {
-    return response
+  const publicRoutes = ['/', '/auth', '/subscribe', '/role-select'];
+  if (publicRoutes.includes(pathname) || pathname.startsWith('/auth')) {
+    return NextResponse.next();
   }
 
-  // Redirect to auth if not logged in
-  if (!user && request.nextUrl.pathname.startsWith('/dashboard')) {
-    return NextResponse.redirect(new URL('/auth', request.url))
-  }
-
-  // Check onboarding status for authenticated users
-  if (user && request.nextUrl.pathname.startsWith('/dashboard')) {
-    const { data: profile } = await supabase
-      .from('profiles')
-      .select('onboarding_completed')
-      .eq('id', user.id)
-      .single()
-
-    // Redirect to onboarding if not completed (except if already on onboarding page)
-    if (!profile?.onboarding_completed && !request.nextUrl.pathname.startsWith('/onboarding')) {
-      return NextResponse.redirect(new URL('/onboarding', request.url))
+  // Check for authentication token in cookies
+  const token = request.cookies.get('auth-token')?.value;
+  
+  if (!token) {
+    // Redirect to auth if no token and trying to access protected routes
+    if (pathname.startsWith('/dashboard') || 
+        pathname.startsWith('/theme-studio') ||
+        pathname.startsWith('/account') ||
+        pathname.startsWith('/admin')) {
+      return NextResponse.redirect(new URL('/auth', request.url));
     }
+    return NextResponse.next();
   }
 
-  // Redirect to dashboard if on onboarding but already completed
-  if (user && request.nextUrl.pathname.startsWith('/onboarding')) {
-    const { data: profile } = await supabase
-      .from('profiles')
-      .select('onboarding_completed')
-      .eq('id', user.id)
-      .single()
-
-    if (profile?.onboarding_completed) {
-      return NextResponse.redirect(new URL('/dashboard', request.url))
+  try {
+    // Verify the JWT token
+    const decoded = jwt.verify(token, process.env.JWT_SECRET || 'your-secret-key');
+    
+    // Add user info to request headers for use in pages
+    const requestHeaders = new Headers(request.headers);
+    requestHeaders.set('x-user-id', (decoded as any).userId);
+    requestHeaders.set('x-user-email', (decoded as any).email);
+    
+    return NextResponse.next({
+      request: {
+        headers: requestHeaders,
+      },
+    });
+  } catch (error) {
+    // Invalid token, redirect to auth
+    if (pathname.startsWith('/dashboard') || 
+        pathname.startsWith('/theme-studio') ||
+        pathname.startsWith('/account') ||
+        pathname.startsWith('/admin')) {
+      return NextResponse.redirect(new URL('/auth', request.url));
     }
+    return NextResponse.next();
   }
-
-  return response
 }
 
 export const config = {

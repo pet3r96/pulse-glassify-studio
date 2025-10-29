@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
 import bcrypt from 'bcryptjs';
+import jwt from 'jsonwebtoken';
 
 // Force dynamic rendering
 export const dynamic = 'force-dynamic';
@@ -51,13 +52,15 @@ export async function POST(request: NextRequest) {
     // Remove password hash from response
     const { password_hash, ...userWithoutPassword } = user;
 
-    // Create a simple session token (in production, use proper JWT)
-    const sessionToken = Buffer.from(JSON.stringify({
+    // Create JWT token
+    const sessionToken = jwt.sign({
       userId: user.id,
       email: user.email,
       role: user.role,
       timestamp: Date.now()
-    })).toString('base64');
+    }, process.env.JWT_SECRET || 'your-secret-key', {
+      expiresIn: '7d'
+    });
 
     const response = NextResponse.json({
       user: userWithoutPassword,
@@ -66,7 +69,7 @@ export async function POST(request: NextRequest) {
     });
 
     // Set session cookie
-    response.cookies.set('session', sessionToken, {
+    response.cookies.set('auth-token', sessionToken, {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
       sameSite: 'lax',
