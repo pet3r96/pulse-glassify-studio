@@ -57,74 +57,66 @@ export const signup = async (formData: SignupFormData) => {
       return { error: ghlValidation.error || 'Invalid GHL API key' };
     }
 
-    // Hash password
-    const password_hash = await hashPassword(formData.password);
-    
+    // Create user with Supabase Auth
+    const { data: authData, error: authError } = await supabase.auth.signUp({
+      email: formData.email,
+      password: formData.password,
+    });
+
+    if (authError) throw authError;
+    if (!authData.user) throw new Error('User creation failed');
+
     // Encrypt API key
     const api_key_encrypted = await encryptApiKey(formData.ghl_api_key);
 
-    // Create agency or subaccount first
+    // Create profile
+    const { data: profile, error: profileError } = await supabase
+      .from('profiles')
+      .insert({
+        id: authData.user.id,
+        full_name: formData.name,
+        role: formData.role,
+      })
+      .select()
+      .single();
+
+    if (profileError) throw profileError;
+
+    // Create agency or subaccount
     let agency_id: string | undefined;
-    let subaccount_id: string | undefined;
 
     if (formData.role === 'agency') {
       const { data: agency, error: agencyError } = await supabase
         .from('agencies')
         .insert({
           name: formData.agency_name!,
-          api_key_encrypted,
+          owner_id: authData.user.id,
+          ghl_api_key_encrypted: api_key_encrypted,
         })
         .select()
         .single();
 
       if (agencyError) throw agencyError;
       agency_id = agency.id;
-    } else if (formData.role === 'subaccount') {
-      // For subaccounts, we need to find the parent agency
-      // This would typically be done through an invitation system
-      // For now, we'll create a placeholder
-      const { data: subaccount, error: subaccountError } = await supabase
-        .from('subaccounts')
-        .insert({
-          agency_id: 'placeholder', // This should be set properly
-          ghl_location_id: 'placeholder',
-          name: formData.subaccount_name!,
-          api_key_encrypted,
-        })
-        .select()
-        .single();
 
-      if (subaccountError) throw subaccountError;
-      subaccount_id = subaccount.id;
+      // Update profile with agency_id
+      await supabase
+        .from('profiles')
+        .update({ agency_id })
+        .eq('id', authData.user.id);
     }
-
-    // Create user
-    const { data: user, error: userError } = await supabase
-      .from('users')
-      .insert({
-        name: formData.name,
-        email: formData.email,
-        password_hash,
-        role: formData.role,
-        agency_id,
-        subaccount_id,
-      })
-      .select()
-      .single();
-
-    if (userError) throw userError;
 
     // Create subscription status record
     const { error: subscriptionError } = await supabase
       .from('subscription_status')
       .insert({
-        user_id: user.id,
+        user_id: authData.user.id,
         status: 'incomplete',
       });
 
     if (subscriptionError) throw subscriptionError;
 
-    return { data: user };
+    return { data: { ...authData.user, profile } };
   } catch (error: any) {
     return { error: error.message };
   }
@@ -132,40 +124,39 @@ export const signup = async (formData: SignupFormData) => {
 
 export const login = async (formData: LoginFormData) => {
   try {
-    // Get user with password hash
-    const { data: user, error: userError } = await supabase
-      .from('users')
+    // Sign in with Supabase Auth
+    const { data: authData, error: authError } = await supabase.auth.signInWithPassword({
+      email: formData.email,
+      password: formData.password,
+    });
+
+    if (authError) throw authError;
+    if (!authData.user) throw new Error('Login failed');
+
+    // Get user profile
+    const { data: profile, error: profileError } = await supabase
+      .from('profiles')
       .select('*')
-      .eq('email', formData.email)
+      .eq('id', authData.user.id)
       .single();
 
-    if (userError || !user) {
-      return { error: 'Invalid credentials' };
-    }
-
-    // Verify password
-    const isValid = await verifyPassword(formData.password, user.password_hash);
-    if (!isValid) {
-      return { error: 'Invalid credentials' };
-    }
+    if (profileError) throw profileError;
 
     // Get subscription status
     const { data: subscription, error: subscriptionError } = await supabase
       .from('subscription_status')
       .select('*')
-      .eq('user_id', user.id)
+      .eq('user_id', authData.user.id)
       .single();
 
     if (subscriptionError) {
       console.error('Subscription status error:', subscriptionError);
     }
 
-    // Remove password hash from response
-    const { password_hash, ...userWithoutPassword } = user;
-
     return { 
       data: { 
-        ...userWithoutPassword, 
+        ...authData.user, 
+        profile,
         subscription_status: subscription 
       } 
     };
@@ -176,31 +167,33 @@ export const login = async (formData: LoginFormData) => {
 
 export const getUserById = async (userId: string) => {
   try {
-    const { data: user, error } = await supabase
-      .from('users')
+    // Get user from Supabase Auth
+    const { data: authUser, error: authError } = await supabase.auth.getUser();
+    if (authError) throw authError;
+
+    // Get profile with related data
+    const { data: profile, error: profileError } = await supabase
+      .from('profiles')
       .select(`
         *,
         agency:agencies(*),
-        subaccount:subaccounts(*),
         subscription_status:subscription_status(*)
       `)
       .eq('id', userId)
       .single();
 
-    if (error) throw error;
+    if (profileError) throw profileError;
 
-    // Remove password hash
-    const { password_hash, ...userWithoutPassword } = user;
-    return { data: userWithoutPassword };
+    return { data: { ...authUser.user, profile } };
   } catch (error: any) {
     return { error: error.message };
   }
 };
 
-export const updateUser = async (userId: string, updates: Partial<User>) => {
+export const updateUser = async (userId: string, updates: Partial<any>) => {
   try {
     const { data, error } = await supabase
-      .from('users')
+      .from('profiles')
       .update(updates)
       .eq('id', userId)
       .select()
@@ -208,9 +201,7 @@ export const updateUser = async (userId: string, updates: Partial<User>) => {
 
     if (error) throw error;
 
-    // Remove password hash
-    const { password_hash, ...userWithoutPassword } = data;
-    return { data: userWithoutPassword };
+    return { data };
   } catch (error: any) {
     return { error: error.message };
   }
