@@ -4,9 +4,9 @@
     "/": {
       "files": [
         "server/edge-runtime-webpack.js",
-        "server/middleware.js"
+        "server/src/middleware.js"
       ],
-      "name": "middleware",
+      "name": "src/middleware",
       "page": "/",
       "matchers": [
         {
@@ -18,7 +18,7 @@
       "assets": [],
       "env": {
         "__NEXT_BUILD_ID": "development",
-        "NEXT_SERVER_ACTIONS_ENCRYPTION_KEY": "O+yUFNCXJRowwz5V2gu5M+a6H3G5cUKmC3vsmrxE3nk="
+        "NEXT_SERVER_ACTIONS_ENCRYPTION_KEY": "ab7FqMwiPmuf5kqOJCtSH46fb7o4HBEnB3Z4cSGO84Q="
       }
     }
   },
