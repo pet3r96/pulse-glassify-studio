@@ -3,6 +3,9 @@ import { stripe, STRIPE_WEBHOOK_SECRET } from '@/lib/stripe/config';
 import { createClient } from '@/lib/supabase/server';
 import Stripe from 'stripe';
 
+// Force dynamic rendering
+export const dynamic = 'force-dynamic';
+
 export async function POST(request: NextRequest) {
   if (!stripe || !STRIPE_WEBHOOK_SECRET) {
     return NextResponse.json(

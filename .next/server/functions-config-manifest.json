@@ -1,0 +1,1 @@
+{"version":1,"functions":{"/api/subscription/billing-portal":{},"/api/auth/login":{},"/api/subscription/create-checkout":{},"/api/stripe/create-portal-session":{},"/api/subscription/status":{},"/api/subscription/update":{},"/api/stripe/webhook":{},"/api/stripe/create-checkout-session":{},"/api/webhooks/stripe":{}}}
