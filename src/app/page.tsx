@@ -1,6 +1,7 @@
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import ThemeStudioAccess from "@/components/theme-studio-access"
 import { 
   Palette, 
   Zap, 
@@ -164,6 +165,9 @@ export default function HomePage() {
           </div>
         </div>
       </section>
+
+      {/* Theme Studio Access for Logged In Users */}
+      <ThemeStudioAccess />
 
       {/* Features Section */}
       <section className="py-20 px-6">

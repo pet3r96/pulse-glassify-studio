@@ -98,14 +98,14 @@ function AuthForm() {
       
       toast({
         title: "Welcome back!",
-        description: `Signed in as ${result.data.name}`,
+        description: `Signed in as ${result.data.profile?.full_name || result.data.email}`,
       })
 
       // Redirect based on subscription status
       if (result.data.subscription_status?.status === 'active') {
-        router.push('/dashboard')
+        router.push('/?logged_in=true')
       } else {
-        router.push('/role-select')
+        router.push('/?logged_in=true&needs_subscription=true')
       }
     } catch (error: any) {
       toast({
