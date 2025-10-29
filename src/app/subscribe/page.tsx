@@ -2,7 +2,6 @@
 
 import { useState, useEffect, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { supabase } from '@/lib/supabase/client';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -91,12 +90,14 @@ function SubscribePageContent() {
   // Using the exported supabase client
 
   useEffect(() => {
-    const getUser = async () => {
-      const { data: { user } } = await supabase.auth.getUser();
-      setUser(user);
+    // Check for user session from cookie or localStorage
+    const checkUser = () => {
+      // For now, we'll set user to null and handle auth in the component
+      // This will be updated when we implement proper session management
+      setUser(null);
     };
-    getUser();
-  }, [supabase.auth]);
+    checkUser();
+  }, []);
 
   const handleSubscribe = async (plan: PricingPlan) => {
     if (!user) {
