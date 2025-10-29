@@ -10,6 +10,10 @@ export interface CreateCustomerData {
 }
 
 export async function createStripeCustomer(data: CreateCustomerData) {
+  if (!stripe) {
+    throw new Error('Stripe not configured');
+  }
+
   const supabase = createClient();
   
   try {
@@ -47,6 +51,10 @@ export async function createCheckoutSession(
   successUrl: string,
   cancelUrl: string
 ) {
+  if (!stripe) {
+    throw new Error('Stripe not configured');
+  }
+
   try {
     const session = await stripe.checkout.sessions.create({
       customer: customerId,
@@ -73,6 +81,10 @@ export async function createCheckoutSession(
 }
 
 export async function createBillingPortalSession(customerId: string, returnUrl: string) {
+  if (!stripe) {
+    throw new Error('Stripe not configured');
+  }
+
   try {
     const session = await stripe.billingPortal.sessions.create({
       customer: customerId,
@@ -87,6 +99,10 @@ export async function createBillingPortalSession(customerId: string, returnUrl: 
 }
 
 export async function getSubscriptionStatus(customerId: string) {
+  if (!stripe) {
+    throw new Error('Stripe not configured');
+  }
+
   try {
     const subscriptions = await stripe.subscriptions.list({
       customer: customerId,
@@ -111,6 +127,10 @@ export async function getSubscriptionStatus(customerId: string) {
 }
 
 export async function cancelSubscription(subscriptionId: string) {
+  if (!stripe) {
+    throw new Error('Stripe not configured');
+  }
+
   try {
     const subscription = await stripe.subscriptions.cancel(subscriptionId);
     return subscription;

@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -26,7 +26,7 @@ interface PurchaseData {
   status: 'success' | 'pending' | 'failed';
 }
 
-export default function MarketplaceSuccessPage() {
+function MarketplaceSuccessPageContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const [purchaseData, setPurchaseData] = useState<PurchaseData | null>(null);
@@ -306,5 +306,13 @@ export default function MarketplaceSuccessPage() {
         </div>
       </div>
     </div>
+  );
+}
+
+export default function MarketplaceSuccessPage() {
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <MarketplaceSuccessPageContent />
+    </Suspense>
   );
 }

@@ -1,18 +1,27 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { stripe } from '@/lib/stripe/config';
+import { stripe, STRIPE_WEBHOOK_SECRET } from '@/lib/stripe/config';
 import { createClient } from '@/lib/supabase/server';
 import Stripe from 'stripe';
 
-const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET!;
-
 export async function POST(request: NextRequest) {
+  if (!stripe || !STRIPE_WEBHOOK_SECRET) {
+    return NextResponse.json(
+      { error: 'Stripe not configured' },
+      { status: 500 }
+    );
+  }
+
   const body = await request.text();
-  const signature = request.headers.get('stripe-signature')!;
+  const signature = request.headers.get('stripe-signature');
+
+  if (!signature) {
+    return NextResponse.json({ error: 'No signature' }, { status: 400 });
+  }
 
   let event: Stripe.Event;
 
   try {
-    event = stripe.webhooks.constructEvent(body, signature, webhookSecret);
+    event = stripe.webhooks.constructEvent(body, signature, STRIPE_WEBHOOK_SECRET);
   } catch (err) {
     console.error('Webhook signature verification failed:', err);
     return NextResponse.json({ error: 'Invalid signature' }, { status: 400 });
@@ -77,7 +86,7 @@ async function handleCheckoutCompleted(session: Stripe.Checkout.Session, supabas
   }
 
   // Get subscription details
-  const subscription = await stripe.subscriptions.retrieve(session.subscription as string);
+  const subscription = await stripe!.subscriptions.retrieve(session.subscription as string);
 
   // Create or update subscription record
   const { error: subError } = await supabase
@@ -161,7 +170,7 @@ async function handlePaymentSucceeded(invoice: Stripe.Invoice, supabase: any) {
   if (!subscriptionId) return;
 
   // Get subscription details
-  const subscription = await stripe.subscriptions.retrieve(subscriptionId);
+  const subscription = await stripe!.subscriptions.retrieve(subscriptionId);
   const userId = subscription.metadata?.userId;
 
   if (!userId) return;
@@ -189,7 +198,7 @@ async function handlePaymentFailed(invoice: Stripe.Invoice, supabase: any) {
   if (!subscriptionId) return;
 
   // Get subscription details
-  const subscription = await stripe.subscriptions.retrieve(subscriptionId);
+  const subscription = await stripe!.subscriptions.retrieve(subscriptionId);
   const userId = subscription.metadata?.userId;
 
   if (!userId) return;

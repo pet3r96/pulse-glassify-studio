@@ -6,10 +6,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { useToast } from '@/hooks/use-toast'
-import { SubscriptionStatus } from '@/components/subscription/SubscriptionStatus'
-import { ThemeManager } from '@/components/theme/ThemeManager'
-import { GHLConnectionManager } from '@/components/injection/GHLConnectionManager'
-import { DeploymentDashboard } from '@/components/injection/DeploymentDashboard'
+// Removed unused component imports
 import { 
   Palette,
   Store,
@@ -274,7 +271,7 @@ export default function DashboardPage() {
           </Card>
         </div>
 
-        {/* Recent Activity */}
+        {/* `Recent Activity */}
         <div className="grid lg:grid-cols-2 gap-6">
           <Card className="glass-card">
             <CardHeader>
@@ -358,22 +355,50 @@ export default function DashboardPage() {
 
         {/* Subscription Status */}
         <div className="mb-8">
-          <SubscriptionStatus userId={user.id} />
+          <Card>
+            <CardHeader>
+              <CardTitle>Subscription Status</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <p>Subscription management coming soon...</p>
+            </CardContent>
+          </Card>
         </div>
 
         {/* Theme Manager */}
         <div className="mb-8">
-          <ThemeManager />
+          <Card>
+            <CardHeader>
+              <CardTitle>Theme Manager</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <p>Theme management coming soon...</p>
+            </CardContent>
+          </Card>
         </div>
 
         {/* GHL Connection Manager */}
         <div className="mb-8">
-          <GHLConnectionManager />
+          <Card>
+            <CardHeader>
+              <CardTitle>GHL Connection</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <p>GHL connection management coming soon...</p>
+            </CardContent>
+          </Card>
         </div>
 
         {/* Deployment Dashboard */}
         <div className="mb-8">
-          <DeploymentDashboard />
+          <Card>
+            <CardHeader>
+              <CardTitle>Deployment Dashboard</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <p>Deployment management coming soon...</p>
+            </CardContent>
+          </Card>
         </div>
       </div>
     </div>

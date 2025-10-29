@@ -4,6 +4,13 @@ import { stripe } from '@/lib/stripe/config';
 
 export async function POST(request: NextRequest) {
   try {
+    if (!stripe) {
+      return NextResponse.json(
+        { error: 'Stripe not configured' },
+        { status: 500 }
+      );
+    }
+
     const { priceId, planId, tier, userId, userEmail } = await request.json();
 
     if (!priceId || !planId || !tier || !userId || !userEmail) {
