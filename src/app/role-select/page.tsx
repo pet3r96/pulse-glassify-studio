@@ -60,13 +60,11 @@ export default function RoleSelectPage() {
     setLoading(true);
 
     try {
-      // For now, skip auth check - this will be updated with proper session management
-      // const { data: { user } } = await supabase.auth.getUser();
-      
-      // if (!user) {
-      //   router.push('/auth');
-      //   return;
-      // }
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) {
+        router.push('/auth');
+        return;
+      }
 
       const { error } = await (supabase as any)
         .from('profiles')

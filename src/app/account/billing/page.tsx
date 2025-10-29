@@ -37,9 +37,11 @@ export default function BillingPage() {
 
   const fetchSubscriptionData = async () => {
     try {
-      // For now, skip auth check - this will be updated with proper session management
-      // const { data: { user } } = await supabase.auth.getUser();
-      // if (!user) return;
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) {
+        setLoading(false);
+        return;
+      }
 
       const { data: subscriptionData, error } = await supabase
         .from('subscription_status')
@@ -143,9 +145,11 @@ export default function BillingPage() {
     setPortalLoading(true);
     
     try {
-      // For now, skip auth check - this will be updated with proper session management
-      // const { data: { user } } = await supabase.auth.getUser();
-      // if (!user) return;
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) {
+        setPortalLoading(false);
+        return;
+      }
 
       const response = await fetch('/api/stripe/create-portal-session', {
         method: 'POST',
