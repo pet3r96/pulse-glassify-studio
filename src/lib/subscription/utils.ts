@@ -14,8 +14,8 @@ export async function getUserSubscriptionStatus(userId: string): Promise<Subscri
   try {
     // Check if user has billing override (Super Admin feature)
     const { data: userData, error: userError } = await supabase
-      .from('users')
-      .select('override_billing, stripe_customer_id')
+      .from('profiles')
+      .select('role')
       .eq('id', userId)
       .single();
 
@@ -25,7 +25,7 @@ export async function getUserSubscriptionStatus(userId: string): Promise<Subscri
     }
 
     // Super Admin override
-    if (userData.override_billing) {
+    if (userData.role === 'super_admin') {
       return { status: 'active', hasAccess: true };
     }
 
@@ -63,7 +63,7 @@ export async function getSubscriptionPlan(userId: string): Promise<'agency' | 's
 
   try {
     const { data: userData, error } = await supabase
-      .from('users')
+      .from('profiles')
       .select('role')
       .eq('id', userId)
       .single();

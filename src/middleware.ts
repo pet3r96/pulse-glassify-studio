@@ -9,6 +9,10 @@ const PROTECTED_ROUTES = [
   '/menu-builder',
   '/project-manager',
   '/analytics',
+  '/task-manager',
+  '/webhook-builder',
+  '/injection',
+  '/preview-frame',
 ];
 
 // Routes that are always accessible
@@ -16,6 +20,8 @@ const PUBLIC_ROUTES = [
   '/',
   '/auth',
   '/onboarding',
+  '/role-select',
+  '/subscribe',
   '/dashboard',
   '/account',
   '/support',
@@ -78,9 +84,9 @@ export async function middleware(request: NextRequest) {
     const subscription = await getUserSubscriptionStatus(user.id);
 
     if (!subscription.hasAccess) {
-      // Redirect to dashboard with subscription required message
-      const url = new URL('/dashboard', request.url);
-      url.searchParams.set('subscription', 'required');
+      // Redirect to subscribe page with locked parameter
+      const url = new URL('/subscribe', request.url);
+      url.searchParams.set('locked', 'true');
       return NextResponse.redirect(url);
     }
 

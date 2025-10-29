@@ -12,6 +12,9 @@ export const supabase = createClient<Database>(supabaseUrl, supabaseAnonKey, {
   }
 })
 
+// Export createClient for use in components
+export { createClient }
+
 // Helper function to get current user
 export const getCurrentUser = async () => {
   const { data: { user }, error } = await supabase.auth.getUser()

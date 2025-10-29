@@ -34,7 +34,9 @@ import {
   UserCheck,
   Reply,
   Archive,
-  Star
+  Star,
+  Crown,
+  ArrowRight
 } from 'lucide-react'
 import { useToast } from '@/hooks/use-toast'
 import { supabase } from '@/lib/supabase/client'
@@ -589,6 +591,38 @@ export default function SupportPage() {
             </CardContent>
           </Card>
         </div>
+
+        {/* Upgrade Banner */}
+        <Card className="glass-card mb-6 border-gradient bg-gradient-to-r from-blue-500/10 to-purple-500/10">
+          <CardContent className="p-6">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-4">
+                <div className="p-3 bg-gradient-to-r from-blue-500 to-purple-500 rounded-full">
+                  <Crown className="h-6 w-6 text-white" />
+                </div>
+                <div>
+                  <h3 className="text-lg font-semibold text-white mb-1">
+                    Unlock Priority Support
+                  </h3>
+                  <p className="text-white/70 text-sm">
+                    Upgrade to Agency Pro for faster response times and dedicated support
+                  </p>
+                </div>
+              </div>
+              <div className="flex items-center gap-3">
+                <Button
+                  variant="outline"
+                  className="border-white/20 text-white hover:bg-white/10"
+                  onClick={() => window.location.href = '/subscribe'}
+                >
+                  <Crown className="h-4 w-4 mr-2" />
+                  Upgrade Now
+                  <ArrowRight className="h-4 w-4 ml-2" />
+                </Button>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
 
         <div className="grid lg:grid-cols-4 gap-8">
           {/* Sidebar Filters */}

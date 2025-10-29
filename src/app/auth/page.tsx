@@ -105,7 +105,7 @@ function AuthForm() {
       if (result.data.subscription_status?.status === 'active') {
         router.push('/dashboard')
       } else {
-        router.push('/onboarding')
+        router.push('/role-select')
       }
     } catch (error: any) {
       toast({
@@ -164,14 +164,14 @@ function AuthForm() {
 
       toast({
         title: "Account Created!",
-        description: "Welcome to PulseGen Studio. Redirecting to onboarding...",
+        description: "Welcome to PulseGen Studio. Please select your role...",
       })
 
       // Store user data
       localStorage.setItem('user', JSON.stringify(result.data))
       
-      // Redirect to onboarding
-      router.push('/onboarding')
+      // Redirect to role selection
+      router.push('/role-select')
     } catch (error: any) {
       toast({
         title: "Signup Failed",

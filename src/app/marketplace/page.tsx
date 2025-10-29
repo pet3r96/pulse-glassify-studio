@@ -25,7 +25,9 @@ import {
   TrendingUp,
   Clock,
   CheckCircle,
-  XCircle
+  XCircle,
+  Crown,
+  ArrowRight
 } from 'lucide-react';
 import Link from 'next/link';
 
@@ -453,6 +455,38 @@ export default function MarketplacePage() {
             </CardContent>
           </Card>
         </div>
+
+        {/* Upgrade Banner */}
+        <Card className="glass-card mb-6 border-gradient bg-gradient-to-r from-blue-500/10 to-purple-500/10">
+          <CardContent className="p-6">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-4">
+                <div className="p-3 bg-gradient-to-r from-blue-500 to-purple-500 rounded-full">
+                  <Crown className="h-6 w-6 text-white" />
+                </div>
+                <div>
+                  <h3 className="text-lg font-semibold text-white mb-1">
+                    Unlock Marketplace Selling
+                  </h3>
+                  <p className="text-white/70 text-sm">
+                    Upgrade to Agency Pro to sell your themes and earn revenue
+                  </p>
+                </div>
+              </div>
+              <div className="flex items-center gap-3">
+                <Button
+                  variant="outline"
+                  className="border-white/20 text-white hover:bg-white/10"
+                  onClick={() => router.push('/subscribe')}
+                >
+                  <Crown className="h-4 w-4 mr-2" />
+                  Upgrade Now
+                  <ArrowRight className="h-4 w-4 ml-2" />
+                </Button>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
 
         {/* Filters and Search */}
         <Card className="glass-card mb-6">
