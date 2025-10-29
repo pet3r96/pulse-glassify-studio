@@ -28,6 +28,7 @@ import {
   ExternalLink
 } from 'lucide-react';
 import Link from 'next/link';
+import { Gated } from '@/components/ui/gated';
 
 interface SellerTheme {
   id: string;
@@ -242,6 +243,7 @@ export default function SellerDashboardPage() {
       </div>
 
       <div className="container mx-auto px-6 py-8">
+        <Gated feature="selling" requiredPlan="pro">
         {/* Stripe Connect Status */}
         {!connectAccount?.hasAccount && (
           <Card className="glass-card mb-6 border-yellow-500/20 bg-yellow-500/5">
@@ -526,6 +528,7 @@ export default function SellerDashboardPage() {
             )}
           </CardContent>
         </Card>
+        </Gated>
       </div>
     </div>
   );

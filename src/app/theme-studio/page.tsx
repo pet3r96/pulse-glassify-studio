@@ -2,6 +2,8 @@
 
 import { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
+import { supabase } from '@/lib/supabase/client';
+import { getUserSubscriptionStatus, evaluateAccess } from '@/lib/subscription/utils';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -35,6 +37,7 @@ import {
   Layout
 } from 'lucide-react';
 import Link from 'next/link';
+import { UpgradeModal } from '@/components/ui/upgrade-modal';
 
 interface ThemeConfig {
   id?: string;
@@ -189,10 +192,35 @@ export default function ThemeStudioPage() {
   const [history, setHistory] = useState<ThemeConfig[]>([DEFAULT_THEME]);
   const [historyIndex, setHistoryIndex] = useState(0);
   const previewRef = useRef<HTMLIFrameElement>(null);
+  const [locked, setLocked] = useState(false);
+  const [banner, setBanner] = useState<string | null>(null);
+  const [upgradeOpen, setUpgradeOpen] = useState(false);
+  const [allowedSeats, setAllowedSeats] = useState<number>(0);
+  const [currentSeats, setCurrentSeats] = useState<number>(0);
 
   useEffect(() => {
     // Load user's current theme if exists
     loadCurrentTheme();
+    (async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) {
+        setLocked(true);
+        setBanner('Billing Required: Your subscription is not active. Please update your payment method to restore features.');
+        return;
+      }
+      const statusRow: any = await getUserSubscriptionStatus(user.id);
+      const access = evaluateAccess(statusRow?.status || 'inactive');
+      setLocked(access.locked);
+      setBanner(access.banner);
+      try {
+        const res = await fetch('/api/subscription/status');
+        const json = await res.json();
+        if (json?.allowedSeats !== undefined) setAllowedSeats(json.allowedSeats);
+        const seatRes = await fetch('/api/agency/seats');
+        const seatJson = await seatRes.json();
+        if (seatJson?.currentSubaccounts !== undefined) setCurrentSeats(seatJson.currentSubaccounts);
+      } catch (_) {}
+    })();
   }, []);
 
   const loadCurrentTheme = async () => {
@@ -372,6 +400,7 @@ export default function ThemeStudioPage() {
   };
 
   return (
+    <>
     <div className="min-h-screen bg-[var(--color-bg)]">
       {/* Header */}
       <div className="border-b border-white/10 glass">
@@ -411,6 +440,7 @@ export default function ThemeStudioPage() {
               <Button
                 onClick={saveTheme}
                 className="bg-gradient-primary hover:opacity-90"
+                disabled={locked || (allowedSeats !== Number.MAX_SAFE_INTEGER && currentSeats > allowedSeats)}
               >
                 <Save className="h-4 w-4 mr-2" />
                 Save Theme
@@ -421,6 +451,32 @@ export default function ThemeStudioPage() {
       </div>
 
       <div className="container mx-auto px-6 py-8">
+        {banner && (
+          <div className="bg-amber-50 border border-amber-200 rounded-lg p-4 mb-6 text-amber-800">
+            {banner}
+            <Button
+              onClick={() => router.push('/subscribe?locked=true')}
+              variant="outline"
+              size="sm"
+              className="ml-3"
+            >
+              Manage Billing
+            </Button>
+          </div>
+        )}
+        {(allowedSeats !== Number.MAX_SAFE_INTEGER && currentSeats > allowedSeats) && (
+          <div className="bg-red-50 border border-red-200 rounded-lg p-4 mb-6 text-red-800">
+            Seat limit reached. Add more seats or upgrade your plan to continue publishing.
+            <Button
+              onClick={() => setUpgradeOpen(true)}
+              variant="outline"
+              size="sm"
+              className="ml-3"
+            >
+              Upgrade
+            </Button>
+          </div>
+        )}
         <div className="grid lg:grid-cols-3 gap-6">
           {/* Theme Configuration Panel */}
           <div className="lg:col-span-1 space-y-6">
@@ -794,5 +850,7 @@ export default function ThemeStudioPage() {
         </div>
       </div>
     </div>
+    <UpgradeModal open={upgradeOpen} onOpenChange={setUpgradeOpen} title="Upgrade Required" message="Your current plan's seat limit has been reached. Add Extra Subaccount Seat or upgrade to continue." cta="View Plans" />
+    </>
   );
 }

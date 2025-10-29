@@ -148,11 +148,24 @@ export default function AdminDashboardPage() {
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedTab, setSelectedTab] = useState<'overview' | 'users' | 'themes' | 'billing' | 'analytics'>('overview');
   const [isLoading, setIsLoading] = useState(false);
+  const [billingEvents, setBillingEvents] = useState<any[]>([]);
 
   useEffect(() => {
     // In a real app, this would check if user is super_admin
     // For now, we'll assume they are
   }, []);
+
+  useEffect(() => {
+    const fetchEvents = async () => {
+      if (selectedTab !== 'billing') return;
+      try {
+        const res = await fetch('/api/admin/billing/events');
+        const json = await res.json();
+        if (json?.events) setBillingEvents(json.events);
+      } catch (e) {}
+    };
+    fetchEvents();
+  }, [selectedTab]);
 
   const handleApproveTheme = async (themeId: string) => {
     setIsLoading(true);
@@ -718,6 +731,20 @@ export default function AdminDashboardPage() {
                         Sync Stripe Data
                       </Button>
                     </div>
+                  </div>
+                </div>
+                <div className="mt-8">
+                  <h4 className="font-medium text-white mb-3">Recent Billing Events</h4>
+                  <div className="space-y-2">
+                    {billingEvents.map((e, idx) => (
+                      <div key={idx} className="flex items-center justify-between p-3 rounded-lg glass border border-white/10">
+                        <div className="text-white/80 text-sm">{e.event}</div>
+                        <div className="text-white/60 text-sm">{new Date(e.recorded_at).toLocaleString()}</div>
+                      </div>
+                    ))}
+                    {billingEvents.length === 0 && (
+                      <div className="text-white/60 text-sm">No events</div>
+                    )}
                   </div>
                 </div>
               </CardContent>

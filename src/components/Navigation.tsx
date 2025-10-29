@@ -4,24 +4,46 @@ import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"
 import { Menu, X, Palette, Home, BarChart3, Settings, User, CreditCard, Store, Shield } from "lucide-react"
-import { useState } from "react"
+import { useEffect, useState } from "react"
+import { supabase } from '@/lib/supabase/client'
+import { evaluateAccess, getUserSubscriptionStatus } from '@/lib/subscription/utils'
 
 export function Navigation() {
   const [isOpen, setIsOpen] = useState(false)
+  const [showAdmin, setShowAdmin] = useState(false)
 
   const navigation = [
     { name: "Home", href: "/", icon: Home },
     { name: "Dashboard", href: "/dashboard", icon: BarChart3 },
     { name: "Theme Builder", href: "/theme-builder", icon: Palette },
     { name: "Marketplace", href: "/marketplace", icon: Store },
+    { name: "Support Hub", href: "/support", icon: Settings },
+    { name: "Project Manager", href: "/project-manager", icon: Settings },
+    { name: "Funnel Blocks", href: "/funnel-blocks", icon: Settings },
     { name: "Billing", href: "/billing", icon: CreditCard },
     { name: "Settings", href: "/settings", icon: Settings },
   ]
 
-  // Add admin link for super admins (this would be dynamic in a real app)
-  const isSuperAdmin = true; // In a real app, this would come from user context
-  if (isSuperAdmin) {
-    navigation.push({ name: "Admin", href: "/admin", icon: Shield });
+  useEffect(() => {
+    (async () => {
+      try {
+        const { data: { user } } = await supabase.auth.getUser()
+        if (!user) { setShowAdmin(false); return }
+        const statusRow: any = await getUserSubscriptionStatus(user.id)
+        const access = evaluateAccess(statusRow?.status || 'inactive')
+        const { data: profile } = await supabase
+          .from('profiles')
+          .select('role')
+          .eq('id', user.id)
+          .maybeSingle()
+        const isSuper = (profile as any)?.role === 'super_admin'
+        setShowAdmin(isSuper && !access.locked)
+      } catch (_) { setShowAdmin(false) }
+    })()
+  }, [])
+
+  if (showAdmin) {
+    navigation.push({ name: "Admin", href: "/admin", icon: Shield })
   }
 
   return (

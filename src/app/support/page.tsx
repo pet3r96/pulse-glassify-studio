@@ -40,6 +40,8 @@ import {
 } from 'lucide-react'
 import { useToast } from '@/hooks/use-toast'
 import { supabase } from '@/lib/supabase/client'
+import { UpgradeModal } from '@/components/ui/upgrade-modal'
+import { evaluateAccess, getUserSubscriptionStatus } from '@/lib/subscription/utils'
 
 interface SupportTicket {
   id: string
@@ -82,6 +84,8 @@ interface TicketStats {
 
 export default function SupportPage() {
   const { toast } = useToast()
+  const [locked, setLocked] = useState(false)
+  const [upgradeOpen, setUpgradeOpen] = useState(false)
   const [tickets, setTickets] = useState<SupportTicket[]>([])
   const [stats, setStats] = useState<TicketStats>({
     total_tickets: 0,
@@ -109,6 +113,13 @@ export default function SupportPage() {
 
   useEffect(() => {
     loadTickets()
+    ;(async () => {
+      const { data: { user } } = await supabase.auth.getUser()
+      if (!user) { setLocked(true); return }
+      const statusRow: any = await getUserSubscriptionStatus(user.id)
+      const access = evaluateAccess(statusRow?.status || 'inactive')
+      setLocked(access.locked)
+    })()
   }, [])
 
   useEffect(() => {
@@ -423,6 +434,7 @@ export default function SupportPage() {
   })
 
   return (
+    <>
     <div className="min-h-screen bg-[var(--color-bg)]">
       {/* Header */}
       <div className="glass border-b border-white/10">
@@ -433,14 +445,14 @@ export default function SupportPage() {
               <p className="text-muted-foreground">Manage support tickets and customer inquiries</p>
             </div>
             <div className="flex items-center gap-4">
-              <Button variant="outline" className="glass">
+              <Button variant="outline" className="glass" onClick={() => setUpgradeOpen(true)} disabled={!locked}>
                 <Settings className="h-4 w-4 mr-2" />
                 Settings
               </Button>
               
               <Dialog open={showCreateDialog} onOpenChange={setShowCreateDialog}>
                 <DialogTrigger asChild>
-                  <Button className="btn-primary">
+                  <Button className="btn-primary" disabled={locked}>
                     <Plus className="h-4 w-4 mr-2" />
                     New Ticket
                   </Button>
@@ -522,7 +534,7 @@ export default function SupportPage() {
                       >
                         Cancel
                       </Button>
-                      <Button onClick={handleCreateTicket} disabled={loading} className="btn-primary">
+                      <Button onClick={handleCreateTicket} disabled={loading || locked} className="btn-primary">
                         {loading ? 'Creating...' : 'Create Ticket'}
                       </Button>
                     </div>
@@ -933,6 +945,8 @@ export default function SupportPage() {
         </div>
       </div>
     </div>
+    <UpgradeModal open={upgradeOpen} onOpenChange={setUpgradeOpen} title="Coming Soon — Accelerator OS" message="Support Hub is unlocked with Accelerator OS. Upgrade your plan to enable." cta="View Plans" />
+    </>
   )
 }
 

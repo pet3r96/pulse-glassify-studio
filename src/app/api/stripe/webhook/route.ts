@@ -64,15 +64,28 @@ export async function POST(request: NextRequest) {
 
 async function handleSubscriptionChange(subscription: Stripe.Subscription, supabase: any) {
   const customerId = subscription.customer as string;
-  
-  // Update subscription status
+
+  const userId = await resolveUserIdByStripeCustomer(customerId, supabase);
+  const currentPeriodEnd = (subscription as any).current_period_end
+    ? new Date((subscription as any).current_period_end * 1000).toISOString()
+    : null;
+  const currentPeriodStart = (subscription as any).current_period_start
+    ? new Date((subscription as any).current_period_start * 1000).toISOString()
+    : null;
+  const priceId = Array.isArray(subscription.items.data) && subscription.items.data[0]?.price?.id
+    ? subscription.items.data[0].price.id
+    : null;
+
   const { error: updateError } = await supabase
     .from('subscription_status')
     .upsert({
-      user_id: customerId, // This should be mapped to actual user_id
+      user_id: userId,
       status: subscription.status,
       stripe_subscription_id: subscription.id,
-      current_period_end: null, // Will be updated when we have proper Stripe types
+      stripe_customer_id: customerId,
+      stripe_price_id: priceId,
+      current_period_end: currentPeriodEnd,
+      current_period_start: currentPeriodStart,
       updated_at: new Date().toISOString(),
     });
 
@@ -81,23 +94,25 @@ async function handleSubscriptionChange(subscription: Stripe.Subscription, supab
     throw updateError;
   }
 
-  // If subscription is active, ensure user can access features
-  if (subscription.status === 'active') {
-    console.log(`Subscription activated for customer: ${customerId}`);
+  await logBillingEvent(userId, subscription.status === 'active' ? 'activated' : 'upgrade', subscription.id, supabase);
+
+  if (subscription.status === 'canceled' || subscription.status === 'unpaid') {
+    await revertUserThemes(userId, supabase);
+    await logBillingEvent(userId, 'rollback', subscription.id, supabase);
   }
 }
 
 async function handleSubscriptionCancellation(subscription: Stripe.Subscription, supabase: any) {
   const customerId = subscription.customer as string;
-  
-  // Update subscription status to canceled
+  const userId = await resolveUserIdByStripeCustomer(customerId, supabase);
+
   const { error: updateError } = await supabase
     .from('subscription_status')
     .upsert({
-      user_id: customerId,
+      user_id: userId,
       status: 'canceled',
       stripe_subscription_id: subscription.id,
-      current_period_end: null, // Will be updated when we have proper Stripe types
+      stripe_customer_id: customerId,
       updated_at: new Date().toISOString(),
     });
 
@@ -106,22 +121,20 @@ async function handleSubscriptionCancellation(subscription: Stripe.Subscription,
     throw updateError;
   }
 
-  // Force revert themes for this user
-  await revertUserThemes(customerId, supabase);
-  
-  console.log(`Subscription canceled for customer: ${customerId}`);
+  await revertUserThemes(userId, supabase);
+  await logBillingEvent(userId, 'cancel', subscription.id, supabase);
 }
 
 async function handlePaymentSuccess(invoice: Stripe.Invoice, supabase: any) {
   const customerId = invoice.customer as string;
-  
-  // Update subscription status to active
+  const userId = await resolveUserIdByStripeCustomer(customerId, supabase);
+
   const { error: updateError } = await supabase
     .from('subscription_status')
     .upsert({
-      user_id: customerId,
+      user_id: userId,
       status: 'active',
-      stripe_subscription_id: null, // Will be updated when we have proper Stripe types
+      stripe_customer_id: customerId,
       updated_at: new Date().toISOString(),
     });
 
@@ -130,19 +143,19 @@ async function handlePaymentSuccess(invoice: Stripe.Invoice, supabase: any) {
     throw updateError;
   }
 
-  console.log(`Payment succeeded for customer: ${customerId}`);
+  await logBillingEvent(userId, 'activated', (invoice as any).subscription as string, supabase);
 }
 
 async function handlePaymentFailure(invoice: Stripe.Invoice, supabase: any) {
   const customerId = invoice.customer as string;
-  
-  // Update subscription status to past_due
+  const userId = await resolveUserIdByStripeCustomer(customerId, supabase);
+
   const { error: updateError } = await supabase
     .from('subscription_status')
     .upsert({
-      user_id: customerId,
+      user_id: userId,
       status: 'past_due',
-      stripe_subscription_id: null, // Will be updated when we have proper Stripe types
+      stripe_customer_id: customerId,
       updated_at: new Date().toISOString(),
     });
 
@@ -151,10 +164,33 @@ async function handlePaymentFailure(invoice: Stripe.Invoice, supabase: any) {
     throw updateError;
   }
 
-  // Force revert themes for this user (no grace period)
-  await revertUserThemes(customerId, supabase);
-  
-  console.log(`Payment failed for customer: ${customerId}`);
+  await logBillingEvent(userId, 'failed', (invoice as any).subscription as string, supabase);
+}
+
+async function resolveUserIdByStripeCustomer(stripeCustomerId: string, supabase: any): Promise<string> {
+  const { data: statusRow } = await supabase
+    .from('subscription_status')
+    .select('user_id')
+    .eq('stripe_customer_id', stripeCustomerId)
+    .maybeSingle();
+  if (statusRow?.user_id) return statusRow.user_id;
+
+  const { data: profileRow } = await supabase
+    .from('profiles')
+    .select('id')
+    .eq('stripe_customer_id', stripeCustomerId)
+    .maybeSingle();
+  if (profileRow?.id) return profileRow.id;
+
+  return stripeCustomerId;
+}
+
+async function logBillingEvent(userId: string, event: 'activated'|'failed'|'rollback'|'upgrade'|'cancel', stripeSubscriptionId: string | null, supabase: any) {
+  await supabase.from('billing_events').insert({
+    user_id: userId,
+    event,
+    stripe_subscription_id: stripeSubscriptionId,
+  });
 }
 
 async function revertUserThemes(customerId: string, supabase: any) {

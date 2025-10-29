@@ -11,9 +11,19 @@ export const STRIPE_PUBLISHABLE_KEY = process.env.STRIPE_PUBLISHABLE_KEY;
 export const STRIPE_WEBHOOK_SECRET = process.env.STRIPE_WEBHOOK_SECRET;
 
 // Subscription pricing tiers
+const AGENCY_PRICE_ID =
+  process.env.STRIPE_AGENCY_PRICE_ID ||
+  process.env.NEXT_PUBLIC_STRIPE_PRO_MONTHLY_PRICE_ID ||
+  'price_agency_monthly';
+
+const SUBACCOUNT_PRICE_ID =
+  process.env.STRIPE_SUBACCOUNT_PRICE_ID ||
+  process.env.NEXT_PUBLIC_STRIPE_STARTER_MONTHLY_PRICE_ID ||
+  'price_subaccount_monthly';
+
 export const SUBSCRIPTION_PLANS = {
   agency: {
-    priceId: process.env.STRIPE_AGENCY_PRICE_ID || 'price_agency_monthly',
+    priceId: AGENCY_PRICE_ID,
     name: 'Agency Plan',
     price: 97, // $97/month
     features: [
@@ -25,7 +35,7 @@ export const SUBSCRIPTION_PLANS = {
     ]
   },
   subaccount: {
-    priceId: process.env.STRIPE_SUBACCOUNT_PRICE_ID || 'price_subaccount_monthly',
+    priceId: SUBACCOUNT_PRICE_ID,
     name: 'Subaccount Plan',
     price: 27, // $27/month
     features: [

@@ -2,6 +2,8 @@
 
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
+import { supabase } from '@/lib/supabase/client';
+import { evaluateAccess, getUserSubscriptionStatus } from '@/lib/subscription/utils';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -29,6 +31,7 @@ import {
   Crown,
   ArrowRight
 } from 'lucide-react';
+import { RenewLicenseModal } from '@/components/ui/renew-license-modal';
 import Link from 'next/link';
 
 interface MarketplaceTheme {
@@ -174,10 +177,29 @@ export default function MarketplacePage() {
   const [sortBy, setSortBy] = useState('newest');
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
   const [isLoading, setIsLoading] = useState(false);
+  const [locked, setLocked] = useState(false);
+  const [banner, setBanner] = useState<string | null>(null);
+  const [renewOpen, setRenewOpen] = useState(false);
+  const [renewReason, setRenewReason] = useState<'expired'|'limit'|'invalid'|undefined>(undefined);
 
   useEffect(() => {
     filterAndSortThemes();
   }, [searchQuery, selectedCategory, sortBy, themes]);
+
+  useEffect(() => {
+    (async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) {
+        setLocked(true);
+        setBanner('Billing Required: Your subscription is not active. Please update your payment method to restore features.');
+        return;
+      }
+      const statusRow: any = await getUserSubscriptionStatus(user.id);
+      const access = evaluateAccess(statusRow?.status || 'inactive');
+      setLocked(access.viewOnlyMarketplace);
+      setBanner(access.banner);
+    })();
+  }, []);
 
   const filterAndSortThemes = () => {
     let filtered = [...themes];
@@ -248,6 +270,32 @@ export default function MarketplacePage() {
     // Open theme preview modal or navigate to preview page
     router.push(`/marketplace/preview/${themeId}`);
   };
+
+  const handleApply = async (themeId: string) => {
+    try {
+      const res = await fetch(`/api/marketplace/license/check?themeId=${encodeURIComponent(themeId)}`);
+      const json = await res.json();
+      if (!json.owned) {
+        setRenewReason(json.reason || 'invalid');
+        setRenewOpen(true);
+        return;
+      }
+      const useRes = await fetch('/api/marketplace/license/use', {
+        method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ themeId })
+      });
+      if (useRes.status !== 200) {
+        const err = await useRes.json();
+        setRenewReason((err?.error as any) || 'invalid');
+        setRenewOpen(true);
+        return;
+      }
+      // proceed to apply theme (placeholder)
+      console.log('Theme applied');
+    } catch (e) {
+      setRenewReason('invalid');
+      setRenewOpen(true);
+    }
+  }
 
   const renderStars = (rating: number) => {
     return Array.from({ length: 5 }, (_, i) => (
@@ -343,6 +391,16 @@ export default function MarketplacePage() {
               <Eye className="h-4 w-4 mr-2" />
               Preview
             </Button>
+            <Button
+              onClick={() => handleApply(theme.id)}
+              variant="outline"
+              size="sm"
+              className="flex-1 border-white/20 text-white hover:bg-white/10"
+              disabled={locked}
+            >
+              <CheckCircle className="h-4 w-4 mr-2" />
+              Apply
+            </Button>
             
             {theme.isOwned ? (
               <Button
@@ -356,7 +414,7 @@ export default function MarketplacePage() {
             ) : (
               <Button
                 onClick={() => handlePurchase(theme.id)}
-                disabled={isLoading}
+                disabled={isLoading || locked}
                 size="sm"
                 className="flex-1 bg-gradient-primary hover:opacity-90"
               >
@@ -371,6 +429,7 @@ export default function MarketplacePage() {
   );
 
   return (
+    <>
     <div className="min-h-screen bg-[var(--color-bg)]">
       {/* Header */}
       <div className="border-b border-white/10 glass">
@@ -399,6 +458,19 @@ export default function MarketplacePage() {
       </div>
 
       <div className="container mx-auto px-6 py-8">
+        {banner && (
+          <div className="bg-amber-50 border border-amber-200 rounded-lg p-4 mb-6 text-amber-800">
+            {banner}
+            <Button
+              onClick={() => router.push('/subscribe?locked=true')}
+              variant="outline"
+              size="sm"
+              className="ml-3"
+            >
+              Manage Billing
+            </Button>
+          </div>
+        )}
         {/* Stats Overview */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
           <Card className="glass-card">
@@ -606,5 +678,7 @@ export default function MarketplacePage() {
         )}
       </div>
     </div>
+    <RenewLicenseModal open={renewOpen} onOpenChange={setRenewOpen} reason={renewReason} />
+    </>
   );
 }

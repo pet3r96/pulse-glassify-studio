@@ -1,3 +1,4 @@
+"use client"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -5,9 +6,28 @@ import { Label } from "@/components/ui/label"
 import { Switch } from "@/components/ui/switch"
 import { Separator } from "@/components/ui/separator"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { User, Shield, Bell, Palette } from "lucide-react"
+import { User, Shield, Bell, Palette, ExternalLink } from "lucide-react"
+import { useState } from 'react'
+import { supabase } from '@/lib/supabase/client'
 
 export default function Settings() {
+  const [loadingPortal, setLoadingPortal] = useState(false)
+  const handleManageBilling = async () => {
+    try {
+      setLoadingPortal(true)
+      const { data: { user } } = await supabase.auth.getUser()
+      if (!user) return
+      const res = await fetch('/api/stripe/create-portal-session', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ userId: user.id }),
+      })
+      const { url } = await res.json()
+      if (url) window.location.href = url
+    } finally {
+      setLoadingPortal(false)
+    }
+  }
   return (
     <div className="min-h-screen bg-gray-50">
       <div className="container mx-auto px-4 py-8">
@@ -56,6 +76,24 @@ export default function Settings() {
                     <Input id="company" defaultValue="Acme Agency" />
                   </div>
                   <Button>Save Changes</Button>
+                </CardContent>
+              </Card>
+
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center">
+                    <Shield className="mr-2 h-5 w-5" />
+                    Billing
+                  </CardTitle>
+                  <CardDescription>
+                    Manage payment methods and invoices
+                  </CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <Button onClick={handleManageBilling} disabled={loadingPortal}>
+                    <ExternalLink className="h-4 w-4 mr-2" />
+                    {loadingPortal ? 'Opening...' : 'Open Billing Portal'}
+                  </Button>
                 </CardContent>
               </Card>
             </TabsContent>
