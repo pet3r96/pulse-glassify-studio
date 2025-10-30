@@ -101,11 +101,15 @@ function AuthForm() {
         description: `Signed in as ${result.data.profile?.full_name || result.data.email}`,
       })
 
-      // Redirect based on subscription status
-      if (result.data.subscription_status?.status === 'active') {
-        router.push('/?logged_in=true')
+      // Redirect based on role and subscription status
+      const userRole = result.data.profile?.role
+      const subStatus = result.data.subscription_status?.status
+      if (userRole === 'super_admin') {
+        router.push('/admin')
+      } else if (subStatus === 'active') {
+        router.push('/dashboard')
       } else {
-        router.push('/?logged_in=true&needs_subscription=true')
+        router.push('/subscribe')
       }
     } catch (error: any) {
       toast({
