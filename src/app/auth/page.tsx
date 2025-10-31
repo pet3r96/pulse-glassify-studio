@@ -252,7 +252,7 @@ function AuthForm() {
                     </button>
                   </div>
                 </div>
-                <Button type="submit" className="w-full btn-primary" disabled={loading}>
+                <Button type="submit" className="w-full" variant="gradient" disabled={loading}>
                   {loading ? "Signing in..." : "Sign In"}
                   <ArrowRight className="h-4 w-4 ml-2" />
                 </Button>
@@ -405,7 +405,8 @@ function AuthForm() {
                 
                 <Button 
                   type="submit" 
-                  className="w-full btn-primary" 
+                  className="w-full" 
+                  variant="gradient"
                   disabled={loading || ghlApiKeyValidating || !ghlApiKeyValid}
                 >
                   {loading ? "Creating account..." : "Create Account"}

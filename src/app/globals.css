@@ -6,41 +6,57 @@
 
 /* Global Styles */
 :root {
-  --color-bg: #0a0a0a;
-  --color-surface: #111111;
-  --color-border: #1a1a1a;
-  --color-text: #ffffff;
-  --color-text-muted: #a0a0a0;
-  --color-accent: #a066ff;
-  --color-accent-hover: #8c5cf6;
-  --color-success: #10b981;
-  --color-warning: #f59e0b;
-  --color-error: #ef4444;
+  /* Brand Tokens */
+  --pg-gradient: linear-gradient(135deg, #0077FF 0%, #8B4EFF 100%);
+  --pg-accent: #0077FF;
+  --pg-text-secondary: #A3A8B0;
+  --pg-border: rgba(255, 255, 255, 0.08);
+  --pg-radius: 0.75rem; /* ~rounded-xl */
+  --pg-shadow: 0 4px 24px rgba(0,0,0,0.1);
+
+  /* Light Mode */
+  --color-bg: #F8FAFC;
+  --color-surface: #FFFFFF;
+  --color-card: #FFFFFF;
+  --color-border: rgba(17, 17, 17, 0.1);
+  --color-text: #111111;
+  --color-text-muted: #6B7280;
+}
+
+.dark {
+  /* Dark Mode */
+  --color-bg: #0A0A0A;
+  --color-surface: #0F1115;
+  --color-card: #111317;
+  --color-border: rgba(255, 255, 255, 0.08);
+  --color-text: #FFFFFF;
+  --color-text-muted: #A3A8B0;
 }
 
 /* Glass morphism effects */
 .glass {
   background: rgba(255, 255, 255, 0.05);
   backdrop-filter: blur(24px);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  border: 1px solid var(--pg-border);
 }
 
 .glass-card {
-  background: rgba(255, 255, 255, 0.08);
+  background: var(--color-card);
   backdrop-filter: blur(24px);
-  border: 1px solid rgba(255, 255, 255, 0.15);
-  border-radius: 12px;
+  border: 1px solid var(--pg-border);
+  border-radius: var(--pg-radius);
+  box-shadow: var(--pg-shadow);
 }
 
 .glass-hover {
-  background: rgba(255, 255, 255, 0.1);
+  background: rgba(255, 255, 255, 0.06);
   backdrop-filter: blur(24px);
-  border: 1px solid rgba(255, 255, 255, 0.2);
+  border: 1px solid var(--pg-border);
 }
 
 /* Gradient text effects */
 .gradient-text {
-  background: linear-gradient(135deg, #a066ff 0%, #ff4bcb 100%);
+  background: var(--pg-gradient);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -48,7 +64,7 @@
 
 /* Button styles */
 .btn-primary {
-  background: linear-gradient(135deg, #a066ff 0%, #ff4bcb 100%);
+  background: var(--pg-gradient);
   border: none;
   color: white;
   font-weight: 600;
@@ -56,9 +72,20 @@
 }
 
 .btn-primary:hover {
-  background: linear-gradient(135deg, #8c5cf6 0%, #e91e63 100%);
+  filter: brightness(1.05);
   transform: translateY(-2px);
-  box-shadow: 0 10px 25px rgba(160, 102, 255, 0.3);
+  box-shadow: 0 10px 25px rgba(0, 119, 255, 0.3);
+}
+
+/* Gradient helpers */
+.gradient-primary {
+  background: var(--pg-gradient);
+}
+
+/* Background helpers */
+body {
+  background: var(--color-bg);
+  color: var(--color-text);
 }
 
 /* Custom scrollbar */

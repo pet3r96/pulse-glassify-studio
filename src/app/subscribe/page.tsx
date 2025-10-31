@@ -2,6 +2,7 @@
 
 import { useState, useEffect, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
+import { motion } from 'framer-motion';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -147,14 +148,14 @@ function SubscribePageContent() {
   const isLocked = searchParams.get('locked') === 'true';
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 py-12 px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen py-12 px-4 sm:px-6 lg:px-8 bg-[var(--color-bg)]">
       <div className="max-w-7xl mx-auto">
         {/* Header */}
         <div className="text-center mb-12">
-          <h1 className="text-4xl font-bold text-gray-900 mb-4">
+          <h1 className="text-4xl font-bold mb-4 gradient-text">
             Choose Your Plan
           </h1>
-          <p className="text-xl text-gray-600 mb-8">
+          <p className="text-xl text-[var(--pg-text-secondary)] mb-8">
             Unlock the full potential of PulseGen Studio
           </p>
           
@@ -168,28 +169,23 @@ function SubscribePageContent() {
 
           {/* Billing Toggle */}
           <div className="flex items-center justify-center space-x-4 mb-8">
-            <span className={`text-sm font-medium ${!isAnnual ? 'text-gray-900' : 'text-gray-500'}`}>
-              Monthly
-            </span>
-            <button
+            <span className={`text-sm font-medium ${!isAnnual ? 'text-white' : 'text-white/60'}`}>Monthly</span>
+            <motion.button
               onClick={() => setIsAnnual(!isAnnual)}
-              className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
-                isAnnual ? 'bg-blue-600' : 'bg-gray-200'
-              }`}
+              whileTap={{ scale: 0.98 }}
+              className={`relative inline-flex h-8 w-16 items-center rounded-full border border-[var(--pg-border)] bg-white/10 dark:bg-black/20 transition-all`}
             >
-              <span
-                className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
-                  isAnnual ? 'translate-x-6' : 'translate-x-1'
-                }`}
+              <span className={`absolute left-1 text-xs ${!isAnnual ? 'text-white' : 'text-white/60'}`}>M</span>
+              <span className={`absolute right-1 text-xs ${isAnnual ? 'text-white' : 'text-white/60'}`}>Y</span>
+              <motion.span
+                layout
+                transition={{ type: 'spring', stiffness: 500, damping: 30 }}
+                className={`inline-block h-6 w-6 rounded-full bg-white shadow-md ${isAnnual ? 'translate-x-8' : 'translate-x-1'}`}
               />
-            </button>
-            <span className={`text-sm font-medium ${isAnnual ? 'text-gray-900' : 'text-gray-500'}`}>
-              Annual
-            </span>
+            </motion.button>
+            <span className={`text-sm font-medium ${isAnnual ? 'text-white' : 'text-white/60'}`}>Annual</span>
             {isAnnual && (
-              <Badge variant="secondary" className="ml-2">
-                Save 17%
-              </Badge>
+              <Badge variant="secondary" className="ml-2">Save 17%</Badge>
             )}
           </div>
         </div>
@@ -197,17 +193,15 @@ function SubscribePageContent() {
         {/* Pricing Cards */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-6xl mx-auto">
           {PRICING_PLANS.map((plan) => (
-            <Card
-              key={plan.id}
-              className={`relative ${
-                plan.popular
-                  ? 'ring-2 ring-blue-500 shadow-xl scale-105'
-                  : 'shadow-lg'
-              }`}
-            >
+            <motion.div key={plan.id} initial={{ opacity: 0, y: 8 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.35 }}>
+              <Card
+                className={`relative transition-transform duration-200 hover:scale-[1.02] ${
+                  plan.popular ? 'ring-2 ring-[#0077FF]' : ''
+                }`}
+              >
               {plan.popular && (
                 <div className="absolute -top-4 left-1/2 transform -translate-x-1/2">
-                  <Badge className="bg-blue-600 text-white px-4 py-1">
+                  <Badge className="px-4 py-1 gradient-primary text-white border-none">
                     <Star className="w-4 h-4 mr-1" />
                     Most Popular
                   </Badge>
@@ -216,19 +210,19 @@ function SubscribePageContent() {
               
               <CardHeader className="text-center pb-4">
                 <CardTitle className="text-2xl font-bold">{plan.name}</CardTitle>
-                <CardDescription className="text-gray-600">
+                <CardDescription className="text-[var(--pg-text-secondary)]">
                   {plan.description}
                 </CardDescription>
                 <div className="mt-4">
-                  <span className="text-4xl font-bold text-gray-900">
+                  <span className="text-4xl font-bold">
                     ${isAnnual ? plan.annualPrice : plan.monthlyPrice}
                   </span>
-                  <span className="text-gray-600 ml-1">
+                  <span className="text-[var(--pg-text-secondary)] ml-1">
                     /{isAnnual ? 'year' : 'month'}
                   </span>
                 </div>
                 {isAnnual && (
-                  <p className="text-sm text-green-600 font-medium">
+                  <p className="text-sm text-green-500 font-medium">
                     Save ${(plan.monthlyPrice * 12) - plan.annualPrice}/year
                   </p>
                 )}
@@ -239,7 +233,7 @@ function SubscribePageContent() {
                   {plan.features.map((feature, index) => (
                     <li key={index} className="flex items-start">
                       <Check className="w-5 h-5 text-green-500 mr-3 mt-0.5 flex-shrink-0" />
-                      <span className="text-gray-700">{feature}</span>
+                      <span className="text-white/90">{feature}</span>
                     </li>
                   ))}
                 </ul>
@@ -249,11 +243,7 @@ function SubscribePageContent() {
                 <Button
                   onClick={() => handleSubscribe(plan)}
                   disabled={loading === plan.id}
-                  className={`w-full ${
-                    plan.popular
-                      ? 'bg-blue-600 hover:bg-blue-700'
-                      : 'bg-gray-900 hover:bg-gray-800'
-                  }`}
+                  className={`w-full ${plan.popular ? 'gradient-primary' : ''}`}
                   size="lg"
                 >
                   {loading === plan.id ? (
@@ -266,101 +256,102 @@ function SubscribePageContent() {
                   )}
                 </Button>
               </CardFooter>
-            </Card>
+              </Card>
+            </motion.div>
           ))}
         </div>
 
         {/* Features Comparison */}
         <div className="mt-16">
-          <h2 className="text-3xl font-bold text-center text-gray-900 mb-8">
+          <h2 className="text-3xl font-bold text-center mb-8">
             Feature Comparison
           </h2>
-          <div className="bg-white rounded-lg shadow-lg overflow-hidden">
+          <div className="rounded-xl overflow-hidden border border-[var(--pg-border)] bg-[var(--color-card)]">
             <table className="w-full">
-              <thead className="bg-gray-50">
+              <thead className="bg-white/5">
                 <tr>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-left text-xs font-medium text-white/60 uppercase tracking-wider">
                     Features
                   </th>
-                  <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-center text-xs font-medium text-white/60 uppercase tracking-wider">
                     Starter
                   </th>
-                  <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-center text-xs font-medium text-white/60 uppercase tracking-wider">
                     Agency Pro
                   </th>
-                  <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-center text-xs font-medium text-white/60 uppercase tracking-wider">
                     Accelerator
                   </th>
                 </tr>
               </thead>
-              <tbody className="bg-white divide-y divide-gray-200">
+              <tbody className="divide-y divide-white/5">
                 <tr>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                  <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
                     GHL Locations
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 text-center">
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-white/70 text-center">
                     1
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 text-center">
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-white/70 text-center">
                     Unlimited
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 text-center">
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-white/70 text-center">
                     Unlimited
                   </td>
                 </tr>
                 <tr>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                  <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
                     Theme Storage
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 text-center">
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-white/70 text-center">
                     Up to 5
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 text-center">
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-white/70 text-center">
                     Unlimited
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 text-center">
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-white/70 text-center">
                     Unlimited
                   </td>
                 </tr>
                 <tr>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                  <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
                     Marketplace Selling
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 text-center">
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-white/70 text-center">
                     <span className="text-red-500">✗</span>
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 text-center">
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-white/70 text-center">
                     <span className="text-green-500">✓</span>
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 text-center">
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-white/70 text-center">
                     <span className="text-green-500">✓</span>
                   </td>
                 </tr>
                 <tr>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                  <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
                     White-label Options
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 text-center">
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-white/70 text-center">
                     <span className="text-red-500">✗</span>
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 text-center">
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-white/70 text-center">
                     <span className="text-green-500">✓</span>
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 text-center">
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-white/70 text-center">
                     <span className="text-green-500">✓</span>
                   </td>
                 </tr>
                 <tr>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                  <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
                     Reseller Rights
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 text-center">
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-white/70 text-center">
                     <span className="text-red-500">✗</span>
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 text-center">
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-white/70 text-center">
                     <span className="text-red-500">✗</span>
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 text-center">
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-white/70 text-center">
                     <span className="text-green-500">✓</span>
                   </td>
                 </tr>
@@ -371,31 +362,31 @@ function SubscribePageContent() {
 
         {/* FAQ Section */}
         <div className="mt-16">
-          <h2 className="text-3xl font-bold text-center text-gray-900 mb-8">
+          <h2 className="text-3xl font-bold text-center mb-8">
             Frequently Asked Questions
           </h2>
           <div className="max-w-3xl mx-auto space-y-6">
-            <div className="bg-white rounded-lg shadow-lg p-6">
-              <h3 className="text-lg font-semibold text-gray-900 mb-2">
+            <div className="rounded-xl border border-[var(--pg-border)] bg-[var(--color-card)] p-6">
+              <h3 className="text-lg font-semibold mb-2">
                 Can I change my plan later?
               </h3>
-              <p className="text-gray-600">
+              <p className="text-[var(--pg-text-secondary)]">
                 Yes, you can upgrade or downgrade your plan at any time. Changes will be prorated and reflected in your next billing cycle.
               </p>
             </div>
-            <div className="bg-white rounded-lg shadow-lg p-6">
-              <h3 className="text-lg font-semibold text-gray-900 mb-2">
+            <div className="rounded-xl border border-[var(--pg-border)] bg-[var(--color-card)] p-6">
+              <h3 className="text-lg font-semibold mb-2">
                 What happens if I cancel?
               </h3>
-              <p className="text-gray-600">
+              <p className="text-[var(--pg-text-secondary)]">
                 You can cancel anytime. Your themes will be removed from GHL locations and you'll lose access to premium features, but your account data will be preserved.
               </p>
             </div>
-            <div className="bg-white rounded-lg shadow-lg p-6">
-              <h3 className="text-lg font-semibold text-gray-900 mb-2">
+            <div className="rounded-xl border border-[var(--pg-border)] bg-[var(--color-card)] p-6">
+              <h3 className="text-lg font-semibold mb-2">
                 Do you offer refunds?
               </h3>
-              <p className="text-gray-600">
+              <p className="text-[var(--pg-text-secondary)]">
                 We offer a 30-day money-back guarantee for all new subscriptions. Contact support if you're not satisfied.
               </p>
             </div>

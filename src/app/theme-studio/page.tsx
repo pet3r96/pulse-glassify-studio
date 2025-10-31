@@ -40,6 +40,7 @@ import {
 import Link from 'next/link';
 import { UpgradeModal } from '@/components/ui/upgrade-modal';
 import { SeatLimitModal } from '@/components/ui/seat-limit-modal';
+import { DndContext, useDraggable, DragEndEvent } from '@dnd-kit/core';
 
 interface ThemeConfig {
   id?: string;
@@ -200,6 +201,10 @@ export default function ThemeStudioPage() {
   const [allowedSeats, setAllowedSeats] = useState<number>(0);
   const [currentSeats, setCurrentSeats] = useState<number>(0);
   const [loadingPortal, setLoadingPortal] = useState(false);
+  const [blocks, setBlocks] = useState<Array<{ id: string; x: number; y: number }>>([
+    { id: 'header', x: 40, y: 40 },
+    { id: 'cta', x: 200, y: 120 },
+  ]);
 
   useEffect(() => {
     loadCurrentTheme();
@@ -326,6 +331,27 @@ export default function ThemeStudioPage() {
     URL.revokeObjectURL(url);
   };
 
+  function DraggableBlock({ id, x, y }: { id: string; x: number; y: number }) {
+    const { attributes, listeners, setNodeRef, transform } = useDraggable({ id });
+    const translate = transform ? { x: x + transform.x, y: y + transform.y } : { x, y };
+    return (
+      <div
+        ref={setNodeRef}
+        {...listeners}
+        {...attributes}
+        className="absolute px-3 py-2 rounded-md glass border border-white/10 text-xs select-none cursor-grab active:cursor-grabbing"
+        style={{ left: translate.x, top: translate.y }}
+      >
+        {id.toUpperCase()}
+      </div>
+    );
+  }
+
+  const handleDragEnd = (event: DragEndEvent) => {
+    const { active, delta } = event;
+    setBlocks((prev) => prev.map((b) => (b.id === active.id ? { ...b, x: Math.max(0, b.x + delta.x), y: Math.max(0, b.y + delta.y) } : b)));
+  };
+
   const importTheme = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (file) {
@@ -431,7 +457,7 @@ export default function ThemeStudioPage() {
               </Button>
               <Button
                 onClick={locked ? () => router.push('/subscribe') : saveTheme}
-                className="bg-gradient-primary hover:opacity-90"
+                variant="gradient"
                 disabled={locked || (allowedSeats !== Number.MAX_SAFE_INTEGER && currentSeats > allowedSeats)}
               >
                 <Save className="h-4 w-4 mr-2" />
@@ -444,9 +470,12 @@ export default function ThemeStudioPage() {
 
       <div className="container mx-auto px-6 py-8">
         {banner && (
-          <div className="bg-amber-50 border border-amber-200 rounded-lg p-4 mb-6 text-amber-800">
-            {banner}
-            <Button
+          <div className="glass rounded-xl p-4 mb-6 border border-[var(--pg-border)]">
+            <div className="flex items-center justify-between">
+              <div className="text-white/90">
+                {banner}
+              </div>
+              <Button
               onClick={async () => {
                 try {
                   setLoadingPortal(true);
@@ -465,26 +494,21 @@ export default function ThemeStudioPage() {
                   setLoadingPortal(false);
                 }
               }}
-              variant="outline"
-              size="sm"
-              className="ml-3"
-              disabled={loadingPortal}
-            >
-              {loadingPortal ? 'Opening...' : 'Manage Billing'}
-            </Button>
+                variant="gradient"
+                size="sm"
+                disabled={loadingPortal}
+              >
+                {loadingPortal ? 'Opening...' : 'Manage Billing'}
+              </Button>
+            </div>
           </div>
         )}
         {(allowedSeats !== Number.MAX_SAFE_INTEGER && currentSeats > allowedSeats) && (
-          <div className="bg-red-50 border border-red-200 rounded-lg p-4 mb-6 text-red-800">
-            Seat limit reached. Add more seats or upgrade your plan to continue publishing.
-            <Button
-              onClick={() => setUpgradeOpen(true)}
-              variant="outline"
-              size="sm"
-              className="ml-3"
-            >
-              Upgrade
-            </Button>
+          <div className="glass rounded-xl p-4 mb-6 border border-[var(--pg-border)]">
+            <div className="flex items-center justify-between">
+              <div className="text-white/90">Seat limit reached. Add more seats or upgrade your plan to continue publishing.</div>
+              <Button onClick={() => setSeatLimitOpen(true)} variant="gradient" size="sm">Resolve</Button>
+            </div>
           </div>
         )}
         <div className="grid lg:grid-cols-3 gap-6">
@@ -881,6 +905,25 @@ export default function ThemeStudioPage() {
                     </div>
                   </CardContent>
                 </Card>
+                {/* Drag-and-drop Builder (Beta) */}
+                <Card className="glass-card mt-6">
+                  <CardHeader>
+                    <CardTitle className="flex items-center gap-2">
+                      <Layers className="h-5 w-5" />
+                      Builder (Beta)
+                    </CardTitle>
+                    <CardDescription>Drag blocks on the canvas to compose a layout</CardDescription>
+                  </CardHeader>
+                  <CardContent>
+                    <DndContext onDragEnd={handleDragEnd}>
+                      <div className="relative h-64 rounded-lg border border-white/10 bg-white/5 overflow-hidden">
+                        {blocks.map((b) => (
+                          <DraggableBlock key={b.id} id={b.id} x={b.x} y={b.y} />
+                        ))}
+                      </div>
+                    </DndContext>
+                  </CardContent>
+                </Card>
                 {locked && (
                   <div className="absolute inset-0 backdrop-blur-md bg-black/40 z-10 rounded-lg pointer-events-none animate-in fade-in duration-300" />
                 )}
@@ -889,6 +932,7 @@ export default function ThemeStudioPage() {
       </div>
     </div>
     <UpgradeModal open={upgradeOpen} onOpenChange={setUpgradeOpen} title="Upgrade Required" message="Your current plan's seat limit has been reached. Add Extra Subaccount Seat or upgrade to continue." cta="View Plans" />
+    <SeatLimitModal open={seatLimitOpen} onOpenChange={setSeatLimitOpen} />
     </>
   );
 }

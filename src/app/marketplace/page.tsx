@@ -416,7 +416,8 @@ export default function MarketplacePage() {
                       onClick={locked ? () => router.push('/subscribe') : () => handlePurchase(theme.id)}
                       disabled={isLoading || locked}
                       size="sm"
-                      className="flex-1 bg-gradient-primary hover:opacity-90"
+                      variant="gradient"
+                      className="flex-1"
                     >
                       <ShoppingCart className="h-4 w-4 mr-2" />
                       {locked ? 'Upgrade to Unlock' : 'Buy'}
@@ -467,16 +468,13 @@ export default function MarketplacePage() {
 
       <div className="container mx-auto px-6 py-8">
         {banner && (
-          <div className="bg-amber-50 border border-amber-200 rounded-lg p-4 mb-6 text-amber-800">
-            {banner}
-            <Button
-              onClick={() => router.push('/subscribe?locked=true')}
-              variant="outline"
-              size="sm"
-              className="ml-3"
-            >
-              Manage Billing
-            </Button>
+          <div className="glass rounded-xl p-4 mb-6 border border-[var(--pg-border)]">
+            <div className="flex items-center justify-between">
+              <div className="text-white/90">{banner}</div>
+              <Button onClick={() => router.push('/subscribe?locked=true')} variant="gradient" size="sm">
+                Manage Billing
+              </Button>
+            </div>
           </div>
         )}
         {/* Stats Overview */}

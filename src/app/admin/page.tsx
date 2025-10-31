@@ -70,6 +70,8 @@ interface MarketplaceStats {
   pendingApprovals: number;
   activeSubscriptions: number;
   monthlyRevenue: number;
+  mrr?: number;
+  arr?: number;
 }
 
 const MOCK_USERS: User[] = [
@@ -149,6 +151,8 @@ export default function AdminDashboardPage() {
   const [selectedTab, setSelectedTab] = useState<'overview' | 'users' | 'themes' | 'billing' | 'analytics'>('overview');
   const [isLoading, setIsLoading] = useState(false);
   const [billingEvents, setBillingEvents] = useState<any[]>([]);
+  const [planFilter, setPlanFilter] = useState<string>('all');
+  const [statusFilter, setStatusFilter] = useState<string>('all');
 
   useEffect(() => {
     // In a real app, this would check if user is super_admin
@@ -166,6 +170,17 @@ export default function AdminDashboardPage() {
     };
     fetchEvents();
   }, [selectedTab]);
+
+  useEffect(() => {
+    const fetchStats = async () => {
+      try {
+        const res = await fetch('/api/admin/billing/stats');
+        const json = await res.json();
+        if (json) setStats((prev) => ({ ...prev, ...json }));
+      } catch (_) {}
+    };
+    fetchStats();
+  }, []);
 
   const handleApproveTheme = async (themeId: string) => {
     setIsLoading(true);
@@ -487,7 +502,7 @@ export default function AdminDashboardPage() {
                 </CardDescription>
               </CardHeader>
               <CardContent>
-                <div className="mb-4">
+                <div className="mb-4 grid grid-cols-1 md:grid-cols-3 gap-3">
                   <div className="relative">
                     <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-white/50" />
                     <Input
@@ -497,10 +512,25 @@ export default function AdminDashboardPage() {
                       className="pl-10 glass"
                     />
                   </div>
+                  <select value={planFilter} onChange={(e) => setPlanFilter(e.target.value)} className="glass p-2 rounded-md">
+                    <option value="all">All Plans</option>
+                    <option value="starter">Starter</option>
+                    <option value="pro">Agency Pro</option>
+                    <option value="accelerator">Accelerator</option>
+                  </select>
+                  <select value={statusFilter} onChange={(e) => setStatusFilter(e.target.value)} className="glass p-2 rounded-md">
+                    <option value="all">All Status</option>
+                    <option value="active">Active</option>
+                    <option value="past_due">Past Due</option>
+                    <option value="unpaid">Unpaid</option>
+                    <option value="canceled">Canceled</option>
+                  </select>
                 </div>
 
                 <div className="space-y-3">
-                  {filteredUsers.map((user) => (
+                  {filteredUsers
+                    .filter((u) => statusFilter === 'all' || u.subscription_status === statusFilter)
+                    .map((user) => (
                     <div key={user.id} className="p-4 rounded-lg glass border border-white/10 hover:border-white/20 transition-all">
                       <div className="flex items-center justify-between mb-3">
                         <div className="flex items-center gap-3">
@@ -707,6 +737,14 @@ export default function AdminDashboardPage() {
                         <span className="text-white">${stats.monthlyRevenue.toLocaleString()}</span>
                       </div>
                       <div className="flex justify-between text-white/70">
+                        <span>MRR:</span>
+                        <span className="text-white">${(stats.mrr ?? stats.monthlyRevenue).toLocaleString()}</span>
+                      </div>
+                      <div className="flex justify-between text-white/70">
+                        <span>ARR:</span>
+                        <span className="text-white">${(stats.arr ?? (stats.monthlyRevenue * 12)).toLocaleString()}</span>
+                      </div>
+                      <div className="flex justify-between text-white/70">
                         <span>Active Subscriptions:</span>
                         <span className="text-white">{stats.activeSubscriptions}</span>
                       </div>
@@ -730,6 +768,11 @@ export default function AdminDashboardPage() {
                         <RefreshCw className="h-4 w-4 mr-2" />
                         Sync Stripe Data
                       </Button>
+                      <div className="grid grid-cols-1 md:grid-cols-3 gap-2">
+                        <Button variant="gradient">Manage in Stripe</Button>
+                        <Button variant="gradient">Override Billing</Button>
+                        <Button variant="gradient">Send Reminder</Button>
+                      </div>
                     </div>
                   </div>
                 </div>

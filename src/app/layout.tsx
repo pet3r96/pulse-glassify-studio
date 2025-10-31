@@ -1,14 +1,11 @@
 import type { Metadata } from 'next'
-import { Inter, Poppins } from 'next/font/google'
+import { Inter, Outfit } from 'next/font/google'
+import { ThemeProvider } from 'next-themes'
 import { Navigation } from '@/components/Navigation'
 import "./globals.css";
 
-const inter = Inter({ subsets: ['latin'] })
-const poppins = Poppins({ 
-  subsets: ['latin'],
-  weight: ['400', '500', '600', '700'],
-  variable: '--pg-font-heading'
-})
+const inter = Inter({ subsets: ['latin'], variable: '--pg-font-body' })
+const outfit = Outfit({ subsets: ['latin'], variable: '--pg-font-heading' })
 
 export const metadata: Metadata = {
   title: 'PulseStudio - Custom GoHighLevel Dashboard Themes',
@@ -21,10 +18,12 @@ export default function RootLayout({
   children: React.ReactNode
 }) {
   return (
-    <html lang="en">
-      <body className={`${inter.className} ${poppins.variable}`}>
-        <Navigation />
-        {children}
+    <html lang="en" suppressHydrationWarning>
+      <body className={`${inter.variable} ${outfit.variable}`}>
+        <ThemeProvider attribute="class" defaultTheme="dark" enableSystem>
+          <Navigation />
+          {children}
+        </ThemeProvider>
       </body>
     </html>
   )
