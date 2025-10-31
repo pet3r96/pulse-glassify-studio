@@ -4,6 +4,7 @@ import { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import { supabase } from '@/lib/supabase/client';
 import { getUserSubscriptionStatus, evaluateAccess } from '@/lib/subscription/utils';
+import { useSubscriptionStatus } from '@/hooks/use-subscription-status';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -38,6 +39,7 @@ import {
 } from 'lucide-react';
 import Link from 'next/link';
 import { UpgradeModal } from '@/components/ui/upgrade-modal';
+import { SeatLimitModal } from '@/components/ui/seat-limit-modal';
 
 interface ThemeConfig {
   id?: string;
@@ -192,26 +194,16 @@ export default function ThemeStudioPage() {
   const [history, setHistory] = useState<ThemeConfig[]>([DEFAULT_THEME]);
   const [historyIndex, setHistoryIndex] = useState(0);
   const previewRef = useRef<HTMLIFrameElement>(null);
-  const [locked, setLocked] = useState(false);
-  const [banner, setBanner] = useState<string | null>(null);
+  const { accessState, locked, banner } = useSubscriptionStatus();
   const [upgradeOpen, setUpgradeOpen] = useState(false);
+  const [seatLimitOpen, setSeatLimitOpen] = useState(false);
   const [allowedSeats, setAllowedSeats] = useState<number>(0);
   const [currentSeats, setCurrentSeats] = useState<number>(0);
+  const [loadingPortal, setLoadingPortal] = useState(false);
 
   useEffect(() => {
-    // Load user's current theme if exists
     loadCurrentTheme();
     (async () => {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) {
-        setLocked(true);
-        setBanner('Billing Required: Your subscription is not active. Please update your payment method to restore features.');
-        return;
-      }
-      const statusRow: any = await getUserSubscriptionStatus(user.id);
-      const access = evaluateAccess(statusRow?.status || 'inactive');
-      setLocked(access.locked);
-      setBanner(access.banner);
       try {
         const res = await fetch('/api/subscription/status');
         const json = await res.json();
@@ -421,7 +413,7 @@ export default function ThemeStudioPage() {
             <div className="flex items-center gap-2">
                 <Button
                 onClick={undo}
-                disabled={historyIndex === 0}
+                disabled={historyIndex === 0 || locked}
                   variant="outline"
                   size="sm"
                 className="border-white/20 text-white hover:bg-white/10"
@@ -430,7 +422,7 @@ export default function ThemeStudioPage() {
                 </Button>
               <Button
                 onClick={redo}
-                disabled={historyIndex === history.length - 1}
+                disabled={historyIndex === history.length - 1 || locked}
                 variant="outline"
                 size="sm"
                 className="border-white/20 text-white hover:bg-white/10"
@@ -438,12 +430,12 @@ export default function ThemeStudioPage() {
                 <Redo className="h-4 w-4" />
               </Button>
               <Button
-                onClick={saveTheme}
+                onClick={locked ? () => router.push('/subscribe') : saveTheme}
                 className="bg-gradient-primary hover:opacity-90"
                 disabled={locked || (allowedSeats !== Number.MAX_SAFE_INTEGER && currentSeats > allowedSeats)}
               >
                 <Save className="h-4 w-4 mr-2" />
-                Save Theme
+                {locked ? 'Upgrade to Unlock' : 'Save Theme'}
               </Button>
             </div>
           </div>
@@ -455,12 +447,30 @@ export default function ThemeStudioPage() {
           <div className="bg-amber-50 border border-amber-200 rounded-lg p-4 mb-6 text-amber-800">
             {banner}
             <Button
-              onClick={() => router.push('/subscribe?locked=true')}
+              onClick={async () => {
+                try {
+                  setLoadingPortal(true);
+                  const { data: { user } } = await supabase.auth.getUser();
+                  if (!user) return;
+                  const res = await fetch('/api/stripe/create-portal-session', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ userId: user.id }),
+                  });
+                  const { url } = await res.json();
+                  if (url) window.location.href = url;
+                } catch (error) {
+                  console.error('Error opening billing portal:', error);
+                } finally {
+                  setLoadingPortal(false);
+                }
+              }}
               variant="outline"
               size="sm"
               className="ml-3"
+              disabled={loadingPortal}
             >
-              Manage Billing
+              {loadingPortal ? 'Opening...' : 'Manage Billing'}
             </Button>
           </div>
         )}
@@ -479,7 +489,7 @@ export default function ThemeStudioPage() {
         )}
         <div className="grid lg:grid-cols-3 gap-6">
           {/* Theme Configuration Panel */}
-          <div className="lg:col-span-1 space-y-6">
+          <div className="lg:col-span-1 space-y-6 relative">
             {/* Theme Info */}
             <Card className="glass-card">
               <CardHeader>
@@ -496,6 +506,7 @@ export default function ThemeStudioPage() {
                     value={theme.name}
                     onChange={(e) => updateTheme({ name: e.target.value })}
                     className="glass"
+                    disabled={locked}
                     />
                   </div>
                   <div>
@@ -506,6 +517,7 @@ export default function ThemeStudioPage() {
                     onChange={(e) => updateTheme({ description: e.target.value })}
                     className="glass"
                       rows={3}
+                    disabled={locked}
                     />
                   </div>
                 <div className="flex gap-2">
@@ -580,6 +592,7 @@ export default function ThemeStudioPage() {
                               colors: { ...theme.colors, primary: e.target.value }
                             })}
                             className="w-12 h-10 p-1"
+                            disabled={locked}
                           />
                           <Input
                             value={theme.colors.primary}
@@ -587,6 +600,7 @@ export default function ThemeStudioPage() {
                               colors: { ...theme.colors, primary: e.target.value }
                             })}
                             className="flex-1 glass"
+                            disabled={locked}
                           />
                         </div>
                       </div>
@@ -601,6 +615,7 @@ export default function ThemeStudioPage() {
                               colors: { ...theme.colors, secondary: e.target.value }
                             })}
                             className="w-12 h-10 p-1"
+                            disabled={locked}
                           />
                           <Input
                             value={theme.colors.secondary}
@@ -608,6 +623,7 @@ export default function ThemeStudioPage() {
                               colors: { ...theme.colors, secondary: e.target.value }
                             })}
                             className="flex-1 glass"
+                            disabled={locked}
                           />
                         </div>
                       </div>
@@ -622,6 +638,7 @@ export default function ThemeStudioPage() {
                               colors: { ...theme.colors, accent: e.target.value }
                             })}
                             className="w-12 h-10 p-1"
+                            disabled={locked}
                           />
                           <Input
                             value={theme.colors.accent}
@@ -629,6 +646,7 @@ export default function ThemeStudioPage() {
                               colors: { ...theme.colors, accent: e.target.value }
                             })}
                             className="flex-1 glass"
+                            disabled={locked}
                           />
                         </div>
                       </div>
@@ -643,6 +661,7 @@ export default function ThemeStudioPage() {
                               colors: { ...theme.colors, background: e.target.value }
                             })}
                             className="w-12 h-10 p-1"
+                            disabled={locked}
                           />
                           <Input
                             value={theme.colors.background}
@@ -650,6 +669,7 @@ export default function ThemeStudioPage() {
                               colors: { ...theme.colors, background: e.target.value }
                             })}
                             className="flex-1 glass"
+                            disabled={locked}
                           />
                         </div>
                       </div>
@@ -666,6 +686,7 @@ export default function ThemeStudioPage() {
                           fonts: { ...theme.fonts, primary: e.target.value }
                         })}
                         className="glass"
+                        disabled={locked}
                       />
                     </div>
                     <div>
@@ -677,6 +698,7 @@ export default function ThemeStudioPage() {
                           fonts: { ...theme.fonts, secondary: e.target.value }
                         })}
                         className="glass"
+                        disabled={locked}
                       />
                     </div>
                   </TabsContent>
@@ -691,6 +713,7 @@ export default function ThemeStudioPage() {
                           layout: { ...theme.layout, sidebar: e.target.value as any }
                         })}
                         className="w-full p-2 rounded-lg glass border border-white/20 bg-transparent text-white"
+                        disabled={locked}
                       >
                         <option value="left">Left</option>
                         <option value="right">Right</option>
@@ -707,6 +730,7 @@ export default function ThemeStudioPage() {
                           layout: { ...theme.layout, header: e.target.value as any }
                         })}
                         className="w-full p-2 rounded-lg glass border border-white/20 bg-transparent text-white"
+                        disabled={locked}
                       >
                         <option value="fixed">Fixed</option>
                         <option value="static">Static</option>
@@ -721,6 +745,7 @@ export default function ThemeStudioPage() {
                           layout: { ...theme.layout, navigation: e.target.value as any }
                         })}
                         className="w-full p-2 rounded-lg glass border border-white/20 bg-transparent text-white"
+                        disabled={locked}
                       >
                         <option value="accordion">Accordion</option>
                         <option value="list">List</option>
@@ -738,6 +763,7 @@ export default function ThemeStudioPage() {
                         onChange={(e) => updateTheme({ css: e.target.value })}
                         className="glass font-mono text-sm"
                         rows={8}
+                        disabled={locked}
                       />
                     </div>
                     <div>
@@ -748,16 +774,20 @@ export default function ThemeStudioPage() {
                         onChange={(e) => updateTheme({ js: e.target.value })}
                         className="glass font-mono text-sm"
                         rows={6}
+                        disabled={locked}
                       />
                 </div>
                   </TabsContent>
                 </Tabs>
               </CardContent>
             </Card>
+            {locked && (
+              <div className="absolute inset-0 backdrop-blur-md bg-black/40 z-10 rounded-lg pointer-events-none animate-in fade-in duration-300" />
+            )}
           </div>
 
           {/* Preview Panel */}
-          <div className="lg:col-span-2">
+          <div className="lg:col-span-2 relative">
                 <Card className="glass-card">
                   <CardHeader>
                     <div className="flex items-center justify-between">
@@ -772,6 +802,7 @@ export default function ThemeStudioPage() {
                         variant={previewMode === 'desktop' ? 'default' : 'ghost'}
                             size="sm"
                         className="h-8 w-8 p-0"
+                        disabled={locked}
                           >
                             <Monitor className="h-4 w-4" />
                           </Button>
@@ -780,6 +811,7 @@ export default function ThemeStudioPage() {
                         variant={previewMode === 'tablet' ? 'default' : 'ghost'}
                             size="sm"
                         className="h-8 w-8 p-0"
+                        disabled={locked}
                           >
                             <Tablet className="h-4 w-4" />
                           </Button>
@@ -788,6 +820,7 @@ export default function ThemeStudioPage() {
                         variant={previewMode === 'mobile' ? 'default' : 'ghost'}
                             size="sm"
                         className="h-8 w-8 p-0"
+                        disabled={locked}
                           >
                             <Smartphone className="h-4 w-4" />
                           </Button>
@@ -797,6 +830,7 @@ export default function ThemeStudioPage() {
                       variant="outline"
                       size="sm"
                       className="border-white/20 text-white hover:bg-white/10"
+                      disabled={locked}
                     >
                       {isPreviewPlaying ? <Square className="h-4 w-4" /> : <Play className="h-4 w-4" />}
                     </Button>
@@ -839,13 +873,17 @@ export default function ThemeStudioPage() {
                     variant="outline"
                     size="sm"
                     className="border-white/20 text-white hover:bg-white/10"
+                    disabled={locked}
                   >
                     <Copy className="h-4 w-4 mr-2" />
-                    Copy CSS
+                    {locked ? 'Upgrade to Unlock' : 'Copy CSS'}
                   </Button>
                     </div>
                   </CardContent>
                 </Card>
+                {locked && (
+                  <div className="absolute inset-0 backdrop-blur-md bg-black/40 z-10 rounded-lg pointer-events-none animate-in fade-in duration-300" />
+                )}
           </div>
         </div>
       </div>

@@ -4,10 +4,12 @@ import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { supabase } from '@/lib/supabase/client';
 import { evaluateAccess, getUserSubscriptionStatus } from '@/lib/subscription/utils';
+import { useSubscriptionStatus } from '@/hooks/use-subscription-status';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { 
   Store, 
   Search, 
@@ -177,29 +179,13 @@ export default function MarketplacePage() {
   const [sortBy, setSortBy] = useState('newest');
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
   const [isLoading, setIsLoading] = useState(false);
-  const [locked, setLocked] = useState(false);
-  const [banner, setBanner] = useState<string | null>(null);
+  const { accessState, locked, banner } = useSubscriptionStatus();
   const [renewOpen, setRenewOpen] = useState(false);
   const [renewReason, setRenewReason] = useState<'expired'|'limit'|'invalid'|undefined>(undefined);
 
   useEffect(() => {
     filterAndSortThemes();
   }, [searchQuery, selectedCategory, sortBy, themes]);
-
-  useEffect(() => {
-    (async () => {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) {
-        setLocked(true);
-        setBanner('Billing Required: Your subscription is not active. Please update your payment method to restore features.');
-        return;
-      }
-      const statusRow: any = await getUserSubscriptionStatus(user.id);
-      const access = evaluateAccess(statusRow?.status || 'inactive');
-      setLocked(access.viewOnlyMarketplace);
-      setBanner(access.banner);
-    })();
-  }, []);
 
   const filterAndSortThemes = () => {
     let filtered = [...themes];
@@ -391,16 +377,27 @@ export default function MarketplacePage() {
               <Eye className="h-4 w-4 mr-2" />
               Preview
             </Button>
-            <Button
-              onClick={() => handleApply(theme.id)}
-              variant="outline"
-              size="sm"
-              className="flex-1 border-white/20 text-white hover:bg-white/10"
-              disabled={locked}
-            >
-              <CheckCircle className="h-4 w-4 mr-2" />
-              Apply
-            </Button>
+            <TooltipProvider>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Button
+                    onClick={locked ? () => router.push('/subscribe') : () => handleApply(theme.id)}
+                    variant="outline"
+                    size="sm"
+                    className="flex-1 border-white/20 text-white hover:bg-white/10"
+                    disabled={locked}
+                  >
+                    <CheckCircle className="h-4 w-4 mr-2" />
+                    {locked ? 'Upgrade to Unlock' : 'Apply'}
+                  </Button>
+                </TooltipTrigger>
+                {locked && (
+                  <TooltipContent>
+                    <p>Upgrade to restore Marketplace access</p>
+                  </TooltipContent>
+                )}
+              </Tooltip>
+            </TooltipProvider>
             
             {theme.isOwned ? (
               <Button
@@ -412,15 +409,26 @@ export default function MarketplacePage() {
                 Owned
               </Button>
             ) : (
-              <Button
-                onClick={() => handlePurchase(theme.id)}
-                disabled={isLoading || locked}
-                size="sm"
-                className="flex-1 bg-gradient-primary hover:opacity-90"
-              >
-                <ShoppingCart className="h-4 w-4 mr-2" />
-                Buy
-              </Button>
+              <TooltipProvider>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <Button
+                      onClick={locked ? () => router.push('/subscribe') : () => handlePurchase(theme.id)}
+                      disabled={isLoading || locked}
+                      size="sm"
+                      className="flex-1 bg-gradient-primary hover:opacity-90"
+                    >
+                      <ShoppingCart className="h-4 w-4 mr-2" />
+                      {locked ? 'Upgrade to Unlock' : 'Buy'}
+                    </Button>
+                  </TooltipTrigger>
+                  {locked && (
+                    <TooltipContent>
+                      <p>Upgrade to restore Marketplace access</p>
+                    </TooltipContent>
+                  )}
+                </Tooltip>
+              </TooltipProvider>
             )}
           </div>
         </div>
