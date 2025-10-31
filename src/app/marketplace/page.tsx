@@ -441,7 +441,7 @@ export default function MarketplacePage() {
     <>
     <div className="min-h-screen bg-[var(--color-bg)]">
       {/* Header */}
-      <div className="border-b border-white/10 glass">
+      <div className="glass">
         <div className="container mx-auto px-6 py-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-4">

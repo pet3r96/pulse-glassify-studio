@@ -46,6 +46,11 @@ export function Navigation() {
     })()
   }, [])
 
+  // Hide navigation on auth pages
+  if (pathname === '/auth' || pathname.startsWith('/auth')) {
+    return null;
+  }
+
   if (showAdmin) {
     navigation.push({ name: "Admin", href: "/admin", icon: Shield })
   }

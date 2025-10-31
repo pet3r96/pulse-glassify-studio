@@ -93,39 +93,8 @@ export default function HomePage() {
 
   return (
     <div className="min-h-screen bg-[var(--color-bg)]">
-      {/* Navigation */}
-      <nav className="fixed top-0 left-0 right-0 z-50 glass border-b border-white/10">
-        <div className="container mx-auto px-6 py-4">
-          <div className="flex items-center justify-between">
-            <Link href="/" className="flex items-center gap-2 group">
-              <div className="w-10 h-10 bg-gradient-to-r from-pink-500 to-purple-500 rounded-lg flex items-center justify-center group-hover:scale-110 transition-transform">
-                <span className="text-white font-bold text-lg">P</span>
-              </div>
-              <div>
-                <h1 className="font-heading text-xl gradient-text">PulseStudio</h1>
-                <p className="text-[10px] text-muted-foreground">by PulseGen Media</p>
-              </div>
-            </Link>
-            
-            <div className="flex items-center gap-4">
-              <Link href="/auth">
-                <Button variant="ghost" className="hover:bg-white/5">
-                  Sign In
-                </Button>
-              </Link>
-              <Link href="/auth?mode=signup">
-                <Button className="btn-primary hover-glow">
-                  Get Started
-                  <ArrowRight className="h-4 w-4 ml-2" />
-                </Button>
-              </Link>
-            </div>
-          </div>
-        </div>
-      </nav>
-
       {/* Hero Section */}
-      <section className="pt-32 pb-20 px-6">
+      <section className="pt-20 pb-20 px-6">
         <div className="container mx-auto text-center">
           <div className="inline-flex items-center gap-2 glass-card px-4 py-2 rounded-full mb-6">
             <Sparkles className="h-4 w-4 text-yellow-400" />
