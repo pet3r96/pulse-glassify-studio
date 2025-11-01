@@ -148,11 +148,11 @@ function SubscribePageContent() {
   const isLocked = searchParams.get('locked') === 'true';
 
   return (
-    <div className="min-h-screen py-12 px-4 sm:px-6 lg:px-8 bg-background text-foreground">
-      <div className="max-w-7xl mx-auto">
+    <div className="min-h-screen py-gutter-lg px-4 sm:px-6 lg:px-8 bg-background text-foreground">
+      <div className="container mx-auto max-w-7xl">
         {/* Header */}
-        <div className="text-center mb-12">
-          <h1 className="text-4xl font-bold mb-4 gradient-text">
+        <div className="text-center mb-gutter-lg">
+          <h1 className="h1 text-4xl mb-4 bg-gradient-primary-accent bg-clip-text text-transparent">
             Choose Your Plan
           </h1>
           <p className="text-xl text-muted-foreground mb-8">
@@ -201,7 +201,7 @@ function SubscribePageContent() {
             >
               {plan.popular && (
                 <div className="absolute -top-4 left-1/2 transform -translate-x-1/2">
-                  <Badge className="px-4 py-1 gradient-primary text-white border-none">
+                  <Badge className="px-4 py-1 bg-gradient-primary-accent text-white border-none">
                     <Star className="w-4 h-4 mr-1" />
                     Most Popular
                   </Badge>
@@ -267,7 +267,7 @@ function SubscribePageContent() {
           <h2 className="text-3xl font-bold text-center mb-8">
             Feature Comparison
           </h2>
-          <Card className="glass-card">
+          <Card>
             <CardContent className="p-0">
               <div className="overflow-hidden">
                 <table className="w-full">
@@ -371,7 +371,7 @@ function SubscribePageContent() {
             Frequently Asked Questions
           </h2>
           <div className="max-w-3xl mx-auto space-y-6">
-            <Card className="glass-card">
+            <Card>
               <CardContent className="p-6">
                 <h3 className="text-lg font-semibold mb-2 text-card-foreground">
                   Can I change my plan later?
@@ -381,7 +381,7 @@ function SubscribePageContent() {
                 </p>
               </CardContent>
             </Card>
-            <Card className="glass-card">
+            <Card>
               <CardContent className="p-6">
                 <h3 className="text-lg font-semibold mb-2 text-card-foreground">
                   What happens if I cancel?
@@ -391,7 +391,7 @@ function SubscribePageContent() {
                 </p>
               </CardContent>
             </Card>
-            <Card className="glass-card">
+            <Card>
               <CardContent className="p-6">
                 <h3 className="text-lg font-semibold mb-2 text-card-foreground">
                   Do you offer refunds?

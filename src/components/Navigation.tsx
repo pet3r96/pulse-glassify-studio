@@ -60,10 +60,10 @@ export function Navigation() {
       <div className="max-w-[1400px] mx-auto flex justify-between items-center px-4 sm:px-6 lg:px-8 py-4">
         {/* Logo */}
         <Link href="/" className="flex items-center space-x-2 group">
-          <div className="w-8 h-8 rounded-lg flex items-center justify-center bg-gradient-to-r from-[hsl(var(--color-primary))] to-[hsl(var(--color-secondary))] group-hover:scale-110 transition-transform">
+          <div className="w-8 h-8 rounded-lg flex items-center justify-center bg-gradient-primary-accent group-hover:scale-110 transition-transform shadow-sm">
             <Palette className="h-5 w-5 text-white" />
           </div>
-          <span className="text-xl font-heading font-bold bg-gradient-to-r from-[hsl(var(--color-primary))] to-[hsl(var(--color-secondary))] bg-clip-text text-transparent">
+          <span className="text-xl font-heading font-bold bg-gradient-primary-accent bg-clip-text text-transparent">
             PulseStudio
           </span>
         </Link>
@@ -78,8 +78,8 @@ export function Navigation() {
                 href={item.href}
                 className={`flex items-center space-x-2 transition-colors border-b-2 pb-1 ${
                   isActive
-                    ? 'border-accent text-foreground font-semibold'
-                    : 'border-transparent text-muted-foreground hover:text-foreground'
+                    ? 'border-primary text-foreground font-semibold shadow-sm'
+                    : 'border-transparent text-muted-foreground hover:text-foreground hover:border-border'
                 }`}
               >
                 <item.icon className="h-4 w-4" />

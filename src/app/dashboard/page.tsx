@@ -120,17 +120,17 @@ export default function DashboardPage() {
   return (
     <div className="min-h-screen bg-background text-foreground">
       {/* Header */}
-      <div className="border-b border-border glass">
-        <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-4">
-          <div className="flex items-center justify-between">
+      <div className="border-b border-border bg-card/50 backdrop-blur-sm">
+        <div className="container mx-auto max-w-[1280px] px-4 sm:px-6 lg:px-8 py-6">
+          <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
             <div>
-              <h1 className="text-2xl font-heading gradient-text">Dashboard</h1>
-              <p className="text-muted-foreground">Welcome back, {user.name || 'User'}</p>
+              <h1 className="h1 text-2xl md:text-3xl bg-gradient-primary-accent bg-clip-text text-transparent">Dashboard</h1>
+              <p className="text-muted-foreground mt-1">Welcome back, {user.name || 'User'}</p>
             </div>
             <div className="flex items-center gap-4">
               {getSubscriptionBadge(stats.subscription_status)}
               {stats.trial_days_left && (
-                <Badge variant="outline" className="glass">
+                <Badge variant="outline" className="bg-card border-border">
                   {stats.trial_days_left} days left
                 </Badge>
               )}
@@ -139,22 +139,22 @@ export default function DashboardPage() {
         </div>
       </div>
 
-      <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <div className="container mx-auto max-w-[1280px] px-4 sm:px-6 lg:px-8 py-gutter-lg">
         {/* Quick Actions */}
-        <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+        <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-gutter mb-gutter-lg">
           <Link href="/theme-studio">
-            <Card className="glass-card hover:glass-hover transition-all duration-300 group cursor-pointer">
+            <Card className="group hover:-translate-y-1 transition-all cursor-pointer">
               <CardContent className="p-6">
                 <div className="flex items-center justify-between mb-4">
-                  <div className="w-12 h-12 bg-gradient-to-r from-[hsl(var(--color-primary))] to-[hsl(var(--color-secondary))] rounded-lg flex items-center justify-center group-hover:scale-110 transition-transform">
+                  <div className="w-12 h-12 bg-gradient-primary-accent rounded-lg flex items-center justify-center group-hover:scale-110 transition-transform shadow-sm">
                     <Palette className="h-6 w-6 text-white" />
                   </div>
                   <ArrowRight className="h-4 w-4 text-muted-foreground group-hover:text-foreground transition-colors" />
                 </div>
-                <h3 className="font-heading text-lg mb-2 group-hover:gradient-text transition-all text-card-foreground">
+                <h3 className="h3 text-lg mb-2 text-card-foreground">
                   Theme Studio
                 </h3>
-                <p className="text-sm text-muted-foreground">
+                <p className="text-sm text-muted-foreground leading-relaxed">
                   Create and customize themes
                 </p>
               </CardContent>
@@ -162,18 +162,18 @@ export default function DashboardPage() {
           </Link>
 
           <Link href="/marketplace">
-            <Card className="glass-card hover:glass-hover transition-all duration-300 group cursor-pointer">
+            <Card className="group hover:-translate-y-1 transition-all cursor-pointer">
               <CardContent className="p-6">
                 <div className="flex items-center justify-between mb-4">
-                  <div className="w-12 h-12 bg-gradient-to-r from-[hsl(var(--color-accent))] to-[hsl(var(--color-primary))] rounded-lg flex items-center justify-center group-hover:scale-110 transition-transform">
+                  <div className="w-12 h-12 bg-gradient-accent rounded-lg flex items-center justify-center group-hover:scale-110 transition-transform shadow-sm">
                     <Store className="h-6 w-6 text-white" />
                   </div>
                   <ArrowRight className="h-4 w-4 text-muted-foreground group-hover:text-foreground transition-colors" />
                 </div>
-                <h3 className="font-heading text-lg mb-2 group-hover:gradient-text transition-all text-card-foreground">
+                <h3 className="h3 text-lg mb-2 text-card-foreground">
                   Marketplace
                 </h3>
-                <p className="text-sm text-muted-foreground">
+                <p className="text-sm text-muted-foreground leading-relaxed">
                   Buy and sell themes
                 </p>
               </CardContent>
@@ -181,18 +181,18 @@ export default function DashboardPage() {
           </Link>
 
           <Link href="/task-manager">
-            <Card className="glass-card hover:glass-hover transition-all duration-300 group cursor-pointer">
+            <Card className="group hover:-translate-y-1 transition-all cursor-pointer">
               <CardContent className="p-6">
                 <div className="flex items-center justify-between mb-4">
-                  <div className="w-12 h-12 bg-gradient-to-r from-green-500 to-emerald-500 rounded-lg flex items-center justify-center group-hover:scale-110 transition-transform">
+                  <div className="w-12 h-12 bg-gradient-to-r from-success to-success/80 rounded-lg flex items-center justify-center group-hover:scale-110 transition-transform shadow-sm">
                     <Users className="h-6 w-6 text-white" />
                   </div>
                   <ArrowRight className="h-4 w-4 text-muted-foreground group-hover:text-foreground transition-colors" />
                 </div>
-                <h3 className="font-heading text-lg mb-2 group-hover:gradient-text transition-all text-card-foreground">
+                <h3 className="h3 text-lg mb-2 text-card-foreground">
                   Project Manager
                 </h3>
-                <p className="text-sm text-muted-foreground">
+                <p className="text-sm text-muted-foreground leading-relaxed">
                   Manage tasks and tickets
                 </p>
               </CardContent>
@@ -200,18 +200,18 @@ export default function DashboardPage() {
           </Link>
 
           <Link href="/settings">
-            <Card className="glass-card hover:glass-hover transition-all duration-300 group cursor-pointer">
+            <Card className="group hover:-translate-y-1 transition-all cursor-pointer">
               <CardContent className="p-6">
                 <div className="flex items-center justify-between mb-4">
-                  <div className="w-12 h-12 bg-gradient-to-r from-gray-500 to-slate-500 rounded-lg flex items-center justify-center group-hover:scale-110 transition-transform">
-                    <Settings className="h-6 w-6 text-white" />
+                  <div className="w-12 h-12 bg-gradient-to-r from-muted to-muted/80 rounded-lg flex items-center justify-center group-hover:scale-110 transition-transform shadow-sm">
+                    <Settings className="h-6 w-6 text-foreground" />
                   </div>
                   <ArrowRight className="h-4 w-4 text-muted-foreground group-hover:text-foreground transition-colors" />
                 </div>
-                <h3 className="font-heading text-lg mb-2 group-hover:gradient-text transition-all text-card-foreground">
+                <h3 className="h3 text-lg mb-2 text-card-foreground">
                   Settings
                 </h3>
-                <p className="text-sm text-muted-foreground">
+                <p className="text-sm text-muted-foreground leading-relaxed">
                   Account and preferences
                 </p>
               </CardContent>
@@ -220,61 +220,61 @@ export default function DashboardPage() {
         </div>
 
         {/* Stats Overview */}
-        <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-          <Card className="glass-card">
+        <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-gutter mb-gutter-lg">
+          <Card>
             <CardContent className="p-6">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm text-muted-foreground">Themes Created</p>
-                  <p className="text-2xl font-bold gradient-text">{stats.themes_created}</p>
+                  <p className="text-sm text-muted-foreground metadata mb-1">Themes Created</p>
+                  <p className="text-2xl font-bold bg-gradient-primary-accent bg-clip-text text-transparent">{stats.themes_created}</p>
                 </div>
-                <Palette className="h-8 w-8 text-[hsl(var(--color-primary))]/50" />
+                <Palette className="h-8 w-8 text-primary/50" />
               </div>
             </CardContent>
           </Card>
 
-          <Card className="glass-card">
+          <Card>
             <CardContent className="p-6">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm text-muted-foreground">Active Themes</p>
-                  <p className="text-2xl font-bold gradient-text">{stats.themes_active}</p>
+                  <p className="text-sm text-muted-foreground metadata mb-1">Active Themes</p>
+                  <p className="text-2xl font-bold bg-gradient-primary-accent bg-clip-text text-transparent">{stats.themes_active}</p>
                 </div>
-                <Zap className="h-8 w-8 text-[hsl(var(--color-secondary))]/50" />
+                <Zap className="h-8 w-8 text-accent/50" />
               </div>
             </CardContent>
           </Card>
 
-          <Card className="glass-card">
+          <Card>
             <CardContent className="p-6">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm text-muted-foreground">Marketplace Listings</p>
-                  <p className="text-2xl font-bold gradient-text">{stats.marketplace_listings}</p>
+                  <p className="text-sm text-muted-foreground metadata mb-1">Marketplace Listings</p>
+                  <p className="text-2xl font-bold bg-gradient-primary-accent bg-clip-text text-transparent">{stats.marketplace_listings}</p>
                 </div>
-                <Store className="h-8 w-8 text-[hsl(var(--color-accent))]/50" />
+                <Store className="h-8 w-8 text-accent/50" />
               </div>
             </CardContent>
           </Card>
 
-          <Card className="glass-card">
+          <Card>
             <CardContent className="p-6">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm text-muted-foreground">Total Downloads</p>
-                  <p className="text-2xl font-bold gradient-text">{stats.total_downloads}</p>
+                  <p className="text-sm text-muted-foreground metadata mb-1">Total Downloads</p>
+                  <p className="text-2xl font-bold bg-gradient-primary-accent bg-clip-text text-transparent">{stats.total_downloads}</p>
                 </div>
-                <Download className="h-8 w-8 text-green-500/50 dark:text-green-400/50" />
+                <Download className="h-8 w-8 text-success/50" />
               </div>
             </CardContent>
           </Card>
         </div>
 
         {/* Recent Activity */}
-        <div className="grid lg:grid-cols-2 gap-6 mb-8">
-          <Card className="glass-card">
+        <div className="grid lg:grid-cols-2 gap-gutter mb-gutter-lg">
+          <Card>
             <CardHeader>
-              <CardTitle className="flex items-center gap-2 text-card-foreground">
+              <CardTitle className="h3 flex items-center gap-2">
                 <TrendingUp className="h-5 w-5" />
                 Recent Themes
               </CardTitle>
@@ -282,9 +282,9 @@ export default function DashboardPage() {
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
-                <div className="flex items-center justify-between p-3 glass rounded-lg">
+                <div className="flex items-center justify-between p-4 bg-muted/30 rounded-lg border border-border">
                   <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 bg-gradient-to-r from-[hsl(var(--color-primary))] to-[hsl(var(--color-secondary))] rounded-lg flex items-center justify-center">
+                    <div className="w-10 h-10 bg-gradient-primary-accent rounded-lg flex items-center justify-center shadow-sm">
                       <Palette className="h-5 w-5 text-white" />
                     </div>
                     <div>
@@ -293,7 +293,7 @@ export default function DashboardPage() {
                     </div>
                   </div>
                   <div className="flex items-center gap-2">
-                    <Badge variant="outline" className="glass">Active</Badge>
+                    <Badge variant="outline" className="bg-card">Active</Badge>
                     <Link href="/theme-studio">
                       <Button size="sm" variant="ghost">
                         <Eye className="h-4 w-4" />
@@ -302,9 +302,9 @@ export default function DashboardPage() {
                   </div>
                 </div>
 
-                <div className="flex items-center justify-between p-3 glass rounded-lg">
+                <div className="flex items-center justify-between p-4 bg-muted/30 rounded-lg border border-border">
                   <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 bg-gradient-to-r from-[hsl(var(--color-accent))] to-[hsl(var(--color-primary))] rounded-lg flex items-center justify-center">
+                    <div className="w-10 h-10 bg-gradient-accent rounded-lg flex items-center justify-center shadow-sm">
                       <Store className="h-5 w-5 text-white" />
                     </div>
                     <div>
@@ -313,7 +313,7 @@ export default function DashboardPage() {
                     </div>
                   </div>
                   <div className="flex items-center gap-2">
-                    <Badge variant="outline" className="glass">Marketplace</Badge>
+                    <Badge variant="outline" className="bg-card">Marketplace</Badge>
                     <Link href="/marketplace">
                       <Button size="sm" variant="ghost">
                         <Eye className="h-4 w-4" />
@@ -325,9 +325,9 @@ export default function DashboardPage() {
             </CardContent>
           </Card>
 
-          <Card className="glass-card">
+          <Card>
             <CardHeader>
-              <CardTitle className="flex items-center gap-2 text-card-foreground">
+              <CardTitle className="h3 flex items-center gap-2">
                 <MessageSquare className="h-5 w-5" />
                 Quick Actions
               </CardTitle>
@@ -336,25 +336,25 @@ export default function DashboardPage() {
             <CardContent>
               <div className="space-y-3">
                 <Link href="/theme-studio">
-                  <Button className="w-full justify-start glass hover:glass-hover" variant="outline">
+                  <Button className="w-full justify-start hover:bg-muted/50" variant="outline">
                     <Plus className="h-4 w-4 mr-2" />
                     Create New Theme
                   </Button>
                 </Link>
                 <Link href="/marketplace">
-                  <Button className="w-full justify-start glass hover:glass-hover" variant="outline">
+                  <Button className="w-full justify-start hover:bg-muted/50" variant="outline">
                     <Store className="h-4 w-4 mr-2" />
                     Browse Marketplace
                   </Button>
                 </Link>
                 <Link href="/theme-studio">
-                  <Button className="w-full justify-start glass hover:glass-hover" variant="outline">
+                  <Button className="w-full justify-start hover:bg-muted/50" variant="outline">
                     <Calendar className="h-4 w-4 mr-2" />
                     Schedule Deployment
                   </Button>
                 </Link>
                 <Link href="/marketplace">
-                  <Button className="w-full justify-start glass hover:glass-hover" variant="outline">
+                  <Button className="w-full justify-start hover:bg-muted/50" variant="outline">
                     <Star className="h-4 w-4 mr-2" />
                     Rate Themes
                   </Button>
@@ -365,9 +365,9 @@ export default function DashboardPage() {
         </div>
 
         {/* Subscription Status */}
-        <Card className="glass-card mb-8">
+        <Card className="mb-gutter-lg">
           <CardHeader>
-            <CardTitle className="text-card-foreground">Subscription Status</CardTitle>
+            <CardTitle className="h3">Subscription Status</CardTitle>
           </CardHeader>
           <CardContent>
             <Link href="/account/billing">

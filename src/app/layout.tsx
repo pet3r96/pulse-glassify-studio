@@ -1,12 +1,23 @@
 import type { Metadata } from 'next'
-import { Inter, Outfit } from 'next/font/google'
+import { Inter, Playfair_Display, Plus_Jakarta_Sans } from 'next/font/google'
 import { ThemeProvider } from 'next-themes'
 import { Navigation } from '@/components/Navigation'
 import { LayoutWrapper } from '@/components/LayoutWrapper'
 import "./globals.css";
 
-const inter = Inter({ subsets: ['latin'], variable: '--pg-font-body' })
-const outfit = Outfit({ subsets: ['latin'], variable: '--pg-font-heading' })
+const inter = Inter({ subsets: ['latin'], variable: '--font-body', display: 'swap' })
+const playfair = Playfair_Display({ 
+  subsets: ['latin'], 
+  variable: '--font-serif',
+  weight: ['700'],
+  display: 'swap'
+})
+const plusJakarta = Plus_Jakarta_Sans({ 
+  subsets: ['latin'], 
+  variable: '--font-heading',
+  weight: ['400', '500', '600', '700'],
+  display: 'swap'
+})
 
 export const metadata: Metadata = {
   title: 'PulseStudio - Custom GoHighLevel Dashboard Themes',
@@ -20,8 +31,8 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <body className={`${inter.variable} ${outfit.variable}`}>
-        <ThemeProvider attribute="class" defaultTheme="dark" enableSystem>
+      <body className={`${inter.variable} ${playfair.variable} ${plusJakarta.variable} font-body`}>
+        <ThemeProvider attribute="class" defaultTheme="light" enableSystem>
           <Navigation />
           <LayoutWrapper>
             {children}

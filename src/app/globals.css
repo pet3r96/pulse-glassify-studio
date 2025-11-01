@@ -10,9 +10,43 @@
     @apply border-border;
   }
   
+  /* Typography Hierarchy */
+  h1, .h1 {
+    font-family: var(--font-serif), Georgia, serif;
+    font-weight: 700;
+    line-height: 1.2;
+    letter-spacing: -0.02em;
+  }
+  
+  h2, .h2,
+  h3, .h3,
+  h4, .h4 {
+    font-family: var(--font-heading), -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    font-weight: 600;
+    line-height: 1.3;
+    letter-spacing: -0.01em;
+  }
+  
   body {
     @apply bg-background text-foreground antialiased transition-colors duration-300;
+    font-family: var(--font-body), -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    line-height: var(--line-height-body);
     font-feature-settings: "rlig" 1, "calt" 1;
+  }
+  
+  /* Metadata / Technical Text */
+  code, pre, .mono,
+  .metadata, .text-mono {
+    font-family: 'SF Mono', 'Monaco', 'Inconsolata', 'Roboto Mono', monospace;
+    font-size: 0.875em;
+    letter-spacing: 0.01em;
+  }
+  
+  .metadata {
+    text-transform: uppercase;
+    font-size: 0.75rem;
+    letter-spacing: 0.1em;
+    font-weight: 500;
   }
 }
 
@@ -48,22 +82,24 @@
     box-shadow: var(--shadow-glow);
   }
 
-  /* Aceternity-style card glass utility - theme-aware */
+  /* Card glass utility - Clean white with soft shadows */
   .card-glass {
-    @apply rounded-xl p-6 border backdrop-blur-[var(--blur-strength)] transition-all duration-300;
+    @apply rounded-xl border transition-all duration-300;
     background: var(--glass-card-bg);
     border-color: var(--glass-card-border);
-    box-shadow: var(--shadow-glow);
+    box-shadow: var(--shadow-card);
+    padding: var(--space-6);
   }
 
   .card-glass:hover {
-    box-shadow: var(--shadow-glow);
+    box-shadow: var(--shadow-lg);
     transform: translateY(-2px);
+    border-color: hsl(var(--primary) / 0.2);
   }
 
   /* Gradient text effects - theme-aware */
   .gradient-text {
-    background: var(--gradient-primary);
+    background: var(--gradient-primary-accent);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;

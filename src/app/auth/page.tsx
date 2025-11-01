@@ -191,24 +191,24 @@ function AuthForm() {
     <div className="min-h-screen flex items-center justify-center p-6 bg-background text-foreground">
       <div className="absolute top-6 left-6">
         <Link href="/" className="flex items-center gap-2 group">
-          <div className="w-10 h-10 bg-gradient-to-r from-[hsl(var(--color-primary))] to-[hsl(var(--color-secondary))] rounded-lg flex items-center justify-center group-hover:scale-110 transition-transform">
+          <div className="w-10 h-10 bg-gradient-primary-accent rounded-lg flex items-center justify-center group-hover:scale-110 transition-transform shadow-sm">
             <span className="text-white font-bold text-lg">P</span>
           </div>
           <div>
-            <h1 className="font-heading text-xl gradient-text">PulseGen Studio</h1>
-            <p className="text-[10px] text-muted-foreground">GHL Operating System</p>
+            <h1 className="h1 text-xl bg-gradient-primary-accent bg-clip-text text-transparent">PulseGen Studio</h1>
+            <p className="text-[10px] text-muted-foreground metadata">GHL Operating System</p>
           </div>
         </Link>
       </div>
 
-      <Card className="w-full max-w-md glass-card">
+      <Card className="w-full max-w-md">
         <CardHeader className="text-center">
-          <CardTitle className="font-heading text-2xl gradient-text">Welcome</CardTitle>
+          <CardTitle className="h1 text-2xl bg-gradient-primary-accent bg-clip-text text-transparent">Welcome</CardTitle>
           <CardDescription>Sign in to your account or create a new one</CardDescription>
         </CardHeader>
         <CardContent>
           <Tabs defaultValue="signin" className="w-full">
-            <TabsList className="grid w-full grid-cols-2 glass">
+            <TabsList className="grid w-full grid-cols-2">
               <TabsTrigger value="signin">Sign In</TabsTrigger>
               <TabsTrigger value="signup">Sign Up</TabsTrigger>
             </TabsList>
@@ -325,7 +325,7 @@ function AuthForm() {
                       value={signupData.role} 
                       onValueChange={(value: UserRole) => setSignupData(prev => ({ ...prev, role: value }))}
                     >
-                      <SelectTrigger className="pl-10 glass">
+                      <SelectTrigger className="pl-10">
                         <SelectValue placeholder="Select account type" />
                       </SelectTrigger>
                       <SelectContent>
@@ -425,12 +425,12 @@ export default function AuthPage() {
   return (
     <Suspense fallback={
       <div className="min-h-screen flex items-center justify-center bg-background">
-        <div className="glass-card p-8 text-center">
+        <Card className="p-8 text-center">
           <div className="animate-pulse mb-4">
-            <div className="w-12 h-12 bg-gradient-to-r from-[hsl(var(--color-primary))] to-[hsl(var(--color-secondary))] rounded-full mx-auto"></div>
+            <div className="w-12 h-12 bg-gradient-primary-accent rounded-full mx-auto"></div>
           </div>
-          <h2 className="text-xl font-heading gradient-text">Loading...</h2>
-        </div>
+          <h2 className="h2 text-xl bg-gradient-primary-accent bg-clip-text text-transparent">Loading...</h2>
+        </Card>
       </div>
     }>
       <AuthForm />

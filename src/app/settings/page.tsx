@@ -31,10 +31,10 @@ export default function Settings() {
   }
   return (
     <div className="min-h-screen bg-background text-foreground">
-      <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold gradient-text mb-2">Settings</h1>
-          <p className="text-muted-foreground">Manage your account and preferences</p>
+      <div className="container mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-gutter-lg">
+        <div className="mb-gutter-lg">
+          <h1 className="h1 text-3xl bg-gradient-primary-accent bg-clip-text text-transparent mb-2">Settings</h1>
+          <p className="text-muted-foreground leading-relaxed">Manage your account and preferences</p>
         </div>
 
         <div className="max-w-4xl">
@@ -46,10 +46,10 @@ export default function Settings() {
               <TabsTrigger value="themes">Themes</TabsTrigger>
             </TabsList>
             
-            <TabsContent value="profile" className="space-y-6 mt-6">
-              <Card className="glass-card">
+            <TabsContent value="profile" className="space-y-gutter mt-6">
+              <Card>
                 <CardHeader>
-                  <CardTitle className="flex items-center text-card-foreground">
+                  <CardTitle className="h3 flex items-center">
                     <User className="mr-2 h-5 w-5" />
                     Profile Information
                   </CardTitle>
@@ -80,9 +80,9 @@ export default function Settings() {
                 </CardContent>
               </Card>
 
-              <Card className="glass-card">
+              <Card>
                 <CardHeader>
-                  <CardTitle className="flex items-center text-card-foreground">
+                  <CardTitle className="h3 flex items-center">
                     <Shield className="mr-2 h-5 w-5" />
                     Billing
                   </CardTitle>
@@ -99,10 +99,10 @@ export default function Settings() {
               </Card>
             </TabsContent>
             
-            <TabsContent value="security" className="space-y-6 mt-6">
-              <Card className="glass-card">
+            <TabsContent value="security" className="space-y-gutter mt-6">
+              <Card>
                 <CardHeader>
-                  <CardTitle className="flex items-center text-card-foreground">
+                  <CardTitle className="h3 flex items-center">
                     <Shield className="mr-2 h-5 w-5" />
                     Security Settings
                   </CardTitle>
@@ -128,10 +128,10 @@ export default function Settings() {
               </Card>
             </TabsContent>
             
-            <TabsContent value="notifications" className="space-y-6 mt-6">
-              <Card className="glass-card">
+            <TabsContent value="notifications" className="space-y-gutter mt-6">
+              <Card>
                 <CardHeader>
-                  <CardTitle className="flex items-center text-card-foreground">
+                  <CardTitle className="h3 flex items-center">
                     <Bell className="mr-2 h-5 w-5" />
                     Notification Preferences
                   </CardTitle>
@@ -167,10 +167,10 @@ export default function Settings() {
               </Card>
             </TabsContent>
             
-            <TabsContent value="themes" className="space-y-6 mt-6">
-              <Card className="glass-card">
+            <TabsContent value="themes" className="space-y-gutter mt-6">
+              <Card>
                 <CardHeader>
-                  <CardTitle className="flex items-center text-card-foreground">
+                  <CardTitle className="h3 flex items-center">
                     <Palette className="mr-2 h-5 w-5" />
                     Theme Preferences
                   </CardTitle>

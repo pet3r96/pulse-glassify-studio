@@ -438,11 +438,11 @@ export default function SupportPage() {
     <>
     <div className="min-h-screen bg-background text-foreground">
       {/* Header */}
-      <div className="glass border-b border-border">
-        <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-4">
+      <div className="border-b border-border bg-card/50 backdrop-blur-sm">
+        <div className="container mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-6">
           <div className="flex items-center justify-between">
             <div>
-              <h1 className="text-3xl font-heading gradient-text">Support Center</h1>
+              <h1 className="h1 text-3xl bg-gradient-primary-accent bg-clip-text text-transparent">Support Center</h1>
               <p className="text-muted-foreground">Manage support tickets and customer inquiries</p>
             </div>
             <div className="flex items-center gap-4">
@@ -458,7 +458,7 @@ export default function SupportPage() {
                     New Ticket
                   </Button>
                 </DialogTrigger>
-                <DialogContent className="glass-card max-w-2xl">
+                <DialogContent className="max-w-2xl">
                   <DialogHeader>
                     <DialogTitle>Create Support Ticket</DialogTitle>
                     <DialogDescription>
@@ -547,58 +547,58 @@ export default function SupportPage() {
         </div>
       </div>
 
-      <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <div className="container mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-gutter-lg">
         {/* Stats Overview */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-          <Card className="glass-card">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-gutter mb-gutter-lg">
+          <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Total Tickets</CardTitle>
-              <Ticket className="h-4 w-4 text-blue-400" />
+              <CardTitle className="text-sm font-medium metadata">Total Tickets</CardTitle>
+              <Ticket className="h-4 w-4 text-primary/50" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold gradient-text">{stats.total_tickets}</div>
-              <p className="text-xs text-muted-foreground">
+              <div className="text-2xl font-bold bg-gradient-primary-accent bg-clip-text text-transparent">{stats.total_tickets}</div>
+              <p className="text-xs text-muted-foreground mt-1">
                 All time
               </p>
             </CardContent>
           </Card>
 
-          <Card className="glass-card">
+          <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Open Tickets</CardTitle>
-              <AlertCircle className="h-4 w-4 text-red-400" />
+              <CardTitle className="text-sm font-medium metadata">Open Tickets</CardTitle>
+              <AlertCircle className="h-4 w-4 text-destructive/50" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold gradient-text">{stats.open_tickets}</div>
-              <p className="text-xs text-muted-foreground">
+              <div className="text-2xl font-bold bg-gradient-primary-accent bg-clip-text text-transparent">{stats.open_tickets}</div>
+              <p className="text-xs text-muted-foreground mt-1">
                 Need attention
               </p>
             </CardContent>
           </Card>
 
-          <Card className="glass-card">
+          <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Urgent</CardTitle>
-              <Flag className="h-4 w-4 text-orange-400" />
+              <CardTitle className="text-sm font-medium metadata">Urgent</CardTitle>
+              <Flag className="h-4 w-4 text-warning/50" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold gradient-text">{stats.urgent_tickets}</div>
-              <p className="text-xs text-muted-foreground">
+              <div className="text-2xl font-bold bg-gradient-primary-accent bg-clip-text text-transparent">{stats.urgent_tickets}</div>
+              <p className="text-xs text-muted-foreground mt-1">
                 High priority
               </p>
             </CardContent>
           </Card>
 
-          <Card className="glass-card">
+          <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Satisfaction</CardTitle>
-              <Star className="h-4 w-4 text-yellow-400" />
+              <CardTitle className="text-sm font-medium metadata">Satisfaction</CardTitle>
+              <Star className="h-4 w-4 text-warning/50" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold gradient-text">
+              <div className="text-2xl font-bold bg-gradient-primary-accent bg-clip-text text-transparent">
                 {stats.satisfaction_score.toFixed(1)}/5
               </div>
-              <p className="text-xs text-muted-foreground">
+              <p className="text-xs text-muted-foreground mt-1">
                 Average rating
               </p>
             </CardContent>
@@ -606,11 +606,11 @@ export default function SupportPage() {
         </div>
 
         {/* Upgrade Banner */}
-        <Card className="glass-card mb-6 border-gradient bg-gradient-to-r from-[hsl(var(--color-primary))]/10 to-[hsl(var(--color-secondary))]/10">
+        <Card className="mb-gutter-lg bg-gradient-primary-accent/5 border-primary/20">
           <CardContent className="p-6">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-4">
-                <div className="p-3 bg-gradient-to-r from-[hsl(var(--color-primary))] to-[hsl(var(--color-secondary))] rounded-full">
+                <div className="p-3 bg-gradient-primary-accent rounded-full shadow-sm">
                   <Crown className="h-6 w-6 text-white" />
                 </div>
                 <div>
@@ -638,7 +638,7 @@ export default function SupportPage() {
         <div className="grid lg:grid-cols-4 gap-8">
           {/* Sidebar Filters */}
           <div className="lg:col-span-1">
-            <Card className="glass-card">
+            <Card>
               <CardHeader>
                 <CardTitle>Filters</CardTitle>
               </CardHeader>
@@ -721,7 +721,7 @@ export default function SupportPage() {
 
               <TabsContent value="all" className="space-y-4">
                 {filteredTickets.map((ticket) => (
-                  <Card key={ticket.id} className="glass-card hover:glass-hover transition-all duration-300">
+                  <Card key={ticket.id} className="hover:-translate-y-1 transition-all">
                     <CardContent className="p-6">
                       <div className="flex items-start justify-between">
                         <div className="flex-1">
@@ -809,7 +809,7 @@ export default function SupportPage() {
 
               <TabsContent value="open" className="space-y-4">
                 {filteredTickets.filter(ticket => ticket.status === 'open').map((ticket) => (
-                  <Card key={ticket.id} className="glass-card hover:glass-hover transition-all duration-300">
+                  <Card key={ticket.id} className="hover:-translate-y-1 transition-all">
                     <CardContent className="p-6">
                       <div className="flex items-start justify-between">
                         <div className="flex-1">
@@ -851,7 +851,7 @@ export default function SupportPage() {
 
               <TabsContent value="in_progress" className="space-y-4">
                 {filteredTickets.filter(ticket => ticket.status === 'in_progress').map((ticket) => (
-                  <Card key={ticket.id} className="glass-card hover:glass-hover transition-all duration-300">
+                  <Card key={ticket.id} className="hover:-translate-y-1 transition-all">
                     <CardContent className="p-6">
                       <div className="flex items-start justify-between">
                         <div className="flex-1">
@@ -893,7 +893,7 @@ export default function SupportPage() {
 
               <TabsContent value="closed" className="space-y-4">
                 {filteredTickets.filter(ticket => ticket.status === 'closed').map((ticket) => (
-                  <Card key={ticket.id} className="glass-card hover:glass-hover transition-all duration-300">
+                  <Card key={ticket.id} className="hover:-translate-y-1 transition-all">
                     <CardContent className="p-6">
                       <div className="flex items-start justify-between">
                         <div className="flex-1">

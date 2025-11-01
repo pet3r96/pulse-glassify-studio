@@ -10,8 +10,11 @@ module.exports = {
   theme: {
     extend: {
       fontFamily: {
-        heading: ['Poppins', 'sans-serif'],
-        body: ['Inter', 'sans-serif'],
+        serif: ['Playfair Display', 'Satoshi', 'Georgia', 'serif'],
+        sans: ['Inter', 'Plus Jakarta Sans', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'sans-serif'],
+        heading: ['Inter', 'Plus Jakarta Sans', '-apple-system', 'BlinkMacSystemFont', 'sans-serif'],
+        body: ['Inter', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'sans-serif'],
+        mono: ['SF Mono', 'Monaco', 'Inconsolata', 'Roboto Mono', 'monospace'],
       },
       colors: {
         border: "hsl(var(--border))",
@@ -19,9 +22,6 @@ module.exports = {
         ring: "hsl(var(--ring))",
         background: "hsl(var(--background))",
         foreground: "hsl(var(--foreground))",
-        pulsePink: "hsl(var(--pulse-pink))",
-        pulsePurple: "hsl(var(--pulse-purple))",
-        pulseBlue: "hsl(var(--pulse-blue))",
         primary: {
           DEFAULT: "hsl(var(--primary))",
           foreground: "hsl(var(--primary-foreground))",
@@ -33,6 +33,14 @@ module.exports = {
         destructive: {
           DEFAULT: "hsl(var(--destructive))",
           foreground: "hsl(var(--destructive-foreground))",
+        },
+        success: {
+          DEFAULT: "hsl(var(--success))",
+          foreground: "hsl(var(--success-foreground))",
+        },
+        warning: {
+          DEFAULT: "hsl(var(--warning))",
+          foreground: "hsl(var(--warning-foreground))",
         },
         muted: {
           DEFAULT: "hsl(var(--muted))",
@@ -54,15 +62,24 @@ module.exports = {
       backdropBlur: {
         glass: '24px',
       },
+      spacing: {
+        // 8pt system
+        'gutter': 'var(--space-12)',      // 24px
+        'gutter-lg': 'var(--space-16)',    // 32px
+      },
       backgroundImage: {
-        'pulsegen-glow': 'linear-gradient(135deg, hsl(var(--color-primary)) 0%, hsl(var(--color-accent)) 100%)',
-        'pulsegen-card': 'linear-gradient(180deg, rgba(17,19,23,0.8) 0%, rgba(12,14,18,0.95) 100%)',
+        'gradient-primary': 'var(--gradient-primary)',
+        'gradient-accent': 'var(--gradient-accent)',
+        'gradient-primary-accent': 'var(--gradient-primary-accent)',
       },
       boxShadow: {
-        glow: '0 0 25px rgba(0, 194, 255, 0.25)',
-        'glow-pink': '0 0 30px rgba(255, 75, 203, 0.4)',
-        'glow-purple': '0 0 30px rgba(160, 102, 255, 0.4)',
-        'glow-blue': '0 0 30px rgba(0, 160, 255, 0.4)',
+        glow: 'var(--shadow-glow)',
+        card: 'var(--shadow-card)',
+        sm: 'var(--shadow-sm)',
+        DEFAULT: 'var(--shadow)',
+        md: 'var(--shadow-md)',
+        lg: 'var(--shadow-lg)',
+        xl: 'var(--shadow-xl)',
       },
       borderRadius: {
         xl: '1rem',

@@ -295,12 +295,12 @@ export default function MarketplacePage() {
   };
 
   const renderThemeCard = (theme: MarketplaceTheme) => (
-    <Card key={theme.id} className="glass-card hover:glass-hover transition-all duration-300 group">
+    <Card key={theme.id} className="group hover:-translate-y-1 transition-all cursor-pointer">
       <div className="relative">
         <div className="aspect-video bg-gradient-to-br from-muted to-muted/50 rounded-t-lg overflow-hidden">
           <div className="w-full h-full flex items-center justify-center">
             <div className="text-center">
-              <div className="w-16 h-16 bg-gradient-to-r from-[hsl(var(--color-primary))] to-[hsl(var(--color-secondary))] rounded-lg mx-auto mb-2 flex items-center justify-center">
+              <div className="w-16 h-16 bg-gradient-primary-accent rounded-lg mx-auto mb-2 flex items-center justify-center shadow-sm">
                 <Store className="h-8 w-8 text-white" />
               </div>
               <p className="text-muted-foreground text-sm">{theme.name}</p>
@@ -310,26 +310,26 @@ export default function MarketplacePage() {
         
         {/* Price Badge */}
         <div className="absolute top-3 right-3">
-          <Badge className="bg-green-500/20 text-green-400 border-green-500/30">
+          <Badge className="bg-success/20 text-success border-success/30">
             ${theme.price}
           </Badge>
         </div>
 
         {/* Category Badge */}
         <div className="absolute top-3 left-3">
-          <Badge variant="outline" className="glass">
+          <Badge variant="outline" className="bg-card/80 backdrop-blur-sm">
             {theme.category}
           </Badge>
         </div>
       </div>
 
-      <CardContent className="p-4">
+      <CardContent className="p-6">
         <div className="space-y-3">
           <div>
-            <h3 className="font-semibold text-card-foreground group-hover:gradient-text transition-all">
+            <h3 className="h3 font-semibold text-card-foreground mb-2">
               {theme.name}
             </h3>
-            <p className="text-sm text-muted-foreground line-clamp-2">
+            <p className="text-sm text-muted-foreground line-clamp-2 leading-relaxed">
               {theme.description}
             </p>
           </div>
@@ -346,7 +346,7 @@ export default function MarketplacePage() {
           </div>
 
           <div className="flex items-center gap-2 text-sm text-muted-foreground">
-            <div className="w-6 h-6 bg-gradient-to-r from-[hsl(var(--color-primary))] to-[hsl(var(--color-secondary))] rounded-full flex items-center justify-center">
+            <div className="w-6 h-6 bg-gradient-primary-accent rounded-full flex items-center justify-center shadow-sm">
               <span className="text-xs text-white font-medium">
                 {theme.author.name.charAt(0)}
               </span>
@@ -354,14 +354,14 @@ export default function MarketplacePage() {
             <span>{theme.author.name}</span>
           </div>
 
-          <div className="flex flex-wrap gap-1">
+          <div className="flex flex-wrap gap-2">
             {theme.tags.slice(0, 3).map((tag) => (
-              <Badge key={tag} variant="outline" className="text-xs glass">
+              <Badge key={tag} variant="outline" className="text-xs bg-muted/50">
                 {tag}
               </Badge>
             ))}
             {theme.tags.length > 3 && (
-              <Badge variant="outline" className="text-xs glass">
+              <Badge variant="outline" className="text-xs bg-muted/50">
                 +{theme.tags.length - 3}
               </Badge>
             )}
@@ -441,9 +441,9 @@ export default function MarketplacePage() {
     <>
     <div className="min-h-screen bg-background text-foreground">
       {/* Header */}
-      <div className="glass border-b border-border">
-        <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-4">
-          <div className="flex items-center justify-between">
+      <div className="border-b border-border bg-card/50 backdrop-blur-sm">
+        <div className="container mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-6">
+          <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
             <div className="flex items-center gap-4">
               <Link href="/dashboard">
                 <Button variant="ghost" size="sm" className="text-muted-foreground hover:text-foreground">
@@ -452,12 +452,12 @@ export default function MarketplacePage() {
                 </Button>
               </Link>
               <div>
-                <h1 className="text-2xl font-heading gradient-text">Theme Marketplace</h1>
-                <p className="text-muted-foreground">Discover and purchase premium GoHighLevel themes</p>
+                <h1 className="h1 text-2xl md:text-3xl bg-gradient-primary-accent bg-clip-text text-transparent">Theme Marketplace</h1>
+                <p className="text-muted-foreground mt-1">Discover and purchase premium GoHighLevel themes</p>
               </div>
             </div>
             <div className="flex items-center gap-2">
-              <Badge variant="outline" className="glass">
+              <Badge variant="outline" className="bg-card border-border">
                 <TrendingUp className="h-3 w-3 mr-1" />
                 {themes.length} Themes
               </Badge>
@@ -466,9 +466,9 @@ export default function MarketplacePage() {
         </div>
       </div>
 
-      <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <div className="container mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-gutter-lg">
         {banner && (
-          <div className="glass rounded-xl p-4 mb-6 border border-border">
+          <div className="rounded-xl p-6 mb-gutter bg-card border border-border shadow-sm">
             <div className="flex items-center justify-between">
               <div className="text-foreground">{banner}</div>
               <Link href="/subscribe?locked=true">
@@ -480,82 +480,82 @@ export default function MarketplacePage() {
           </div>
         )}
         {/* Stats Overview */}
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
-          <Card className="glass-card">
-            <CardContent className="p-4">
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-gutter mb-gutter-lg">
+          <Card>
+            <CardContent className="p-6">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm text-muted-foreground">Total Themes</p>
-                  <p className="text-2xl font-bold gradient-text">{themes.length}</p>
+                  <p className="text-sm text-muted-foreground metadata mb-1">Total Themes</p>
+                  <p className="text-2xl font-bold bg-gradient-primary-accent bg-clip-text text-transparent">{themes.length}</p>
                 </div>
-                <Store className="h-8 w-8 text-[hsl(var(--color-primary))]/50" />
+                <Store className="h-8 w-8 text-primary/50" />
               </div>
             </CardContent>
           </Card>
 
-          <Card className="glass-card">
-            <CardContent className="p-4">
+          <Card>
+            <CardContent className="p-6">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm text-muted-foreground">Total Downloads</p>
-                  <p className="text-2xl font-bold gradient-text">
+                  <p className="text-sm text-muted-foreground metadata mb-1">Total Downloads</p>
+                  <p className="text-2xl font-bold bg-gradient-primary-accent bg-clip-text text-transparent">
                     {themes.reduce((sum, theme) => sum + theme.downloads, 0).toLocaleString()}
                   </p>
                 </div>
-                <Download className="h-8 w-8 text-green-500/50 dark:text-green-400/50" />
+                <Download className="h-8 w-8 text-success/50" />
               </div>
             </CardContent>
           </Card>
 
-          <Card className="glass-card">
-            <CardContent className="p-4">
+          <Card>
+            <CardContent className="p-6">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm text-muted-foreground">Avg Rating</p>
-                  <p className="text-2xl font-bold gradient-text">
+                  <p className="text-sm text-muted-foreground metadata mb-1">Avg Rating</p>
+                  <p className="text-2xl font-bold bg-gradient-primary-accent bg-clip-text text-transparent">
                     {(themes.reduce((sum, theme) => sum + theme.rating, 0) / themes.length).toFixed(1)}
                   </p>
                 </div>
-                <Star className="h-8 w-8 text-yellow-500/50 dark:text-yellow-400/50" />
+                <Star className="h-8 w-8 text-warning/50" />
               </div>
             </CardContent>
           </Card>
 
-          <Card className="glass-card">
-            <CardContent className="p-4">
+          <Card>
+            <CardContent className="p-6">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm text-muted-foreground">Creators</p>
-                  <p className="text-2xl font-bold gradient-text">
+                  <p className="text-sm text-muted-foreground metadata mb-1">Creators</p>
+                  <p className="text-2xl font-bold bg-gradient-primary-accent bg-clip-text text-transparent">
                     {new Set(themes.map(theme => theme.author.name)).size}
                   </p>
                 </div>
-                <Users className="h-8 w-8 text-[hsl(var(--color-secondary))]/50" />
+                <Users className="h-8 w-8 text-accent/50" />
               </div>
             </CardContent>
           </Card>
         </div>
 
         {/* Upgrade Banner */}
-        <Card className="glass-card mb-6 border-gradient bg-gradient-to-r from-blue-500/10 to-purple-500/10">
+        <Card className="mb-gutter-lg bg-gradient-primary-accent/5 border-primary/20">
           <CardContent className="p-6">
-            <div className="flex items-center justify-between">
+            <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
               <div className="flex items-center gap-4">
-                <div className="p-3 bg-gradient-to-r from-blue-500 to-purple-500 rounded-full">
+                <div className="p-3 bg-gradient-primary-accent rounded-full shadow-sm">
                   <Crown className="h-6 w-6 text-white" />
                 </div>
                 <div>
-                  <h3 className="text-lg font-semibold text-card-foreground mb-1">
+                  <h3 className="h3 text-lg mb-1">
                     Unlock Marketplace Selling
                   </h3>
-                  <p className="text-muted-foreground text-sm">
+                  <p className="text-muted-foreground text-sm leading-relaxed">
                     Upgrade to Agency Pro to sell your themes and earn revenue
                   </p>
                 </div>
               </div>
               <div className="flex items-center gap-3">
                 <Link href="/subscribe">
-                  <Button variant="outline">
+                  <Button variant="gradient">
                     <Crown className="h-4 w-4 mr-2" />
                     Upgrade Now
                     <ArrowRight className="h-4 w-4 ml-2" />
@@ -566,12 +566,51 @@ export default function MarketplacePage() {
           </CardContent>
         </Card>
 
-        {/* Filters and Search */}
-        <Card className="glass-card mb-6">
-          <CardContent className="p-6">
-            <div className="flex flex-col lg:flex-row gap-4">
-              {/* Search */}
-              <div className="flex-1">
+        {/* Filters and Search - Left-aligned filters as per design */}
+        <div className="grid lg:grid-cols-4 gap-gutter mb-gutter-lg">
+          {/* Left Sidebar - Filters */}
+          <div className="lg:col-span-1">
+            <Card className="sticky top-24">
+              <CardHeader>
+                <CardTitle className="h3 text-lg">Filters</CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                {/* Category Filter */}
+                <div>
+                  <label className="text-sm font-medium text-foreground mb-2 block">Category</label>
+                  <select
+                    value={selectedCategory}
+                    onChange={(e) => setSelectedCategory(e.target.value)}
+                    className="w-full px-3 py-2 rounded-lg border border-border bg-background text-foreground"
+                  >
+                    {CATEGORIES.map(category => (
+                      <option key={category} value={category}>{category}</option>
+                    ))}
+                  </select>
+                </div>
+
+                {/* Sort */}
+                <div>
+                  <label className="text-sm font-medium text-foreground mb-2 block">Sort By</label>
+                  <select
+                    value={sortBy}
+                    onChange={(e) => setSortBy(e.target.value)}
+                    className="w-full px-3 py-2 rounded-lg border border-border bg-background text-foreground"
+                  >
+                    {SORT_OPTIONS.map(option => (
+                      <option key={option.value} value={option.value}>{option.label}</option>
+                    ))}
+                  </select>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+
+          {/* Right Content - Search and Grid */}
+          <div className="lg:col-span-3">
+            {/* Search */}
+            <Card className="mb-gutter">
+              <CardContent className="p-4">
                 <div className="relative">
                   <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                   <Input
@@ -581,38 +620,15 @@ export default function MarketplacePage() {
                     className="pl-10"
                   />
                 </div>
-              </div>
+              </CardContent>
+            </Card>
 
-              {/* Category Filter */}
-              <div className="flex items-center gap-2">
-                <Filter className="h-4 w-4 text-muted-foreground" />
-                <select
-                  value={selectedCategory}
-                  onChange={(e) => setSelectedCategory(e.target.value)}
-                  className="px-3 py-2 rounded-lg border border-border bg-background text-foreground"
-                >
-                  {CATEGORIES.map(category => (
-                    <option key={category} value={category}>{category}</option>
-                  ))}
-                </select>
-              </div>
-
-              {/* Sort */}
-              <div className="flex items-center gap-2">
-                <SortAsc className="h-4 w-4 text-muted-foreground" />
-                <select
-                  value={sortBy}
-                  onChange={(e) => setSortBy(e.target.value)}
-                  className="px-3 py-2 rounded-lg border border-border bg-background text-foreground"
-                >
-                  {SORT_OPTIONS.map(option => (
-                    <option key={option.value} value={option.value}>{option.label}</option>
-                  ))}
-                </select>
-              </div>
-
-              {/* View Mode */}
-              <div className="flex items-center gap-1 glass rounded-lg p-1">
+            {/* View Mode Toggle */}
+            <div className="flex items-center justify-between mb-gutter">
+              <p className="text-muted-foreground text-sm">
+                Showing {filteredThemes.length} of {themes.length} themes
+              </p>
+              <div className="flex items-center gap-1 bg-muted/50 rounded-lg p-1">
                 <Button
                   onClick={() => setViewMode('grid')}
                   variant={viewMode === 'grid' ? 'default' : 'ghost'}
@@ -631,24 +647,11 @@ export default function MarketplacePage() {
                 </Button>
               </div>
             </div>
-          </CardContent>
-        </Card>
-
-        {/* Results */}
-        <div className="mb-4 flex items-center justify-between">
-              <p className="text-muted-foreground">
-            Showing {filteredThemes.length} of {themes.length} themes
-          </p>
-          <div className="flex items-center gap-2">
-            <Button variant="outline" size="sm">
-              <Heart className="h-4 w-4 mr-2" />
-              Wishlist
-            </Button>
           </div>
         </div>
 
-        {/* Theme Grid */}
-        <div className={`grid gap-6 ${
+        {/* Theme Grid - Dense card grid */}
+        <div className={`grid gap-gutter ${
           viewMode === 'grid' 
             ? 'grid-cols-1 md:grid-cols-2 lg:grid-cols-3' 
             : 'grid-cols-1'

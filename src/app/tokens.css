@@ -2,18 +2,28 @@
 /* PulseStudio Theme - Optimized for GoHighLevel Agencies */
 
 :root {
-  /* Base Colors - Used in both light and dark */
-  --color-primary: 221 89% 63%;   /* Bright blue */
-  --color-secondary: 275 80% 67%; /* Violet glow */
-  --color-accent: 195 90% 65%;    /* Cyan edge */
+  /* New Design System Colors */
+  /* Primary: #3E2BFF - Electric Indigo */
+  --color-primary: 254 100% 58%;
+  /* Accent: #FFA43C - Warm Amber */
+  --color-accent: 32 100% 62%;
+  /* Background: #F6F6F7 - Soft Neutral */
+  --color-background: 240 9% 96%;
+  /* Card: #FFFFFF - White */
+  --color-card: 0 0% 100%;
   --blur-strength: 24px;
 
+  /* Semantic Colors - WCAG AA+ Compliant */
+  --color-success: 142 76% 36%;   /* #22C55E */
+  --color-warning: 43 96% 56%;    /* #F59E0B */
+  --color-error: 0 84% 60%;       /* #EF4444 */
+
   /* Light Mode Default */
-  --background: 0 0% 100%;
+  --background: var(--color-background);
   --foreground: 0 0% 9%;
-  --card: 0 0% 100%;
+  --card: var(--color-card);
   --card-foreground: 0 0% 9%;
-  --popover: 0 0% 100%;
+  --popover: var(--color-card);
   --popover-foreground: 0 0% 9%;
   --primary: var(--color-primary);
   --primary-foreground: 0 0% 100%;
@@ -22,40 +32,46 @@
   --muted: 0 0% 96%;
   --muted-foreground: 0 0% 45%;
   --accent: var(--color-accent);
-  --accent-foreground: 0 0% 100%;
-  --destructive: 0 84% 60%;
+  --accent-foreground: 0 0% 9%;
+  --destructive: var(--color-error);
   --destructive-foreground: 0 0% 100%;
+  --success: var(--color-success);
+  --success-foreground: 0 0% 100%;
+  --warning: var(--color-warning);
+  --warning-foreground: 0 0% 9%;
   --border: 0 0% 90%;
   --input: 0 0% 90%;
   --ring: var(--color-primary);
 
   /* Glass morphism - Light mode */
-  --glass-bg: rgba(255, 255, 255, 0.8);
-  --glass-border: rgba(0, 0, 0, 0.1);
-  --glass-card-bg: rgba(255, 255, 255, 0.95);
-  --glass-card-border: rgba(0, 0, 0, 0.08);
+  --glass-bg: rgba(255, 255, 255, 0.9);
+  --glass-border: rgba(0, 0, 0, 0.08);
+  --glass-card-bg: rgba(255, 255, 255, 1);
+  --glass-card-border: rgba(0, 0, 0, 0.06);
 
-  /* Shadows - Light mode */
-  --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
-  --shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);
-  --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
-  --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
-  --shadow-glow: 0 0 25px rgba(0, 119, 255, 0.15);
+  /* Shadows - Light mode (soft, elevated) */
+  --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.04);
+  --shadow: 0 1px 3px 0 rgb(0 0 0 / 0.08), 0 1px 2px -1px rgb(0 0 0 / 0.06);
+  --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.08), 0 2px 4px -2px rgb(0 0 0 / 0.06);
+  --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.08);
+  --shadow-xl: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.08);
+  --shadow-glow: 0 0 20px rgba(62, 43, 255, 0.15);
+  --shadow-card: 0 2px 8px rgba(0, 0, 0, 0.04), 0 1px 2px rgba(0, 0, 0, 0.06);
 
-  /* Spacing Scale */
-  --space-1: 0.25rem;
-  --space-2: 0.5rem;
-  --space-3: 0.75rem;
-  --space-4: 1rem;
-  --space-5: 1.25rem;
-  --space-6: 1.5rem;
-  --space-8: 2rem;
-  --space-10: 2.5rem;
-  --space-12: 3rem;
-  --space-16: 4rem;
-  --space-20: 5rem;
-  --space-24: 6rem;
-  --space-32: 8rem;
+  /* Spacing Scale - 8pt System */
+  --space-1: 0.125rem;   /* 2px */
+  --space-2: 0.25rem;     /* 4px */
+  --space-3: 0.375rem;    /* 6px */
+  --space-4: 0.5rem;      /* 8px */
+  --space-5: 0.625rem;    /* 10px */
+  --space-6: 0.75rem;     /* 12px */
+  --space-8: 1rem;        /* 16px */
+  --space-10: 1.25rem;    /* 20px */
+  --space-12: 1.5rem;     /* 24px - generous rhythm */
+  --space-16: 2rem;       /* 32px - generous rhythm */
+  --space-20: 2.5rem;     /* 40px */
+  --space-24: 3rem;       /* 48px */
+  --space-32: 4rem;       /* 64px */
 
   /* Typography Scale */
   --font-size-xs: 0.75rem;
@@ -69,12 +85,13 @@
   --font-size-5xl: 3rem;
   --font-size-6xl: 3.75rem;
 
-  /* Line Heights */
+  /* Line Heights - Body with 1.5-1.8× for readability */
   --line-height-tight: 1.25;
   --line-height-snug: 1.375;
   --line-height-normal: 1.5;
   --line-height-relaxed: 1.625;
-  --line-height-loose: 2;
+  --line-height-body: 1.65;    /* 1.5-1.8× range, optimal for body */
+  --line-height-loose: 1.8;
 
   /* Font Weights */
   --font-weight-light: 300;
@@ -110,46 +127,52 @@
   --z-toast: 1080;
 
   /* Brand Gradients */
-  --gradient-primary: linear-gradient(135deg, hsl(var(--color-primary)) 0%, hsl(var(--color-secondary)) 100%);
-  --gradient-secondary: linear-gradient(135deg, hsl(var(--color-accent)) 0%, hsl(var(--color-primary)) 100%);
-  --gradient-accent: linear-gradient(135deg, hsl(var(--color-secondary)) 0%, hsl(var(--color-accent)) 100%);
+  --gradient-primary: linear-gradient(135deg, hsl(var(--color-primary)) 0%, hsl(var(--color-primary) / 0.8) 100%);
+  --gradient-accent: linear-gradient(135deg, hsl(var(--color-accent)) 0%, hsl(var(--color-accent) / 0.8) 100%);
+  --gradient-primary-accent: linear-gradient(135deg, hsl(var(--color-primary)) 0%, hsl(var(--color-accent)) 100%);
 }
 
 /* Dark Mode - Using .dark class for next-themes compatibility */
 .dark {
-  /* Dark Mode Colors */
-  --background: 0 0% 4%;
-  --foreground: 0 0% 100%;
-  --card: 0 0% 7%;
-  --card-foreground: 0 0% 100%;
-  --popover: 0 0% 7%;
-  --popover-foreground: 0 0% 100%;
+  /* Dark Mode Colors - maintaining contrast */
+  --background: 0 0% 8%;
+  --foreground: 0 0% 98%;
+  --card: 0 0% 12%;
+  --card-foreground: 0 0% 98%;
+  --popover: 0 0% 12%;
+  --popover-foreground: 0 0% 98%;
   --primary: var(--color-primary);
   --primary-foreground: 0 0% 100%;
-  --secondary: 0 0% 15%;
-  --secondary-foreground: 0 0% 100%;
-  --muted: 0 0% 15%;
+  --secondary: 0 0% 18%;
+  --secondary-foreground: 0 0% 98%;
+  --muted: 0 0% 18%;
   --muted-foreground: 0 0% 65%;
   --accent: var(--color-accent);
-  --accent-foreground: 0 0% 100%;
-  --destructive: 0 84% 60%;
+  --accent-foreground: 0 0% 9%;
+  --destructive: var(--color-error);
   --destructive-foreground: 0 0% 100%;
-  --border: 0 0% 15%;
-  --input: 0 0% 15%;
+  --success: var(--color-success);
+  --success-foreground: 0 0% 100%;
+  --warning: var(--color-warning);
+  --warning-foreground: 0 0% 9%;
+  --border: 0 0% 20%;
+  --input: 0 0% 18%;
   --ring: var(--color-primary);
 
   /* Glass morphism - Dark mode */
-  --glass-bg: rgba(255, 255, 255, 0.05);
+  --glass-bg: rgba(0, 0, 0, 0.4);
   --glass-border: rgba(255, 255, 255, 0.1);
-  --glass-card-bg: rgba(17, 19, 23, 0.8);
+  --glass-card-bg: rgba(18, 18, 18, 0.9);
   --glass-card-border: rgba(255, 255, 255, 0.08);
 
   /* Shadows - Dark mode */
-  --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.2);
-  --shadow: 0 1px 3px 0 rgb(0 0 0 / 0.3), 0 1px 2px -1px rgb(0 0 0 / 0.3);
-  --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.3), 0 2px 4px -2px rgb(0 0 0 / 0.3);
-  --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.4), 0 4px 6px -4px rgb(0 0 0 / 0.4);
-  --shadow-glow: 0 0 25px rgba(0, 194, 255, 0.25);
+  --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.3);
+  --shadow: 0 1px 3px 0 rgb(0 0 0 / 0.4), 0 1px 2px -1px rgb(0 0 0 / 0.4);
+  --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.4), 0 2px 4px -2px rgb(0 0 0 / 0.4);
+  --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.5), 0 4px 6px -4px rgb(0 0 0 / 0.4);
+  --shadow-xl: 0 20px 25px -5px rgb(0 0 0 / 0.5), 0 8px 10px -6px rgb(0 0 0 / 0.4);
+  --shadow-glow: 0 0 20px rgba(62, 43, 255, 0.3);
+  --shadow-card: 0 2px 8px rgba(0, 0, 0, 0.3), 0 1px 2px rgba(0, 0, 0, 0.4);
 }
 
 /* Light mode specific overrides */

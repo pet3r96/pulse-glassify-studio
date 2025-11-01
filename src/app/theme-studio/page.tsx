@@ -339,7 +339,7 @@ export default function ThemeStudioPage() {
         ref={setNodeRef}
         {...listeners}
         {...attributes}
-        className="absolute px-3 py-2 rounded-md glass border border-white/10 text-xs select-none cursor-grab active:cursor-grabbing"
+        className="absolute px-3 py-2 rounded-md bg-card border border-border text-xs select-none cursor-grab active:cursor-grabbing shadow-sm"
         style={{ left: translate.x, top: translate.y }}
       >
         {id.toUpperCase()}
@@ -419,20 +419,20 @@ export default function ThemeStudioPage() {
 
   return (
     <>
-    <div className="min-h-screen bg-[var(--color-bg)]">
+    <div className="min-h-screen bg-background text-foreground">
       {/* Header */}
-      <div className="glass">
-        <div className="container mx-auto px-6 py-4">
+      <div className="glass border-b border-border">
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-4">
               <Link href="/dashboard">
-                <Button variant="ghost" size="sm" className="text-white/70 hover:text-white">
+                <Button variant="ghost" size="sm" className="text-muted-foreground hover:text-foreground">
                   <ArrowLeft className="h-4 w-4 mr-2" />
                   Back to Dashboard
                 </Button>
               </Link>
               <div>
-                <h1 className="text-2xl font-heading gradient-text">Theme Studio</h1>
+                <h1 className="h1 text-2xl bg-gradient-primary-accent bg-clip-text text-transparent">Theme Studio</h1>
                 <p className="text-muted-foreground">Customize your GoHighLevel theme with real-time preview</p>
               </div>
             </div>
@@ -442,7 +442,6 @@ export default function ThemeStudioPage() {
                 disabled={historyIndex === 0 || locked}
                   variant="outline"
                   size="sm"
-                className="border-white/20 text-white hover:bg-white/10"
                 >
                 <Undo className="h-4 w-4" />
                 </Button>
@@ -451,7 +450,6 @@ export default function ThemeStudioPage() {
                 disabled={historyIndex === history.length - 1 || locked}
                 variant="outline"
                 size="sm"
-                className="border-white/20 text-white hover:bg-white/10"
               >
                 <Redo className="h-4 w-4" />
               </Button>
@@ -468,11 +466,11 @@ export default function ThemeStudioPage() {
         </div>
       </div>
 
-      <div className="container mx-auto px-6 py-8">
+      <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {banner && (
-          <div className="glass rounded-xl p-4 mb-6 border border-[var(--pg-border)]">
+          <div className="glass rounded-xl p-4 mb-6 border border-border">
             <div className="flex items-center justify-between">
-              <div className="text-white/90">
+              <div className="text-foreground">
             {banner}
               </div>
             <Button
@@ -504,9 +502,9 @@ export default function ThemeStudioPage() {
           </div>
         )}
         {(allowedSeats !== Number.MAX_SAFE_INTEGER && currentSeats > allowedSeats) && (
-          <div className="glass rounded-xl p-4 mb-6 border border-[var(--pg-border)]">
+          <div className="glass rounded-xl p-4 mb-6 border border-border">
             <div className="flex items-center justify-between">
-              <div className="text-white/90">Seat limit reached. Add more seats or upgrade your plan to continue publishing.</div>
+              <div className="text-foreground">Seat limit reached. Add more seats or upgrade your plan to continue publishing.</div>
               <Button onClick={() => setSeatLimitOpen(true)} variant="gradient" size="sm">Resolve</Button>
             </div>
           </div>
@@ -515,7 +513,7 @@ export default function ThemeStudioPage() {
           {/* Theme Configuration Panel */}
           <div className="lg:col-span-1 space-y-6 relative">
             {/* Theme Info */}
-            <Card className="glass-card">
+            <Card>
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                   <Settings className="h-5 w-5" />
@@ -529,7 +527,7 @@ export default function ThemeStudioPage() {
                       id="theme-name"
                     value={theme.name}
                     onChange={(e) => updateTheme({ name: e.target.value })}
-                    className="glass"
+                    className=""
                     disabled={locked}
                     />
                   </div>
@@ -539,7 +537,7 @@ export default function ThemeStudioPage() {
                       id="theme-description"
                     value={theme.description}
                     onChange={(e) => updateTheme({ description: e.target.value })}
-                    className="glass"
+                    className=""
                       rows={3}
                     disabled={locked}
                     />
@@ -549,7 +547,7 @@ export default function ThemeStudioPage() {
                     onClick={() => document.getElementById('import-theme')?.click()}
                     variant="outline"
                     size="sm"
-                    className="flex-1 border-white/20 text-white hover:bg-white/10"
+                    className="flex-1"
                   >
                     <Upload className="h-4 w-4 mr-2" />
                     Import
@@ -558,7 +556,7 @@ export default function ThemeStudioPage() {
                     onClick={exportTheme}
                     variant="outline"
                     size="sm"
-                    className="flex-1 border-white/20 text-white hover:bg-white/10"
+                    className="flex-1"
                   >
                     <Download className="h-4 w-4 mr-2" />
                     Export
@@ -575,7 +573,7 @@ export default function ThemeStudioPage() {
             </Card>
 
             {/* Theme Customization Tabs */}
-            <Card className="glass-card">
+            <Card>
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                   <Palette className="h-5 w-5" />
@@ -709,7 +707,7 @@ export default function ThemeStudioPage() {
                         onChange={(e) => updateTheme({ 
                           fonts: { ...theme.fonts, primary: e.target.value }
                         })}
-                        className="glass"
+                        className=""
                         disabled={locked}
                       />
                     </div>
@@ -721,7 +719,7 @@ export default function ThemeStudioPage() {
                         onChange={(e) => updateTheme({ 
                           fonts: { ...theme.fonts, secondary: e.target.value }
                         })}
-                        className="glass"
+                        className=""
                         disabled={locked}
                       />
                     </div>
@@ -736,7 +734,7 @@ export default function ThemeStudioPage() {
                         onChange={(e) => updateTheme({ 
                           layout: { ...theme.layout, sidebar: e.target.value as any }
                         })}
-                        className="w-full p-2 rounded-lg glass border border-white/20 bg-transparent text-white"
+                        className="w-full p-2 rounded-lg border border-border bg-background text-foreground"
                         disabled={locked}
                       >
                         <option value="left">Left</option>
@@ -753,7 +751,7 @@ export default function ThemeStudioPage() {
                         onChange={(e) => updateTheme({ 
                           layout: { ...theme.layout, header: e.target.value as any }
                         })}
-                        className="w-full p-2 rounded-lg glass border border-white/20 bg-transparent text-white"
+                        className="w-full p-2 rounded-lg border border-border bg-background text-foreground"
                         disabled={locked}
                       >
                         <option value="fixed">Fixed</option>
@@ -768,7 +766,7 @@ export default function ThemeStudioPage() {
                         onChange={(e) => updateTheme({ 
                           layout: { ...theme.layout, navigation: e.target.value as any }
                         })}
-                        className="w-full p-2 rounded-lg glass border border-white/20 bg-transparent text-white"
+                        className="w-full p-2 rounded-lg border border-border bg-background text-foreground"
                         disabled={locked}
                       >
                         <option value="accordion">Accordion</option>
@@ -812,7 +810,7 @@ export default function ThemeStudioPage() {
 
           {/* Preview Panel */}
           <div className="lg:col-span-2 relative">
-                <Card className="glass-card">
+                <Card>
                   <CardHeader>
                     <div className="flex items-center justify-between">
                   <CardTitle className="flex items-center gap-2">
@@ -853,7 +851,6 @@ export default function ThemeStudioPage() {
                       onClick={() => setIsPreviewPlaying(!isPreviewPlaying)}
                       variant="outline"
                       size="sm"
-                      className="border-white/20 text-white hover:bg-white/10"
                       disabled={locked}
                     >
                       {isPreviewPlaying ? <Square className="h-4 w-4" /> : <Play className="h-4 w-4" />}
@@ -866,7 +863,7 @@ export default function ThemeStudioPage() {
                   </CardHeader>
                   <CardContent>
                 <div 
-                  className={`border border-white/20 rounded-lg overflow-hidden ${
+                  className={`border border-border rounded-lg overflow-hidden ${
                     previewMode === 'desktop' ? 'w-full' :
                     previewMode === 'tablet' ? 'w-full max-w-md mx-auto' :
                     'w-full max-w-sm mx-auto'
@@ -896,7 +893,6 @@ export default function ThemeStudioPage() {
                     }}
                     variant="outline"
                     size="sm"
-                    className="border-white/20 text-white hover:bg-white/10"
                     disabled={locked}
                   >
                     <Copy className="h-4 w-4 mr-2" />
@@ -916,7 +912,7 @@ export default function ThemeStudioPage() {
                   </CardHeader>
                   <CardContent>
                     <DndContext onDragEnd={handleDragEnd}>
-                      <div className="relative h-64 rounded-lg border border-white/10 bg-white/5 overflow-hidden">
+                      <div className="relative h-64 rounded-lg border border-border bg-muted/50 overflow-hidden">
                         {blocks.map((b) => (
                           <DraggableBlock key={b.id} id={b.id} x={b.x} y={b.y} />
                         ))}

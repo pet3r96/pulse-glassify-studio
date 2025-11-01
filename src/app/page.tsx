@@ -94,22 +94,22 @@ export default function HomePage() {
   return (
     <div className="min-h-screen bg-background text-foreground">
       {/* Hero Section */}
-      <section className="pt-20 pb-20 px-4 sm:px-6 lg:px-8">
+      <section className="pt-24 pb-24 px-4 sm:px-6 lg:px-8">
         <div className="container mx-auto text-center max-w-7xl">
-          <div className="inline-flex items-center gap-2 glass-card px-4 py-2 rounded-full mb-6">
-            <Sparkles className="h-4 w-4 text-yellow-400 dark:text-yellow-300" />
-            <span className="text-sm font-medium">Now in Beta</span>
+          <div className="inline-flex items-center gap-2 bg-card border border-border rounded-full px-4 py-2 shadow-sm mb-8">
+            <Sparkles className="h-4 w-4 text-accent" />
+            <span className="text-sm font-medium metadata">Now in Beta</span>
           </div>
           
-          <h1 className="font-heading text-4xl sm:text-5xl md:text-7xl gradient-text mb-6">
+          <h1 className="h1 text-4xl sm:text-5xl md:text-7xl bg-gradient-primary-accent bg-clip-text text-transparent mb-6">
             Transform Your GoHighLevel Experience
           </h1>
-          <p className="text-xl text-muted-foreground mb-8 max-w-3xl mx-auto">
+          <p className="text-xl text-muted-foreground mb-12 max-w-3xl mx-auto leading-relaxed">
             Professional theme builder with deployment infrastructure, version control, 
             and rollback capabilities. The complete UI operating system for GoHighLevel agencies.
           </p>
           
-          <div className="flex flex-col sm:flex-row gap-4 justify-center mb-16">
+          <div className="flex flex-col sm:flex-row gap-4 justify-center mb-20">
             <Link href="/auth?mode=signup">
               <Button size="lg" variant="gradient" className="text-lg px-8 py-6">
                 Start Building
@@ -124,7 +124,7 @@ export default function HomePage() {
           </div>
 
           {/* Stats */}
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-8 max-w-2xl mx-auto">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-gutter max-w-2xl mx-auto">
             {stats.map((stat, index) => (
               <div key={index} className="text-center">
                 <div className="text-3xl font-bold gradient-text mb-2">{stat.number}</div>
@@ -139,29 +139,29 @@ export default function HomePage() {
       <ThemeStudioAccess />
 
       {/* Features Section */}
-      <section className="py-20 px-4 sm:px-6 lg:px-8 bg-muted/30">
+      <section className="py-gutter-lg px-4 sm:px-6 lg:px-8 bg-muted/30">
         <div className="container mx-auto max-w-7xl">
-          <div className="text-center mb-16">
-            <h2 className="font-heading text-3xl sm:text-4xl gradient-text mb-4">
+          <div className="text-center mb-gutter-lg">
+            <h2 className="h2 text-3xl sm:text-4xl bg-gradient-primary-accent bg-clip-text text-transparent mb-4">
               Everything You Need to Customize GHL
             </h2>
-            <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
+            <p className="text-xl text-muted-foreground max-w-2xl mx-auto leading-relaxed">
               From visual theme builders to marketplace integrations, 
               we've got everything agencies need to succeed.
             </p>
           </div>
           
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-gutter">
             {features.map((feature, index) => (
-              <Card key={index} className="glass-card hover:glass-hover transition-all duration-300 group cursor-pointer">
+              <Card key={index} className="group cursor-pointer hover:-translate-y-1 transition-all">
                 <CardContent className="p-6">
-                  <div className={`w-12 h-12 bg-gradient-to-r ${feature.gradient} rounded-lg flex items-center justify-center mb-4 group-hover:scale-110 transition-transform`}>
-                    <feature.icon className={`h-6 w-6 ${feature.iconColor}`} />
+                  <div className="w-12 h-12 bg-gradient-primary-accent/20 rounded-lg flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
+                    <feature.icon className="h-6 w-6 text-primary" />
                   </div>
-                  <h3 className="font-heading text-xl mb-3 group-hover:gradient-text transition-all text-card-foreground">
+                  <h3 className="h3 text-xl mb-3 text-card-foreground">
                     {feature.title}
                   </h3>
-                  <p className="text-muted-foreground">
+                  <p className="text-muted-foreground leading-relaxed">
                     {feature.description}
                   </p>
                 </CardContent>
@@ -172,42 +172,42 @@ export default function HomePage() {
       </section>
 
       {/* How It Works */}
-      <section className="py-20 px-4 sm:px-6 lg:px-8 bg-gradient-to-r from-[hsl(var(--color-primary))]/10 via-[hsl(var(--color-secondary))]/10 to-[hsl(var(--color-accent))]/10">
+      <section className="py-gutter-lg px-4 sm:px-6 lg:px-8 bg-gradient-primary-accent/5">
         <div className="container mx-auto max-w-7xl">
-          <div className="text-center mb-16">
-            <h2 className="font-heading text-3xl sm:text-4xl gradient-text mb-4">
+          <div className="text-center mb-gutter-lg">
+            <h2 className="h2 text-3xl sm:text-4xl bg-gradient-primary-accent bg-clip-text text-transparent mb-4">
               How It Works
             </h2>
-            <p className="text-xl text-muted-foreground">
+            <p className="text-xl text-muted-foreground leading-relaxed">
               Get started in minutes with our simple 3-step process
             </p>
           </div>
 
-          <div className="grid md:grid-cols-3 gap-8 max-w-4xl mx-auto">
+          <div className="grid md:grid-cols-3 gap-gutter max-w-4xl mx-auto">
             <div className="text-center">
-              <div className="w-16 h-16 bg-gradient-to-r from-[hsl(var(--color-primary))] to-[hsl(var(--color-secondary))] rounded-full flex items-center justify-center mx-auto mb-6">
+              <div className="w-16 h-16 bg-gradient-primary-accent rounded-full flex items-center justify-center mx-auto mb-6 shadow-md">
                 <span className="text-white font-bold text-xl">1</span>
               </div>
-              <h3 className="font-heading text-xl mb-4">Connect Your GHL Account</h3>
-              <p className="text-muted-foreground">
+              <h3 className="h3 text-xl mb-4">Connect Your GHL Account</h3>
+              <p className="text-muted-foreground leading-relaxed">
                 Enter your GoHighLevel API key to securely connect your account
               </p>
             </div>
             <div className="text-center">
-              <div className="w-16 h-16 bg-gradient-to-r from-[hsl(var(--color-secondary))] to-[hsl(var(--color-accent))] rounded-full flex items-center justify-center mx-auto mb-6">
+              <div className="w-16 h-16 bg-gradient-accent rounded-full flex items-center justify-center mx-auto mb-6 shadow-md">
                 <span className="text-white font-bold text-xl">2</span>
               </div>
-              <h3 className="font-heading text-xl mb-4">Design Your Theme</h3>
-              <p className="text-muted-foreground">
+              <h3 className="h3 text-xl mb-4">Design Your Theme</h3>
+              <p className="text-muted-foreground leading-relaxed">
                 Use our visual builder to create custom themes with live preview
               </p>
             </div>
             <div className="text-center">
-              <div className="w-16 h-16 bg-gradient-to-r from-[hsl(var(--color-accent))] to-[hsl(var(--color-primary))] rounded-full flex items-center justify-center mx-auto mb-6">
+              <div className="w-16 h-16 bg-gradient-primary rounded-full flex items-center justify-center mx-auto mb-6 shadow-md">
                 <span className="text-white font-bold text-xl">3</span>
               </div>
-              <h3 className="font-heading text-xl mb-4">Deploy & Manage</h3>
-              <p className="text-muted-foreground">
+              <h3 className="h3 text-xl mb-4">Deploy & Manage</h3>
+              <p className="text-muted-foreground leading-relaxed">
                 Deploy themes instantly and manage them with version control
               </p>
             </div>
@@ -216,31 +216,31 @@ export default function HomePage() {
       </section>
 
       {/* Testimonials */}
-      <section className="py-20 px-4 sm:px-6 lg:px-8">
+      <section className="py-gutter-lg px-4 sm:px-6 lg:px-8">
         <div className="container mx-auto max-w-7xl">
-          <div className="text-center mb-16">
-            <h2 className="font-heading text-3xl sm:text-4xl gradient-text mb-4">
+          <div className="text-center mb-gutter-lg">
+            <h2 className="h2 text-3xl sm:text-4xl bg-gradient-primary-accent bg-clip-text text-transparent mb-4">
               What Our Users Say
             </h2>
-            <p className="text-xl text-muted-foreground">
+            <p className="text-xl text-muted-foreground leading-relaxed">
               Join hundreds of agencies already using PulseStudio
             </p>
           </div>
 
-          <div className="grid md:grid-cols-3 gap-8">
+          <div className="grid md:grid-cols-3 gap-gutter">
             {testimonials.map((testimonial, index) => (
-              <Card key={index} className="glass-card">
+              <Card key={index} className="hover:-translate-y-1 transition-all">
                 <CardContent className="p-6">
                   <div className="flex items-center mb-4">
-                    <div className="w-10 h-10 bg-gradient-to-r from-[hsl(var(--color-primary))] to-[hsl(var(--color-secondary))] rounded-full flex items-center justify-center text-white font-bold mr-3">
+                    <div className="w-10 h-10 bg-gradient-primary-accent rounded-full flex items-center justify-center text-white font-bold mr-3 shadow-sm">
                       {testimonial.avatar}
                     </div>
                     <div>
-                      <h4 className="font-semibold text-card-foreground">{testimonial.name}</h4>
-                      <p className="text-sm text-muted-foreground">{testimonial.role}</p>
+                      <h4 className="h4 font-semibold text-card-foreground">{testimonial.name}</h4>
+                      <p className="text-sm text-muted-foreground metadata">{testimonial.role}</p>
                     </div>
                   </div>
-                  <p className="text-muted-foreground">"{testimonial.content}"</p>
+                  <p className="text-muted-foreground leading-relaxed">"{testimonial.content}"</p>
                 </CardContent>
               </Card>
             ))}
