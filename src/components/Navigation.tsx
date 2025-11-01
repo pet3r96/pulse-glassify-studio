@@ -56,83 +56,109 @@ export function Navigation() {
   }
 
   return (
-    <nav className="sticky top-0 z-40 backdrop-blur-xl bg-[#0b0d10]/80 border-b border-white/10">
-      <div className="max-w-[1400px] mx-auto flex justify-between items-center px-8 py-4">
-          {/* Logo */}
-          <Link href="/" className="flex items-center space-x-2">
-            <div className="w-8 h-8 rounded-lg flex items-center justify-center gradient-primary">
-              <Palette className="h-5 w-5 text-white" />
-            </div>
-            <span className="text-xl font-bold">PulseStudio</span>
-          </Link>
+    <nav className="sticky top-0 z-40 backdrop-blur-xl bg-background/80 border-b border-border">
+      <div className="max-w-[1400px] mx-auto flex justify-between items-center px-4 sm:px-6 lg:px-8 py-4">
+        {/* Logo */}
+        <Link href="/" className="flex items-center space-x-2 group">
+          <div className="w-8 h-8 rounded-lg flex items-center justify-center bg-gradient-to-r from-[hsl(var(--color-primary))] to-[hsl(var(--color-secondary))] group-hover:scale-110 transition-transform">
+            <Palette className="h-5 w-5 text-white" />
+          </div>
+          <span className="text-xl font-heading font-bold bg-gradient-to-r from-[hsl(var(--color-primary))] to-[hsl(var(--color-secondary))] bg-clip-text text-transparent">
+            PulseStudio
+          </span>
+        </Link>
 
-          {/* Desktop Navigation */}
-          <div className="hidden md:flex items-center space-x-8">
-            {navigation.map((item) => (
+        {/* Desktop Navigation */}
+        <div className="hidden md:flex items-center space-x-8">
+          {navigation.map((item) => {
+            const isActive = pathname === item.href;
+            return (
               <Link
                 key={item.name}
                 href={item.href}
                 className={`flex items-center space-x-2 transition-colors border-b-2 pb-1 ${
-                  pathname === item.href 
-                    ? 'border-[hsl(var(--color-accent))] text-white data-[state=active]:border-b-[2px]' 
-                    : 'border-transparent text-white/70 hover:text-white'
+                  isActive
+                    ? 'border-accent text-foreground font-semibold'
+                    : 'border-transparent text-muted-foreground hover:text-foreground'
                 }`}
               >
                 <item.icon className="h-4 w-4" />
                 <span>{item.name}</span>
               </Link>
-            ))}
-          </div>
+            );
+          })}
+        </div>
 
-          {/* Desktop Auth */}
-          <div className="hidden md:flex items-center space-x-4">
-            <Button variant="ghost" onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')} aria-label="Toggle theme">
-              {theme === 'dark' ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
-            </Button>
-            <Link href="/auth">
-              <Button variant="ghost">Sign In</Button>
-            </Link>
-            <Link href="/auth">
-              <Button variant="gradient" className="shadow-md">Get Started</Button>
-            </Link>
-          </div>
+        {/* Desktop Auth */}
+        <div className="hidden md:flex items-center space-x-4">
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
+            aria-label="Toggle theme"
+          >
+            {theme === 'dark' ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
+          </Button>
+          <Link href="/auth">
+            <Button variant="ghost">Sign In</Button>
+          </Link>
+          <Link href="/auth?mode=signup">
+            <Button variant="gradient">Get Started</Button>
+          </Link>
+        </div>
 
-          {/* Mobile menu button */}
-          <div className="md:hidden">
-            <Sheet open={isOpen} onOpenChange={setIsOpen}>
-              <SheetTrigger asChild>
-                <Button variant="ghost" size="sm">
-                  <Menu className="h-6 w-6" />
-                </Button>
-              </SheetTrigger>
-              <SheetContent side="right" className="w-64">
-                <div className="flex flex-col space-y-4 mt-8">
-                  {navigation.map((item) => (
+        {/* Mobile menu button */}
+        <div className="md:hidden">
+          <Sheet open={isOpen} onOpenChange={setIsOpen}>
+            <SheetTrigger asChild>
+              <Button variant="ghost" size="icon">
+                <Menu className="h-6 w-6" />
+              </Button>
+            </SheetTrigger>
+            <SheetContent side="right" className="w-64">
+              <div className="flex flex-col space-y-4 mt-8">
+                {navigation.map((item) => {
+                  const isActive = pathname === item.href;
+                  return (
                     <Link
                       key={item.name}
                       href={item.href}
-                      className="flex items-center space-x-2 text-white/70 hover:text-white transition-colors"
+                      className={`flex items-center space-x-2 transition-colors ${
+                        isActive
+                          ? 'text-foreground font-semibold'
+                          : 'text-muted-foreground hover:text-foreground'
+                      }`}
                       onClick={() => setIsOpen(false)}
                     >
                       <item.icon className="h-4 w-4" />
                       <span>{item.name}</span>
                     </Link>
-                  ))}
-                  <div className="pt-4 border-t">
-                    <Link href="/auth" onClick={() => setIsOpen(false)}>
-                      <Button variant="ghost" className="w-full justify-start">
-                        <User className="h-4 w-4 mr-2" />
-                        Sign In
-                      </Button>
-                    </Link>
-                    <Link href="/auth" onClick={() => setIsOpen(false)}>
-                      <Button variant="gradient" className="w-full mt-2">Get Started</Button>
-                    </Link>
-                  </div>
+                  );
+                })}
+                <div className="pt-4 border-t border-border">
+                  <Button
+                    variant="ghost"
+                    onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
+                    className="w-full justify-start mb-2"
+                    aria-label="Toggle theme"
+                  >
+                    {theme === 'dark' ? <Sun className="h-4 w-4 mr-2" /> : <Moon className="h-4 w-4 mr-2" />}
+                    {theme === 'dark' ? 'Light Mode' : 'Dark Mode'}
+                  </Button>
+                  <Link href="/auth" onClick={() => setIsOpen(false)}>
+                    <Button variant="ghost" className="w-full justify-start">
+                      <User className="h-4 w-4 mr-2" />
+                      Sign In
+                    </Button>
+                  </Link>
+                  <Link href="/auth?mode=signup" onClick={() => setIsOpen(false)}>
+                    <Button variant="gradient" className="w-full mt-2">Get Started</Button>
+                  </Link>
                 </div>
-              </SheetContent>
-            </Sheet>
-          </div>
+              </div>
+            </SheetContent>
+          </Sheet>
+        </div>
       </div>
     </nav>
   )

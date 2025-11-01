@@ -9,6 +9,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { User, Shield, Bell, Palette, ExternalLink } from "lucide-react"
 import { useState } from 'react'
 import { supabase } from '@/lib/supabase/client'
+import Link from 'next/link'
 
 export default function Settings() {
   const [loadingPortal, setLoadingPortal] = useState(false)
@@ -29,11 +30,11 @@ export default function Settings() {
     }
   }
   return (
-    <div className="min-h-screen bg-gray-50">
-      <div className="container mx-auto px-4 py-8">
+    <div className="min-h-screen bg-background text-foreground">
+      <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">Settings</h1>
-          <p className="text-gray-600">Manage your account and preferences</p>
+          <h1 className="text-3xl font-bold gradient-text mb-2">Settings</h1>
+          <p className="text-muted-foreground">Manage your account and preferences</p>
         </div>
 
         <div className="max-w-4xl">
@@ -45,10 +46,10 @@ export default function Settings() {
               <TabsTrigger value="themes">Themes</TabsTrigger>
             </TabsList>
             
-            <TabsContent value="profile" className="space-y-6">
-              <Card>
+            <TabsContent value="profile" className="space-y-6 mt-6">
+              <Card className="glass-card">
                 <CardHeader>
-                  <CardTitle className="flex items-center">
+                  <CardTitle className="flex items-center text-card-foreground">
                     <User className="mr-2 h-5 w-5" />
                     Profile Information
                   </CardTitle>
@@ -75,13 +76,13 @@ export default function Settings() {
                     <Label htmlFor="company">Company</Label>
                     <Input id="company" defaultValue="Acme Agency" />
                   </div>
-                  <Button>Save Changes</Button>
+                  <Button variant="gradient">Save Changes</Button>
                 </CardContent>
               </Card>
 
-              <Card>
+              <Card className="glass-card">
                 <CardHeader>
-                  <CardTitle className="flex items-center">
+                  <CardTitle className="flex items-center text-card-foreground">
                     <Shield className="mr-2 h-5 w-5" />
                     Billing
                   </CardTitle>
@@ -90,7 +91,7 @@ export default function Settings() {
                   </CardDescription>
                 </CardHeader>
                 <CardContent>
-                  <Button onClick={handleManageBilling} disabled={loadingPortal}>
+                  <Button onClick={handleManageBilling} disabled={loadingPortal} variant="gradient">
                     <ExternalLink className="h-4 w-4 mr-2" />
                     {loadingPortal ? 'Opening...' : 'Open Billing Portal'}
                   </Button>
@@ -98,10 +99,10 @@ export default function Settings() {
               </Card>
             </TabsContent>
             
-            <TabsContent value="security" className="space-y-6">
-              <Card>
+            <TabsContent value="security" className="space-y-6 mt-6">
+              <Card className="glass-card">
                 <CardHeader>
-                  <CardTitle className="flex items-center">
+                  <CardTitle className="flex items-center text-card-foreground">
                     <Shield className="mr-2 h-5 w-5" />
                     Security Settings
                   </CardTitle>
@@ -122,15 +123,15 @@ export default function Settings() {
                     <Label htmlFor="confirmPassword">Confirm New Password</Label>
                     <Input id="confirmPassword" type="password" />
                   </div>
-                  <Button>Update Password</Button>
+                  <Button variant="gradient">Update Password</Button>
                 </CardContent>
               </Card>
             </TabsContent>
             
-            <TabsContent value="notifications" className="space-y-6">
-              <Card>
+            <TabsContent value="notifications" className="space-y-6 mt-6">
+              <Card className="glass-card">
                 <CardHeader>
-                  <CardTitle className="flex items-center">
+                  <CardTitle className="flex items-center text-card-foreground">
                     <Bell className="mr-2 h-5 w-5" />
                     Notification Preferences
                   </CardTitle>
@@ -142,7 +143,7 @@ export default function Settings() {
                   <div className="flex items-center justify-between">
                     <div>
                       <Label htmlFor="email-notifications">Email Notifications</Label>
-                      <p className="text-sm text-gray-500">Receive updates via email</p>
+                      <p className="text-sm text-muted-foreground">Receive updates via email</p>
                     </div>
                     <Switch id="email-notifications" defaultChecked />
                   </div>
@@ -150,7 +151,7 @@ export default function Settings() {
                   <div className="flex items-center justify-between">
                     <div>
                       <Label htmlFor="theme-updates">Theme Updates</Label>
-                      <p className="text-sm text-gray-500">Get notified when themes are updated</p>
+                      <p className="text-sm text-muted-foreground">Get notified when themes are updated</p>
                     </div>
                     <Switch id="theme-updates" defaultChecked />
                   </div>
@@ -158,7 +159,7 @@ export default function Settings() {
                   <div className="flex items-center justify-between">
                     <div>
                       <Label htmlFor="deployment-alerts">Deployment Alerts</Label>
-                      <p className="text-sm text-gray-500">Alert when deployments complete</p>
+                      <p className="text-sm text-muted-foreground">Alert when deployments complete</p>
                     </div>
                     <Switch id="deployment-alerts" />
                   </div>
@@ -166,10 +167,10 @@ export default function Settings() {
               </Card>
             </TabsContent>
             
-            <TabsContent value="themes" className="space-y-6">
-              <Card>
+            <TabsContent value="themes" className="space-y-6 mt-6">
+              <Card className="glass-card">
                 <CardHeader>
-                  <CardTitle className="flex items-center">
+                  <CardTitle className="flex items-center text-card-foreground">
                     <Palette className="mr-2 h-5 w-5" />
                     Theme Preferences
                   </CardTitle>
@@ -189,11 +190,11 @@ export default function Settings() {
                   <div className="flex items-center justify-between">
                     <div>
                       <Label htmlFor="auto-deploy">Auto Deploy</Label>
-                      <p className="text-sm text-gray-500">Automatically deploy theme changes</p>
+                      <p className="text-sm text-muted-foreground">Automatically deploy theme changes</p>
                     </div>
                     <Switch id="auto-deploy" />
                   </div>
-                  <Button>Save Preferences</Button>
+                  <Button variant="gradient">Save Preferences</Button>
                 </CardContent>
               </Card>
             </TabsContent>

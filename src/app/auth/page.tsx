@@ -188,10 +188,10 @@ function AuthForm() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center p-6 bg-[var(--color-bg)]">
+    <div className="min-h-screen flex items-center justify-center p-6 bg-background text-foreground">
       <div className="absolute top-6 left-6">
         <Link href="/" className="flex items-center gap-2 group">
-          <div className="w-10 h-10 bg-gradient-to-r from-pink-500 to-purple-500 rounded-lg flex items-center justify-center group-hover:scale-110 transition-transform">
+          <div className="w-10 h-10 bg-gradient-to-r from-[hsl(var(--color-primary))] to-[hsl(var(--color-secondary))] rounded-lg flex items-center justify-center group-hover:scale-110 transition-transform">
             <span className="text-white font-bold text-lg">P</span>
           </div>
           <div>
@@ -225,7 +225,7 @@ function AuthForm() {
                       value={loginData.email}
                       onChange={(e) => setLoginData(prev => ({ ...prev, email: e.target.value }))}
                       placeholder="you@agency.com"
-                      className="pl-10 glass"
+                      className="pl-10"
                       required
                     />
                   </div>
@@ -240,7 +240,7 @@ function AuthForm() {
                       value={loginData.password}
                       onChange={(e) => setLoginData(prev => ({ ...prev, password: e.target.value }))}
                       placeholder="Enter your password"
-                      className="pl-10 pr-10 glass"
+                      className="pl-10 pr-10"
                       required
                     />
                     <button
@@ -271,7 +271,7 @@ function AuthForm() {
                       value={signupData.name}
                       onChange={(e) => setSignupData(prev => ({ ...prev, name: e.target.value }))}
                       placeholder="John Doe"
-                      className="pl-10 glass"
+                      className="pl-10"
                       required
                     />
                   </div>
@@ -287,7 +287,7 @@ function AuthForm() {
                       value={signupData.email}
                       onChange={(e) => setSignupData(prev => ({ ...prev, email: e.target.value }))}
                       placeholder="you@agency.com"
-                      className="pl-10 glass"
+                      className="pl-10"
                       required
                     />
                   </div>
@@ -303,7 +303,7 @@ function AuthForm() {
                       value={signupData.password}
                       onChange={(e) => setSignupData(prev => ({ ...prev, password: e.target.value }))}
                       placeholder="Create a password"
-                      className="pl-10 pr-10 glass"
+                      className="pl-10 pr-10"
                       required
                       minLength={6}
                     />
@@ -347,7 +347,7 @@ function AuthForm() {
                         value={signupData.agency_name}
                         onChange={(e) => setSignupData(prev => ({ ...prev, agency_name: e.target.value }))}
                         placeholder="Your Agency Name"
-                        className="pl-10 glass"
+                        className="pl-10"
                         required
                       />
                     </div>
@@ -365,7 +365,7 @@ function AuthForm() {
                         value={signupData.subaccount_name}
                         onChange={(e) => setSignupData(prev => ({ ...prev, subaccount_name: e.target.value }))}
                         placeholder="Your Subaccount Name"
-                        className="pl-10 glass"
+                        className="pl-10"
                         required
                       />
                     </div>
@@ -385,7 +385,7 @@ function AuthForm() {
                         validateGHLKey(e.target.value)
                       }}
                       placeholder="Enter your GHL API key"
-                      className="pl-10 pr-10 glass"
+                      className="pl-10 pr-10"
                       required
                     />
                     <div className="absolute right-3 top-3 h-4 w-4">
@@ -424,10 +424,10 @@ function AuthForm() {
 export default function AuthPage() {
   return (
     <Suspense fallback={
-      <div className="min-h-screen flex items-center justify-center bg-[var(--color-bg)]">
+      <div className="min-h-screen flex items-center justify-center bg-background">
         <div className="glass-card p-8 text-center">
-          <div className="animate-pulse-glow mb-4">
-            <div className="w-12 h-12 bg-gradient-to-r from-pink-500 to-purple-500 rounded-full mx-auto"></div>
+          <div className="animate-pulse mb-4">
+            <div className="w-12 h-12 bg-gradient-to-r from-[hsl(var(--color-primary))] to-[hsl(var(--color-secondary))] rounded-full mx-auto"></div>
           </div>
           <h2 className="text-xl font-heading gradient-text">Loading...</h2>
         </div>

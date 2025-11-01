@@ -4,125 +4,178 @@
 
 @import './tokens.css';
 
-/* Global Styles */
-:root {
-  /* Brand Tokens */
-  --pg-gradient: linear-gradient(135deg, #0077FF 0%, #8B4EFF 100%);
-  --pg-accent: #0077FF;
-  --pg-text-secondary: #A3A8B0;
-  --pg-border: rgba(255, 255, 255, 0.08);
-  --pg-radius: 0.75rem; /* ~rounded-xl */
-  --pg-shadow: 0 4px 24px rgba(0,0,0,0.1);
-
-  /* Light Mode */
-  --color-bg: #F8FAFC;
-  --color-surface: #FFFFFF;
-  --color-card: #FFFFFF;
-  --color-border: rgba(17, 17, 17, 0.1);
-  --color-text: #111111;
-  --color-text-muted: #6B7280;
+/* Base layer - defaults to light mode */
+@layer base {
+  * {
+    @apply border-border;
+  }
+  
+  body {
+    @apply bg-background text-foreground antialiased transition-colors duration-300;
+    font-feature-settings: "rlig" 1, "calt" 1;
+  }
 }
 
-.dark {
-  /* Dark Mode */
-  --color-bg: #0A0A0A;
-  --color-surface: #0F1115;
-  --color-card: #111317;
-  --color-border: rgba(255, 255, 255, 0.08);
-  --color-text: #FFFFFF;
-  --color-text-muted: #A3A8B0;
+/* Component layer - utility classes */
+@layer components {
+  /* Glass morphism effects - theme-aware */
+  .glass {
+    background: var(--glass-bg);
+    backdrop-filter: blur(var(--blur-strength));
+    border: 1px solid var(--glass-border);
+    transition: all var(--transition-normal);
+  }
+
+  .glass-card {
+    background: var(--glass-card-bg);
+    backdrop-filter: blur(var(--blur-strength));
+    border: 1px solid var(--glass-card-border);
+    border-radius: var(--radius-xl);
+    box-shadow: var(--shadow-lg);
+    transition: all var(--transition-normal);
+  }
+
+  .glass-hover {
+    background: var(--glass-bg);
+    backdrop-filter: blur(var(--blur-strength));
+    border: 1px solid var(--glass-border);
+    transition: all var(--transition-normal);
+  }
+
+  .glass-hover:hover {
+    background: var(--glass-card-bg);
+    border-color: var(--glass-card-border);
+    box-shadow: var(--shadow-glow);
+  }
+
+  /* Aceternity-style card glass utility - theme-aware */
+  .card-glass {
+    @apply rounded-xl p-6 border backdrop-blur-[var(--blur-strength)] transition-all duration-300;
+    background: var(--glass-card-bg);
+    border-color: var(--glass-card-border);
+    box-shadow: var(--shadow-glow);
+  }
+
+  .card-glass:hover {
+    box-shadow: var(--shadow-glow);
+    transform: translateY(-2px);
+  }
+
+  /* Gradient text effects - theme-aware */
+  .gradient-text {
+    background: var(--gradient-primary);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  /* Button styles - unified */
+  .btn-primary {
+    @apply bg-gradient-to-r from-[hsl(var(--color-primary))] to-[hsl(var(--color-secondary))] 
+           text-white font-semibold transition-all duration-300;
+    box-shadow: var(--shadow);
+  }
+
+  .btn-primary:hover {
+    filter: brightness(1.1);
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-glow);
+  }
+
+  /* Gradient helpers */
+  .gradient-primary {
+    background: var(--gradient-primary);
+  }
+
+  .gradient-secondary {
+    background: var(--gradient-secondary);
+  }
+
+  .gradient-accent {
+    background: var(--gradient-accent);
+  }
+
+  /* Hover glow effect */
+  .hover-glow:hover {
+    box-shadow: var(--shadow-glow);
+  }
 }
 
-/* Glass morphism effects */
-.glass {
-  background: rgba(255, 255, 255, 0.05);
-  backdrop-filter: blur(24px);
-  border: 1px solid hsl(var(--color-border));
+/* Utilities layer */
+@layer utilities {
+  /* Custom scrollbar - theme-aware */
+  .custom-scrollbar::-webkit-scrollbar {
+    width: 8px;
+  }
+
+  .custom-scrollbar::-webkit-scrollbar-track {
+    background: hsl(var(--muted));
+  }
+
+  .custom-scrollbar::-webkit-scrollbar-thumb {
+    background: hsl(var(--border));
+    border-radius: 4px;
+  }
+
+  .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+    background: hsl(var(--accent));
+  }
 }
 
-.glass-card {
-  background: var(--color-card);
-  backdrop-filter: blur(24px);
-  border: 1px solid hsl(var(--color-border));
-  border-radius: var(--pg-radius);
-  box-shadow: var(--pg-shadow);
-}
-
-.glass-hover {
-  background: rgba(255, 255, 255, 0.06);
-  backdrop-filter: blur(24px);
-  border: 1px solid hsl(var(--color-border));
-}
-
-/* Aceternity-style card glass utility */
-.card-glass {
-  @apply rounded-xl p-6 border border-[hsl(var(--color-border))] bg-[hsl(var(--color-card))]/80
-  backdrop-blur-[var(--blur-strength)] shadow-glow hover:shadow-[0_0_30px_rgba(0,194,255,0.4)]
-  transition-all duration-300;
-}
-
-/* Gradient text effects */
-.gradient-text {
-  background: var(--pg-gradient);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-}
-
-/* Button styles */
-.btn-primary {
-  background: var(--pg-gradient);
-  border: none;
-  color: white;
-  font-weight: 600;
-  transition: all 0.3s ease;
-}
-
-.btn-primary:hover {
-  filter: brightness(1.05);
-  transform: translateY(-2px);
-  box-shadow: 0 10px 25px rgba(0, 119, 255, 0.3);
-}
-
-/* Gradient helpers */
-.gradient-primary {
-  background: var(--pg-gradient);
-}
-
-/* Background helpers */
-body {
-  @apply bg-[var(--color-bg-dark)] text-white antialiased transition-all duration-300;
-}
-
-/* Custom scrollbar */
+/* Global scrollbar styling */
 ::-webkit-scrollbar {
   width: 8px;
+  height: 8px;
 }
 
 ::-webkit-scrollbar-track {
-  background: rgba(255, 255, 255, 0.05);
+  background: hsl(var(--muted));
 }
 
 ::-webkit-scrollbar-thumb {
-  background: rgba(160, 102, 255, 0.5);
+  background: hsl(var(--border));
   border-radius: 4px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: rgba(160, 102, 255, 0.7);
+  background: hsl(var(--accent));
+}
+
+/* Dark mode specific scrollbar */
+.dark ::-webkit-scrollbar-track {
+  background: hsl(var(--muted));
+}
+
+.dark ::-webkit-scrollbar-thumb {
+  background: hsl(var(--border));
+}
+
+.dark ::-webkit-scrollbar-thumb:hover {
+  background: hsl(var(--accent));
 }
 
 /* Responsive design helpers */
 @media (max-width: 768px) {
-  .glass {
-    backdrop-filter: blur(16px);
-  }
-  
-  .glass-card {
-    backdrop-filter: blur(16px);
-  }
-  
+  .glass,
+  .glass-card,
+  .glass-hover,
   .card-glass {
     backdrop-filter: blur(16px);
   }
+}
+
+/* Focus visible styles */
+*:focus-visible {
+  @apply outline-none ring-2 ring-ring ring-offset-2 ring-offset-background;
+}
+
+/* Selection styles - theme-aware */
+::selection {
+  background: hsl(var(--accent));
+  color: hsl(var(--accent-foreground));
+}
+
+::-moz-selection {
+  background: hsl(var(--accent));
+  color: hsl(var(--accent-foreground));
 }

@@ -12,7 +12,7 @@ export function LayoutWrapper({ children }: LayoutWrapperProps) {
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       transition={{ duration: 0.4 }}
-      className="min-h-screen bg-[var(--color-bg-dark)] text-white"
+      className="min-h-screen bg-background text-foreground transition-colors duration-300"
     >
       {children}
     </motion.main>

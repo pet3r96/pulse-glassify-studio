@@ -8,8 +8,9 @@ const Card = React.forwardRef<HTMLDivElement, React.HTMLAttributes<HTMLDivElemen
   <div
     ref={ref}
     className={cn(
-      "rounded-xl border bg-[var(--color-card)] text-[var(--color-text)] shadow-[var(--pg-shadow)] border-[var(--pg-border)]",
+      "rounded-xl border bg-card text-card-foreground shadow-sm",
       "p-6 md:p-8",
+      "transition-all duration-300",
       className,
     )}
     {...props}
@@ -64,27 +65,27 @@ const GlowCard = React.forwardRef<HTMLDivElement, GlowCardProps>(
         whileHover={{ scale: 1.02, y: -2 }}
         transition={{ type: "spring", stiffness: 240, damping: 18 }}
         className={cn(
-          "card-glass relative overflow-hidden bg-pulsegen-card group",
+          "card-glass relative overflow-hidden group",
           className
         )}
         {...(props as any)}
       >
-        <div className="absolute inset-0 bg-pulsegen-glow opacity-20 blur-3xl group-hover:opacity-30 transition-opacity duration-300" />
+        <div className="absolute inset-0 bg-gradient-to-r from-[hsl(var(--color-primary))] to-[hsl(var(--color-accent))] opacity-20 blur-3xl group-hover:opacity-30 transition-opacity duration-300" />
         <div className="relative z-10 flex flex-col gap-3">
           {(title || Icon) && (
             <div className="flex items-center gap-2">
               {Icon && (
-                <div className="flex items-center justify-center h-10 w-10 rounded-lg bg-pulsegen-glow/20 text-cyan-300">
+                <div className="flex items-center justify-center h-10 w-10 rounded-lg bg-gradient-to-r from-[hsl(var(--color-primary))]/20 to-[hsl(var(--color-accent))]/20 text-accent">
                   <Icon className="h-5 w-5" />
                 </div>
               )}
               {title && (
-                <h3 className="text-lg font-semibold tracking-tight">{title}</h3>
+                <h3 className="text-lg font-semibold tracking-tight text-card-foreground">{title}</h3>
               )}
             </div>
           )}
           {description && (
-            <p className="text-white/70 text-sm leading-relaxed">{description}</p>
+            <p className="text-muted-foreground text-sm leading-relaxed">{description}</p>
           )}
           {children}
         </div>

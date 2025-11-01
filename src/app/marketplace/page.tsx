@@ -297,13 +297,13 @@ export default function MarketplacePage() {
   const renderThemeCard = (theme: MarketplaceTheme) => (
     <Card key={theme.id} className="glass-card hover:glass-hover transition-all duration-300 group">
       <div className="relative">
-        <div className="aspect-video bg-gradient-to-br from-gray-800 to-gray-900 rounded-t-lg overflow-hidden">
+        <div className="aspect-video bg-gradient-to-br from-muted to-muted/50 rounded-t-lg overflow-hidden">
           <div className="w-full h-full flex items-center justify-center">
             <div className="text-center">
-              <div className="w-16 h-16 bg-gradient-to-r from-blue-500 to-purple-500 rounded-lg mx-auto mb-2 flex items-center justify-center">
+              <div className="w-16 h-16 bg-gradient-to-r from-[hsl(var(--color-primary))] to-[hsl(var(--color-secondary))] rounded-lg mx-auto mb-2 flex items-center justify-center">
                 <Store className="h-8 w-8 text-white" />
               </div>
-              <p className="text-white/70 text-sm">{theme.name}</p>
+              <p className="text-muted-foreground text-sm">{theme.name}</p>
             </div>
           </div>
         </div>
@@ -326,10 +326,10 @@ export default function MarketplacePage() {
       <CardContent className="p-4">
         <div className="space-y-3">
           <div>
-            <h3 className="font-semibold text-white group-hover:gradient-text transition-all">
+            <h3 className="font-semibold text-card-foreground group-hover:gradient-text transition-all">
               {theme.name}
             </h3>
-            <p className="text-sm text-white/70 line-clamp-2">
+            <p className="text-sm text-muted-foreground line-clamp-2">
               {theme.description}
             </p>
           </div>
@@ -337,16 +337,16 @@ export default function MarketplacePage() {
           <div className="flex items-center justify-between text-sm">
             <div className="flex items-center gap-1">
               {renderStars(theme.rating)}
-              <span className="text-white/70 ml-1">({theme.rating})</span>
+              <span className="text-muted-foreground ml-1">({theme.rating})</span>
             </div>
-            <div className="flex items-center gap-1 text-white/70">
+            <div className="flex items-center gap-1 text-muted-foreground">
               <Download className="h-3 w-3" />
               <span>{theme.downloads.toLocaleString()}</span>
             </div>
           </div>
 
-          <div className="flex items-center gap-2 text-sm text-white/70">
-            <div className="w-6 h-6 bg-gradient-to-r from-blue-500 to-purple-500 rounded-full flex items-center justify-center">
+          <div className="flex items-center gap-2 text-sm text-muted-foreground">
+            <div className="w-6 h-6 bg-gradient-to-r from-[hsl(var(--color-primary))] to-[hsl(var(--color-secondary))] rounded-full flex items-center justify-center">
               <span className="text-xs text-white font-medium">
                 {theme.author.name.charAt(0)}
               </span>
@@ -372,7 +372,7 @@ export default function MarketplacePage() {
               onClick={() => handlePreview(theme.id)}
               variant="outline"
               size="sm"
-              className="flex-1 border-white/20 text-white hover:bg-white/10"
+              className="flex-1"
             >
               <Eye className="h-4 w-4 mr-2" />
               Preview
@@ -384,7 +384,7 @@ export default function MarketplacePage() {
                     onClick={locked ? () => router.push('/subscribe') : () => handleApply(theme.id)}
                     variant="outline"
                     size="sm"
-                    className="flex-1 border-white/20 text-white hover:bg-white/10"
+                    className="flex-1"
                     disabled={locked}
                   >
                     <CheckCircle className="h-4 w-4 mr-2" />
@@ -439,14 +439,14 @@ export default function MarketplacePage() {
 
   return (
     <>
-    <div className="min-h-screen bg-[var(--color-bg)]">
+    <div className="min-h-screen bg-background text-foreground">
       {/* Header */}
-      <div className="glass">
-        <div className="container mx-auto px-6 py-4">
+      <div className="glass border-b border-border">
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-4">
               <Link href="/dashboard">
-                <Button variant="ghost" size="sm" className="text-white/70 hover:text-white">
+                <Button variant="ghost" size="sm" className="text-muted-foreground hover:text-foreground">
                   <ArrowLeft className="h-4 w-4 mr-2" />
                   Back to Dashboard
                 </Button>
@@ -466,14 +466,16 @@ export default function MarketplacePage() {
         </div>
       </div>
 
-      <div className="container mx-auto px-6 py-8">
+      <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {banner && (
-          <div className="glass rounded-xl p-4 mb-6 border border-[var(--pg-border)]">
+          <div className="glass rounded-xl p-4 mb-6 border border-border">
             <div className="flex items-center justify-between">
-              <div className="text-white/90">{banner}</div>
-              <Button onClick={() => router.push('/subscribe?locked=true')} variant="gradient" size="sm">
-              Manage Billing
-            </Button>
+              <div className="text-foreground">{banner}</div>
+              <Link href="/subscribe?locked=true">
+                <Button variant="gradient" size="sm">
+                  Manage Billing
+                </Button>
+              </Link>
             </div>
           </div>
         )}
@@ -483,10 +485,10 @@ export default function MarketplacePage() {
             <CardContent className="p-4">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm text-white/70">Total Themes</p>
+                  <p className="text-sm text-muted-foreground">Total Themes</p>
                   <p className="text-2xl font-bold gradient-text">{themes.length}</p>
                 </div>
-                <Store className="h-8 w-8 text-blue-500/50" />
+                <Store className="h-8 w-8 text-[hsl(var(--color-primary))]/50" />
               </div>
             </CardContent>
           </Card>
@@ -495,12 +497,12 @@ export default function MarketplacePage() {
             <CardContent className="p-4">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm text-white/70">Total Downloads</p>
+                  <p className="text-sm text-muted-foreground">Total Downloads</p>
                   <p className="text-2xl font-bold gradient-text">
                     {themes.reduce((sum, theme) => sum + theme.downloads, 0).toLocaleString()}
                   </p>
                 </div>
-                <Download className="h-8 w-8 text-green-500/50" />
+                <Download className="h-8 w-8 text-green-500/50 dark:text-green-400/50" />
               </div>
             </CardContent>
           </Card>
@@ -509,12 +511,12 @@ export default function MarketplacePage() {
             <CardContent className="p-4">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm text-white/70">Avg Rating</p>
+                  <p className="text-sm text-muted-foreground">Avg Rating</p>
                   <p className="text-2xl font-bold gradient-text">
                     {(themes.reduce((sum, theme) => sum + theme.rating, 0) / themes.length).toFixed(1)}
                   </p>
                 </div>
-                <Star className="h-8 w-8 text-yellow-500/50" />
+                <Star className="h-8 w-8 text-yellow-500/50 dark:text-yellow-400/50" />
               </div>
             </CardContent>
           </Card>
@@ -523,12 +525,12 @@ export default function MarketplacePage() {
             <CardContent className="p-4">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm text-white/70">Creators</p>
+                  <p className="text-sm text-muted-foreground">Creators</p>
                   <p className="text-2xl font-bold gradient-text">
                     {new Set(themes.map(theme => theme.author.name)).size}
                   </p>
                 </div>
-                <Users className="h-8 w-8 text-purple-500/50" />
+                <Users className="h-8 w-8 text-[hsl(var(--color-secondary))]/50" />
               </div>
             </CardContent>
           </Card>
@@ -543,24 +545,22 @@ export default function MarketplacePage() {
                   <Crown className="h-6 w-6 text-white" />
                 </div>
                 <div>
-                  <h3 className="text-lg font-semibold text-white mb-1">
+                  <h3 className="text-lg font-semibold text-card-foreground mb-1">
                     Unlock Marketplace Selling
                   </h3>
-                  <p className="text-white/70 text-sm">
+                  <p className="text-muted-foreground text-sm">
                     Upgrade to Agency Pro to sell your themes and earn revenue
                   </p>
                 </div>
               </div>
               <div className="flex items-center gap-3">
-                <Button
-                  variant="outline"
-                  className="border-white/20 text-white hover:bg-white/10"
-                  onClick={() => router.push('/subscribe')}
-                >
-                  <Crown className="h-4 w-4 mr-2" />
-                  Upgrade Now
-                  <ArrowRight className="h-4 w-4 ml-2" />
-                </Button>
+                <Link href="/subscribe">
+                  <Button variant="outline">
+                    <Crown className="h-4 w-4 mr-2" />
+                    Upgrade Now
+                    <ArrowRight className="h-4 w-4 ml-2" />
+                  </Button>
+                </Link>
               </div>
             </div>
           </CardContent>
@@ -573,23 +573,23 @@ export default function MarketplacePage() {
               {/* Search */}
               <div className="flex-1">
                 <div className="relative">
-                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-white/50" />
+                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                   <Input
                     placeholder="Search themes..."
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
-                    className="pl-10 glass"
+                    className="pl-10"
                   />
                 </div>
               </div>
 
               {/* Category Filter */}
               <div className="flex items-center gap-2">
-                <Filter className="h-4 w-4 text-white/50" />
+                <Filter className="h-4 w-4 text-muted-foreground" />
                 <select
                   value={selectedCategory}
                   onChange={(e) => setSelectedCategory(e.target.value)}
-                  className="px-3 py-2 rounded-lg glass border border-white/20 bg-transparent text-white"
+                  className="px-3 py-2 rounded-lg border border-border bg-background text-foreground"
                 >
                   {CATEGORIES.map(category => (
                     <option key={category} value={category}>{category}</option>
@@ -599,11 +599,11 @@ export default function MarketplacePage() {
 
               {/* Sort */}
               <div className="flex items-center gap-2">
-                <SortAsc className="h-4 w-4 text-white/50" />
+                <SortAsc className="h-4 w-4 text-muted-foreground" />
                 <select
                   value={sortBy}
                   onChange={(e) => setSortBy(e.target.value)}
-                  className="px-3 py-2 rounded-lg glass border border-white/20 bg-transparent text-white"
+                  className="px-3 py-2 rounded-lg border border-border bg-background text-foreground"
                 >
                   {SORT_OPTIONS.map(option => (
                     <option key={option.value} value={option.value}>{option.label}</option>
@@ -636,15 +636,11 @@ export default function MarketplacePage() {
 
         {/* Results */}
         <div className="mb-4 flex items-center justify-between">
-          <p className="text-white/70">
+              <p className="text-muted-foreground">
             Showing {filteredThemes.length} of {themes.length} themes
           </p>
           <div className="flex items-center gap-2">
-            <Button
-              variant="outline"
-              size="sm"
-              className="border-white/20 text-white hover:bg-white/10"
-            >
+            <Button variant="outline" size="sm">
               <Heart className="h-4 w-4 mr-2" />
               Wishlist
             </Button>
@@ -664,9 +660,9 @@ export default function MarketplacePage() {
         {filteredThemes.length === 0 && (
           <Card className="glass-card">
             <CardContent className="p-12 text-center">
-              <Store className="h-16 w-16 text-white/30 mx-auto mb-4" />
-              <h3 className="text-xl font-medium text-white mb-2">No themes found</h3>
-              <p className="text-white/70 mb-4">
+              <Store className="h-16 w-16 text-muted-foreground/30 mx-auto mb-4" />
+              <h3 className="text-xl font-medium text-card-foreground mb-2">No themes found</h3>
+              <p className="text-muted-foreground mb-4">
                 Try adjusting your search criteria or browse all themes
               </p>
               <Button
@@ -675,7 +671,6 @@ export default function MarketplacePage() {
                   setSelectedCategory('All');
                 }}
                 variant="outline"
-                className="border-white/20 text-white hover:bg-white/10"
               >
                 Clear Filters
               </Button>

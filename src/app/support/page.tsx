@@ -42,6 +42,7 @@ import { useToast } from '@/hooks/use-toast'
 import { supabase } from '@/lib/supabase/client'
 import { UpgradeModal } from '@/components/ui/upgrade-modal'
 import { evaluateAccess, getUserSubscriptionStatus } from '@/lib/subscription/utils'
+import Link from 'next/link'
 
 interface SupportTicket {
   id: string
@@ -401,7 +402,7 @@ export default function SupportPage() {
       case 'pending':
         return <Clock className="h-4 w-4 text-yellow-400" />
       default:
-        return <AlertCircle className="h-4 w-4 text-gray-400" />
+        return <AlertCircle className="h-4 w-4 text-muted-foreground" />
     }
   }
 
@@ -435,10 +436,10 @@ export default function SupportPage() {
 
   return (
     <>
-    <div className="min-h-screen bg-[var(--color-bg)]">
+    <div className="min-h-screen bg-background text-foreground">
       {/* Header */}
-      <div className="glass border-b border-white/10">
-        <div className="container mx-auto px-6 py-4">
+      <div className="glass border-b border-border">
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-4">
           <div className="flex items-center justify-between">
             <div>
               <h1 className="text-3xl font-heading gradient-text">Support Center</h1>
@@ -546,7 +547,7 @@ export default function SupportPage() {
         </div>
       </div>
 
-      <div className="container mx-auto px-6 py-8">
+      <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Stats Overview */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
           <Card className="glass-card">
@@ -605,32 +606,30 @@ export default function SupportPage() {
         </div>
 
         {/* Upgrade Banner */}
-        <Card className="glass-card mb-6 border-gradient bg-gradient-to-r from-blue-500/10 to-purple-500/10">
+        <Card className="glass-card mb-6 border-gradient bg-gradient-to-r from-[hsl(var(--color-primary))]/10 to-[hsl(var(--color-secondary))]/10">
           <CardContent className="p-6">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-4">
-                <div className="p-3 bg-gradient-to-r from-blue-500 to-purple-500 rounded-full">
+                <div className="p-3 bg-gradient-to-r from-[hsl(var(--color-primary))] to-[hsl(var(--color-secondary))] rounded-full">
                   <Crown className="h-6 w-6 text-white" />
                 </div>
                 <div>
-                  <h3 className="text-lg font-semibold text-white mb-1">
+                  <h3 className="text-lg font-semibold text-card-foreground mb-1">
                     Unlock Priority Support
                   </h3>
-                  <p className="text-white/70 text-sm">
+                  <p className="text-muted-foreground text-sm">
                     Upgrade to Agency Pro for faster response times and dedicated support
                   </p>
                 </div>
               </div>
               <div className="flex items-center gap-3">
-                <Button
-                  variant="outline"
-                  className="border-white/20 text-white hover:bg-white/10"
-                  onClick={() => window.location.href = '/subscribe'}
-                >
-                  <Crown className="h-4 w-4 mr-2" />
-                  Upgrade Now
-                  <ArrowRight className="h-4 w-4 ml-2" />
-                </Button>
+                <Link href="/subscribe">
+                  <Button variant="outline">
+                    <Crown className="h-4 w-4 mr-2" />
+                    Upgrade Now
+                    <ArrowRight className="h-4 w-4 ml-2" />
+                  </Button>
+                </Link>
               </div>
             </div>
           </CardContent>
@@ -748,7 +747,7 @@ export default function SupportPage() {
                           
                           <div className="flex items-center space-x-6 text-sm text-muted-foreground mb-4">
                             <div className="flex items-center space-x-2">
-                              <div className="w-6 h-6 bg-gradient-to-r from-blue-500 to-purple-500 rounded-full flex items-center justify-center">
+                              <div className="w-6 h-6 bg-gradient-to-r from-[hsl(var(--color-primary))] to-[hsl(var(--color-secondary))] rounded-full flex items-center justify-center">
                                 <span className="text-xs text-white font-bold">
                                   {ticket.created_user?.name.charAt(0)}
                                 </span>
@@ -824,7 +823,7 @@ export default function SupportPage() {
                           <p className="text-muted-foreground mb-4">{ticket.description}</p>
                           <div className="flex items-center space-x-6 text-sm text-muted-foreground">
                             <div className="flex items-center space-x-2">
-                              <div className="w-6 h-6 bg-gradient-to-r from-blue-500 to-purple-500 rounded-full flex items-center justify-center">
+                              <div className="w-6 h-6 bg-gradient-to-r from-[hsl(var(--color-primary))] to-[hsl(var(--color-secondary))] rounded-full flex items-center justify-center">
                                 <span className="text-xs text-white font-bold">
                                   {ticket.created_user?.name.charAt(0)}
                                 </span>
@@ -908,7 +907,7 @@ export default function SupportPage() {
                           <p className="text-muted-foreground mb-4 opacity-75">{ticket.description}</p>
                           <div className="flex items-center space-x-6 text-sm text-muted-foreground">
                             <div className="flex items-center space-x-2">
-                              <div className="w-6 h-6 bg-gradient-to-r from-blue-500 to-purple-500 rounded-full flex items-center justify-center">
+                              <div className="w-6 h-6 bg-gradient-to-r from-[hsl(var(--color-primary))] to-[hsl(var(--color-secondary))] rounded-full flex items-center justify-center">
                                 <span className="text-xs text-white font-bold">
                                   {ticket.created_user?.name.charAt(0)}
                                 </span>

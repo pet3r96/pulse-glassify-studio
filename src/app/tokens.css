@@ -1,53 +1,46 @@
-/* Design System Tokens - CSS Variables */
+/* Unified Design System Tokens - CSS Variables */
+/* PulseStudio Theme - Optimized for GoHighLevel Agencies */
 
 :root {
-  /* Aceternity-style Bright Blue-Violet Gradient Colors */
-  --color-bg-dark: #0b0d10;
-  --color-bg-light: #f7f9fb;
-  --color-card: #111317;
-  --color-primary: 221 89% 63%;   /* bright blue */
-  --color-secondary: 275 80% 67%; /* violet glow */
-  --color-accent: 195 90% 65%;    /* cyan edge */
-  --color-border: 0 0% 100% / 0.08;
+  /* Base Colors - Used in both light and dark */
+  --color-primary: 221 89% 63%;   /* Bright blue */
+  --color-secondary: 275 80% 67%; /* Violet glow */
+  --color-accent: 195 90% 65%;    /* Cyan edge */
   --blur-strength: 24px;
 
-  /* Color Palette */
-  --color-primary-50: #f0f9ff;
-  --color-primary-100: #e0f2fe;
-  --color-primary-200: #bae6fd;
-  --color-primary-300: #7dd3fc;
-  --color-primary-400: #38bdf8;
-  --color-primary-500: #0ea5e9;
-  --color-primary-600: #0284c7;
-  --color-primary-700: #0369a1;
-  --color-primary-800: #075985;
-  --color-primary-900: #0c4a6e;
-
-  /* Pulse Brand Colors */
-  --pulse-pink: 330 100% 70%;
-  --pulse-purple: 260 100% 70%;
-  --pulse-blue: 200 100% 60%;
-
-  /* Semantic Colors */
-  --background: 0 0% 4%;
-  --foreground: 0 0% 100%;
-  --card: 0 0% 7%;
-  --card-foreground: 0 0% 100%;
-  --popover: 0 0% 7%;
-  --popover-foreground: 0 0% 100%;
-  --primary: 221 89% 63%;  /* Updated to use new primary */
+  /* Light Mode Default */
+  --background: 0 0% 100%;
+  --foreground: 0 0% 9%;
+  --card: 0 0% 100%;
+  --card-foreground: 0 0% 9%;
+  --popover: 0 0% 100%;
+  --popover-foreground: 0 0% 9%;
+  --primary: var(--color-primary);
   --primary-foreground: 0 0% 100%;
-  --secondary: 0 0% 15%;
-  --secondary-foreground: 0 0% 100%;
-  --muted: 0 0% 15%;
-  --muted-foreground: 0 0% 65%;
-  --accent: 195 90% 65%;  /* Updated to use new accent */
+  --secondary: 0 0% 96%;
+  --secondary-foreground: 0 0% 9%;
+  --muted: 0 0% 96%;
+  --muted-foreground: 0 0% 45%;
+  --accent: var(--color-accent);
   --accent-foreground: 0 0% 100%;
   --destructive: 0 84% 60%;
   --destructive-foreground: 0 0% 100%;
-  --border: 0 0% 15%;
-  --input: 0 0% 15%;
-  --ring: 221 89% 63%;  /* Updated to use new primary */
+  --border: 0 0% 90%;
+  --input: 0 0% 90%;
+  --ring: var(--color-primary);
+
+  /* Glass morphism - Light mode */
+  --glass-bg: rgba(255, 255, 255, 0.8);
+  --glass-border: rgba(0, 0, 0, 0.1);
+  --glass-card-bg: rgba(255, 255, 255, 0.95);
+  --glass-card-border: rgba(0, 0, 0, 0.08);
+
+  /* Shadows - Light mode */
+  --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+  --shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);
+  --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+  --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+  --shadow-glow: 0 0 25px rgba(0, 119, 255, 0.15);
 
   /* Spacing Scale */
   --space-1: 0.25rem;
@@ -101,26 +94,6 @@
   --radius-3xl: 1.5rem;
   --radius-full: 9999px;
 
-  /* Shadows */
-  --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
-  --shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);
-  --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
-  --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
-  --shadow-xl: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
-  --shadow-2xl: 0 25px 50px -12px rgb(0 0 0 / 0.25);
-
-  /* Glass Effects */
-  --glass-bg: rgba(255, 255, 255, 0.05);
-  --glass-border: rgba(255, 255, 255, 0.1);
-  --glass-blur: blur(24px);
-  --glass-card-bg: rgba(255, 255, 255, 0.08);
-  --glass-card-border: rgba(255, 255, 255, 0.15);
-
-  /* Gradients */
-  --gradient-primary: linear-gradient(135deg, hsl(var(--pulse-purple)) 0%, hsl(var(--pulse-pink)) 100%);
-  --gradient-secondary: linear-gradient(135deg, hsl(var(--pulse-blue)) 0%, hsl(var(--pulse-purple)) 100%);
-  --gradient-accent: linear-gradient(135deg, hsl(var(--pulse-pink)) 0%, hsl(var(--pulse-blue)) 100%);
-
   /* Transitions */
   --transition-fast: 150ms ease-in-out;
   --transition-normal: 300ms ease-in-out;
@@ -135,54 +108,52 @@
   --z-popover: 1060;
   --z-tooltip: 1070;
   --z-toast: 1080;
+
+  /* Brand Gradients */
+  --gradient-primary: linear-gradient(135deg, hsl(var(--color-primary)) 0%, hsl(var(--color-secondary)) 100%);
+  --gradient-secondary: linear-gradient(135deg, hsl(var(--color-accent)) 0%, hsl(var(--color-primary)) 100%);
+  --gradient-accent: linear-gradient(135deg, hsl(var(--color-secondary)) 0%, hsl(var(--color-accent)) 100%);
 }
 
-/* Dark mode overrides */
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: 0 0% 4%;
-    --foreground: 0 0% 100%;
-    --card: 0 0% 7%;
-    --card-foreground: 0 0% 100%;
-    --popover: 0 0% 7%;
-    --popover-foreground: 0 0% 100%;
-    --primary: 221 89% 63%;  /* Updated to bright blue */
-    --primary-foreground: 0 0% 100%;
-    --secondary: 0 0% 15%;
-    --secondary-foreground: 0 0% 100%;
-    --muted: 0 0% 15%;
-    --muted-foreground: 0 0% 65%;
-    --accent: 195 90% 65%;  /* Updated to cyan edge */
-    --accent-foreground: 0 0% 100%;
-    --destructive: 0 84% 60%;
-    --destructive-foreground: 0 0% 100%;
-    --border: 0 0% 15%;
-    --input: 0 0% 15%;
-    --ring: 221 89% 63%;  /* Updated to bright blue */
-  }
+/* Dark Mode - Using .dark class for next-themes compatibility */
+.dark {
+  /* Dark Mode Colors */
+  --background: 0 0% 4%;
+  --foreground: 0 0% 100%;
+  --card: 0 0% 7%;
+  --card-foreground: 0 0% 100%;
+  --popover: 0 0% 7%;
+  --popover-foreground: 0 0% 100%;
+  --primary: var(--color-primary);
+  --primary-foreground: 0 0% 100%;
+  --secondary: 0 0% 15%;
+  --secondary-foreground: 0 0% 100%;
+  --muted: 0 0% 15%;
+  --muted-foreground: 0 0% 65%;
+  --accent: var(--color-accent);
+  --accent-foreground: 0 0% 100%;
+  --destructive: 0 84% 60%;
+  --destructive-foreground: 0 0% 100%;
+  --border: 0 0% 15%;
+  --input: 0 0% 15%;
+  --ring: var(--color-primary);
+
+  /* Glass morphism - Dark mode */
+  --glass-bg: rgba(255, 255, 255, 0.05);
+  --glass-border: rgba(255, 255, 255, 0.1);
+  --glass-card-bg: rgba(17, 19, 23, 0.8);
+  --glass-card-border: rgba(255, 255, 255, 0.08);
+
+  /* Shadows - Dark mode */
+  --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.2);
+  --shadow: 0 1px 3px 0 rgb(0 0 0 / 0.3), 0 1px 2px -1px rgb(0 0 0 / 0.3);
+  --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.3), 0 2px 4px -2px rgb(0 0 0 / 0.3);
+  --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.4), 0 4px 6px -4px rgb(0 0 0 / 0.4);
+  --shadow-glow: 0 0 25px rgba(0, 194, 255, 0.25);
 }
 
-/* Light mode overrides */
-@media (prefers-color-scheme: light) {
-  :root {
-    --background: 0 0% 100%;
-    --foreground: 0 0% 9%;
-    --card: 0 0% 100%;
-    --card-foreground: 0 0% 9%;
-    --popover: 0 0% 100%;
-    --popover-foreground: 0 0% 9%;
-    --primary: 221 89% 63%;  /* Updated to bright blue */
-    --primary-foreground: 0 0% 100%;
-    --secondary: 0 0% 96%;
-    --secondary-foreground: 0 0% 9%;
-    --muted: 0 0% 96%;
-    --muted-foreground: 0 0% 45%;
-    --accent: 195 90% 65%;  /* Updated to cyan edge */
-    --accent-foreground: 0 0% 100%;
-    --destructive: 0 84% 60%;
-    --destructive-foreground: 0 0% 100%;
-    --border: 0 0% 90%;
-    --input: 0 0% 90%;
-    --ring: 221 89% 63%;  /* Updated to bright blue */
-  }
+/* Light mode specific overrides */
+.light {
+  /* Ensure light mode uses the defaults from :root */
+  /* All values already set in :root for light mode */
 }

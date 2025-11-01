@@ -6,7 +6,6 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { useToast } from '@/hooks/use-toast'
-// Removed unused component imports
 import { 
   Palette,
   Store,
@@ -91,22 +90,22 @@ export default function DashboardPage() {
   const getSubscriptionBadge = (status: string) => {
     switch (status) {
       case 'active':
-        return <Badge className="bg-green-500/20 text-green-400 border-green-500/30">Active</Badge>
+        return <Badge className="bg-green-500/20 text-green-400 dark:text-green-300 border-green-500/30">Active</Badge>
       case 'trialing':
-        return <Badge className="bg-blue-500/20 text-blue-400 border-blue-500/30">Trial</Badge>
+        return <Badge className="bg-blue-500/20 text-blue-400 dark:text-blue-300 border-blue-500/30">Trial</Badge>
       case 'canceled':
-        return <Badge className="bg-red-500/20 text-red-400 border-red-500/30">Canceled</Badge>
+        return <Badge className="bg-red-500/20 text-red-400 dark:text-red-300 border-red-500/30">Canceled</Badge>
       default:
-        return <Badge className="bg-yellow-500/20 text-yellow-400 border-yellow-500/30">Incomplete</Badge>
+        return <Badge className="bg-yellow-500/20 text-yellow-400 dark:text-yellow-300 border-yellow-500/30">Incomplete</Badge>
     }
   }
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-[var(--color-bg)] flex items-center justify-center">
+      <div className="min-h-screen bg-background flex items-center justify-center">
         <div className="glass-card p-8 text-center">
-          <div className="animate-pulse-glow mb-4">
-            <div className="w-12 h-12 bg-gradient-to-r from-pink-500 to-purple-500 rounded-full mx-auto"></div>
+          <div className="animate-pulse mb-4">
+            <div className="w-12 h-12 bg-gradient-to-r from-[hsl(var(--color-primary))] to-[hsl(var(--color-secondary))] rounded-full mx-auto"></div>
           </div>
           <h2 className="text-xl font-heading gradient-text">Loading Dashboard...</h2>
         </div>
@@ -119,14 +118,14 @@ export default function DashboardPage() {
   }
 
   return (
-    <div className="min-h-screen bg-[var(--color-bg)]">
+    <div className="min-h-screen bg-background text-foreground">
       {/* Header */}
-      <div className="border-b border-white/10 glass">
-        <div className="container mx-auto px-6 py-4">
+      <div className="border-b border-border glass">
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-4">
           <div className="flex items-center justify-between">
             <div>
               <h1 className="text-2xl font-heading gradient-text">Dashboard</h1>
-              <p className="text-muted-foreground">Welcome back, {user.name}</p>
+              <p className="text-muted-foreground">Welcome back, {user.name || 'User'}</p>
             </div>
             <div className="flex items-center gap-4">
               {getSubscriptionBadge(stats.subscription_status)}
@@ -140,19 +139,19 @@ export default function DashboardPage() {
         </div>
       </div>
 
-      <div className="container mx-auto px-6 py-8">
+      <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Quick Actions */}
         <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
           <Link href="/theme-studio">
             <Card className="glass-card hover:glass-hover transition-all duration-300 group cursor-pointer">
               <CardContent className="p-6">
                 <div className="flex items-center justify-between mb-4">
-                  <div className="w-12 h-12 bg-gradient-to-r from-pink-500 to-purple-500 rounded-lg flex items-center justify-center group-hover:scale-110 transition-transform">
+                  <div className="w-12 h-12 bg-gradient-to-r from-[hsl(var(--color-primary))] to-[hsl(var(--color-secondary))] rounded-lg flex items-center justify-center group-hover:scale-110 transition-transform">
                     <Palette className="h-6 w-6 text-white" />
                   </div>
                   <ArrowRight className="h-4 w-4 text-muted-foreground group-hover:text-foreground transition-colors" />
                 </div>
-                <h3 className="font-heading text-lg mb-2 group-hover:gradient-text transition-all">
+                <h3 className="font-heading text-lg mb-2 group-hover:gradient-text transition-all text-card-foreground">
                   Theme Studio
                 </h3>
                 <p className="text-sm text-muted-foreground">
@@ -166,12 +165,12 @@ export default function DashboardPage() {
             <Card className="glass-card hover:glass-hover transition-all duration-300 group cursor-pointer">
               <CardContent className="p-6">
                 <div className="flex items-center justify-between mb-4">
-                  <div className="w-12 h-12 bg-gradient-to-r from-blue-500 to-cyan-500 rounded-lg flex items-center justify-center group-hover:scale-110 transition-transform">
+                  <div className="w-12 h-12 bg-gradient-to-r from-[hsl(var(--color-accent))] to-[hsl(var(--color-primary))] rounded-lg flex items-center justify-center group-hover:scale-110 transition-transform">
                     <Store className="h-6 w-6 text-white" />
                   </div>
                   <ArrowRight className="h-4 w-4 text-muted-foreground group-hover:text-foreground transition-colors" />
                 </div>
-                <h3 className="font-heading text-lg mb-2 group-hover:gradient-text transition-all">
+                <h3 className="font-heading text-lg mb-2 group-hover:gradient-text transition-all text-card-foreground">
                   Marketplace
                 </h3>
                 <p className="text-sm text-muted-foreground">
@@ -190,7 +189,7 @@ export default function DashboardPage() {
                   </div>
                   <ArrowRight className="h-4 w-4 text-muted-foreground group-hover:text-foreground transition-colors" />
                 </div>
-                <h3 className="font-heading text-lg mb-2 group-hover:gradient-text transition-all">
+                <h3 className="font-heading text-lg mb-2 group-hover:gradient-text transition-all text-card-foreground">
                   Project Manager
                 </h3>
                 <p className="text-sm text-muted-foreground">
@@ -209,7 +208,7 @@ export default function DashboardPage() {
                   </div>
                   <ArrowRight className="h-4 w-4 text-muted-foreground group-hover:text-foreground transition-colors" />
                 </div>
-                <h3 className="font-heading text-lg mb-2 group-hover:gradient-text transition-all">
+                <h3 className="font-heading text-lg mb-2 group-hover:gradient-text transition-all text-card-foreground">
                   Settings
                 </h3>
                 <p className="text-sm text-muted-foreground">
@@ -229,7 +228,7 @@ export default function DashboardPage() {
                   <p className="text-sm text-muted-foreground">Themes Created</p>
                   <p className="text-2xl font-bold gradient-text">{stats.themes_created}</p>
                 </div>
-                <Palette className="h-8 w-8 text-pink-500/50" />
+                <Palette className="h-8 w-8 text-[hsl(var(--color-primary))]/50" />
               </div>
             </CardContent>
           </Card>
@@ -241,7 +240,7 @@ export default function DashboardPage() {
                   <p className="text-sm text-muted-foreground">Active Themes</p>
                   <p className="text-2xl font-bold gradient-text">{stats.themes_active}</p>
                 </div>
-                <Zap className="h-8 w-8 text-purple-500/50" />
+                <Zap className="h-8 w-8 text-[hsl(var(--color-secondary))]/50" />
               </div>
             </CardContent>
           </Card>
@@ -253,7 +252,7 @@ export default function DashboardPage() {
                   <p className="text-sm text-muted-foreground">Marketplace Listings</p>
                   <p className="text-2xl font-bold gradient-text">{stats.marketplace_listings}</p>
                 </div>
-                <Store className="h-8 w-8 text-blue-500/50" />
+                <Store className="h-8 w-8 text-[hsl(var(--color-accent))]/50" />
               </div>
             </CardContent>
           </Card>
@@ -265,17 +264,17 @@ export default function DashboardPage() {
                   <p className="text-sm text-muted-foreground">Total Downloads</p>
                   <p className="text-2xl font-bold gradient-text">{stats.total_downloads}</p>
                 </div>
-                <Download className="h-8 w-8 text-green-500/50" />
+                <Download className="h-8 w-8 text-green-500/50 dark:text-green-400/50" />
               </div>
             </CardContent>
           </Card>
         </div>
 
-        {/* `Recent Activity */}
-        <div className="grid lg:grid-cols-2 gap-6">
+        {/* Recent Activity */}
+        <div className="grid lg:grid-cols-2 gap-6 mb-8">
           <Card className="glass-card">
             <CardHeader>
-              <CardTitle className="flex items-center gap-2">
+              <CardTitle className="flex items-center gap-2 text-card-foreground">
                 <TrendingUp className="h-5 w-5" />
                 Recent Themes
               </CardTitle>
@@ -285,37 +284,41 @@ export default function DashboardPage() {
               <div className="space-y-4">
                 <div className="flex items-center justify-between p-3 glass rounded-lg">
                   <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 bg-gradient-to-r from-pink-500 to-purple-500 rounded-lg flex items-center justify-center">
+                    <div className="w-10 h-10 bg-gradient-to-r from-[hsl(var(--color-primary))] to-[hsl(var(--color-secondary))] rounded-lg flex items-center justify-center">
                       <Palette className="h-5 w-5 text-white" />
                     </div>
                     <div>
-                      <p className="font-medium">Dark Glass Theme</p>
+                      <p className="font-medium text-card-foreground">Dark Glass Theme</p>
                       <p className="text-sm text-muted-foreground">Created 2 days ago</p>
                     </div>
                   </div>
                   <div className="flex items-center gap-2">
                     <Badge variant="outline" className="glass">Active</Badge>
-                    <Button size="sm" variant="ghost">
-                      <Eye className="h-4 w-4" />
-                    </Button>
+                    <Link href="/theme-studio">
+                      <Button size="sm" variant="ghost">
+                        <Eye className="h-4 w-4" />
+                      </Button>
+                    </Link>
                   </div>
                 </div>
 
                 <div className="flex items-center justify-between p-3 glass rounded-lg">
                   <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 bg-gradient-to-r from-blue-500 to-cyan-500 rounded-lg flex items-center justify-center">
+                    <div className="w-10 h-10 bg-gradient-to-r from-[hsl(var(--color-accent))] to-[hsl(var(--color-primary))] rounded-lg flex items-center justify-center">
                       <Store className="h-5 w-5 text-white" />
                     </div>
                     <div>
-                      <p className="font-medium">Modern Agency Theme</p>
+                      <p className="font-medium text-card-foreground">Modern Agency Theme</p>
                       <p className="text-sm text-muted-foreground">Created 1 week ago</p>
                     </div>
                   </div>
                   <div className="flex items-center gap-2">
                     <Badge variant="outline" className="glass">Marketplace</Badge>
-                    <Button size="sm" variant="ghost">
-                      <Eye className="h-4 w-4" />
-                    </Button>
+                    <Link href="/marketplace">
+                      <Button size="sm" variant="ghost">
+                        <Eye className="h-4 w-4" />
+                      </Button>
+                    </Link>
                   </div>
                 </div>
               </div>
@@ -324,7 +327,7 @@ export default function DashboardPage() {
 
           <Card className="glass-card">
             <CardHeader>
-              <CardTitle className="flex items-center gap-2">
+              <CardTitle className="flex items-center gap-2 text-card-foreground">
                 <MessageSquare className="h-5 w-5" />
                 Quick Actions
               </CardTitle>
@@ -332,74 +335,46 @@ export default function DashboardPage() {
             </CardHeader>
             <CardContent>
               <div className="space-y-3">
-                <Button className="w-full justify-start glass hover:glass-hover">
-                  <Plus className="h-4 w-4 mr-2" />
-                  Create New Theme
-                </Button>
-                <Button className="w-full justify-start glass hover:glass-hover" variant="outline">
-                  <Store className="h-4 w-4 mr-2" />
-                  Browse Marketplace
-                </Button>
-                <Button className="w-full justify-start glass hover:glass-hover" variant="outline">
-                  <Calendar className="h-4 w-4 mr-2" />
-                  Schedule Deployment
-                </Button>
-                <Button className="w-full justify-start glass hover:glass-hover" variant="outline">
-                  <Star className="h-4 w-4 mr-2" />
-                  Rate Themes
-                </Button>
+                <Link href="/theme-studio">
+                  <Button className="w-full justify-start glass hover:glass-hover" variant="outline">
+                    <Plus className="h-4 w-4 mr-2" />
+                    Create New Theme
+                  </Button>
+                </Link>
+                <Link href="/marketplace">
+                  <Button className="w-full justify-start glass hover:glass-hover" variant="outline">
+                    <Store className="h-4 w-4 mr-2" />
+                    Browse Marketplace
+                  </Button>
+                </Link>
+                <Link href="/theme-studio">
+                  <Button className="w-full justify-start glass hover:glass-hover" variant="outline">
+                    <Calendar className="h-4 w-4 mr-2" />
+                    Schedule Deployment
+                  </Button>
+                </Link>
+                <Link href="/marketplace">
+                  <Button className="w-full justify-start glass hover:glass-hover" variant="outline">
+                    <Star className="h-4 w-4 mr-2" />
+                    Rate Themes
+                  </Button>
+                </Link>
               </div>
             </CardContent>
           </Card>
         </div>
 
         {/* Subscription Status */}
-        <div className="mb-8">
-          <Card>
-            <CardHeader>
-              <CardTitle>Subscription Status</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <p>Subscription management coming soon...</p>
-            </CardContent>
-          </Card>
-        </div>
-
-        {/* Theme Manager */}
-        <div className="mb-8">
-          <Card>
-            <CardHeader>
-              <CardTitle>Theme Manager</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <p>Theme management coming soon...</p>
-            </CardContent>
-          </Card>
-        </div>
-
-        {/* GHL Connection Manager */}
-        <div className="mb-8">
-          <Card>
-            <CardHeader>
-              <CardTitle>GHL Connection</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <p>GHL connection management coming soon...</p>
-            </CardContent>
-          </Card>
-        </div>
-
-        {/* Deployment Dashboard */}
-        <div className="mb-8">
-          <Card>
-            <CardHeader>
-              <CardTitle>Deployment Dashboard</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <p>Deployment management coming soon...</p>
-            </CardContent>
-          </Card>
-        </div>
+        <Card className="glass-card mb-8">
+          <CardHeader>
+            <CardTitle className="text-card-foreground">Subscription Status</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <Link href="/account/billing">
+              <Button variant="outline">Manage Subscription</Button>
+            </Link>
+          </CardContent>
+        </Card>
       </div>
     </div>
   )
