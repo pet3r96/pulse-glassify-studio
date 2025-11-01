@@ -50,7 +50,7 @@ const CardFooter = React.forwardRef<HTMLDivElement, React.HTMLAttributes<HTMLDiv
 );
 CardFooter.displayName = "CardFooter";
 
-export interface GlowCardProps extends React.HTMLAttributes<HTMLDivElement> {
+export interface GlowCardProps extends Omit<React.HTMLAttributes<HTMLDivElement>, 'onDrag' | 'onDragEnd' | 'onDragStart'> {
   title?: string;
   description?: string;
   icon?: React.ComponentType<{ className?: string }>;
@@ -67,7 +67,7 @@ const GlowCard = React.forwardRef<HTMLDivElement, GlowCardProps>(
           "card-glass relative overflow-hidden bg-pulsegen-card group",
           className
         )}
-        {...props}
+        {...(props as any)}
       >
         <div className="absolute inset-0 bg-pulsegen-glow opacity-20 blur-3xl group-hover:opacity-30 transition-opacity duration-300" />
         <div className="relative z-10 flex flex-col gap-3">

@@ -133,7 +133,6 @@ export function Navigation() {
               </SheetContent>
             </Sheet>
           </div>
-        </div>
       </div>
     </nav>
   )
