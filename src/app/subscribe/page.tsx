@@ -194,11 +194,11 @@ function SubscribePageContent() {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-6xl mx-auto">
           {PRICING_PLANS.map((plan) => (
             <motion.div key={plan.id} initial={{ opacity: 0, y: 8 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.35 }}>
-              <Card
+            <Card
                 className={`relative transition-transform duration-200 hover:scale-[1.02] ${
                   plan.popular ? 'ring-2 ring-[#0077FF]' : ''
-                }`}
-              >
+              }`}
+            >
               {plan.popular && (
                 <div className="absolute -top-4 left-1/2 transform -translate-x-1/2">
                   <Badge className="px-4 py-1 gradient-primary text-white border-none">
@@ -256,7 +256,7 @@ function SubscribePageContent() {
                   )}
                 </Button>
               </CardFooter>
-              </Card>
+            </Card>
             </motion.div>
           ))}
         </div>

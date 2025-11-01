@@ -54,13 +54,18 @@ module.exports = {
       backdropBlur: {
         glass: '24px',
       },
+      backgroundImage: {
+        'pulsegen-glow': 'linear-gradient(135deg, hsl(var(--color-primary)) 0%, hsl(var(--color-accent)) 100%)',
+        'pulsegen-card': 'linear-gradient(180deg, rgba(17,19,23,0.8) 0%, rgba(12,14,18,0.95) 100%)',
+      },
       boxShadow: {
-        glow: '0 0 30px rgba(160, 102, 255, 0.3)',
+        glow: '0 0 25px rgba(0, 194, 255, 0.25)',
         'glow-pink': '0 0 30px rgba(255, 75, 203, 0.4)',
         'glow-purple': '0 0 30px rgba(160, 102, 255, 0.4)',
         'glow-blue': '0 0 30px rgba(0, 160, 255, 0.4)',
       },
       borderRadius: {
+        xl: '1rem',
         lg: "var(--radius)",
         md: "calc(var(--radius) - 2px)",
         sm: "calc(var(--radius) - 4px)",

@@ -412,16 +412,16 @@ export default function MarketplacePage() {
               <TooltipProvider>
                 <Tooltip>
                   <TooltipTrigger asChild>
-                    <Button
+              <Button
                       onClick={locked ? () => router.push('/subscribe') : () => handlePurchase(theme.id)}
-                      disabled={isLoading || locked}
-                      size="sm"
+                disabled={isLoading || locked}
+                size="sm"
                       variant="gradient"
                       className="flex-1"
-                    >
-                      <ShoppingCart className="h-4 w-4 mr-2" />
+              >
+                <ShoppingCart className="h-4 w-4 mr-2" />
                       {locked ? 'Upgrade to Unlock' : 'Buy'}
-                    </Button>
+              </Button>
                   </TooltipTrigger>
                   {locked && (
                     <TooltipContent>
@@ -472,8 +472,8 @@ export default function MarketplacePage() {
             <div className="flex items-center justify-between">
               <div className="text-white/90">{banner}</div>
               <Button onClick={() => router.push('/subscribe?locked=true')} variant="gradient" size="sm">
-                Manage Billing
-              </Button>
+              Manage Billing
+            </Button>
             </div>
           </div>
         )}

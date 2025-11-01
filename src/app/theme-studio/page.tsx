@@ -473,9 +473,9 @@ export default function ThemeStudioPage() {
           <div className="glass rounded-xl p-4 mb-6 border border-[var(--pg-border)]">
             <div className="flex items-center justify-between">
               <div className="text-white/90">
-                {banner}
+            {banner}
               </div>
-              <Button
+            <Button
               onClick={async () => {
                 try {
                   setLoadingPortal(true);
@@ -495,11 +495,11 @@ export default function ThemeStudioPage() {
                 }
               }}
                 variant="gradient"
-                size="sm"
+              size="sm"
                 disabled={loadingPortal}
-              >
+            >
                 {loadingPortal ? 'Opening...' : 'Manage Billing'}
-              </Button>
+            </Button>
             </div>
           </div>
         )}
@@ -920,16 +920,16 @@ export default function ThemeStudioPage() {
                         {blocks.map((b) => (
                           <DraggableBlock key={b.id} id={b.id} x={b.x} y={b.y} />
                         ))}
-                      </div>
+          </div>
                     </DndContext>
                   </CardContent>
                 </Card>
                 {locked && (
                   <div className="absolute inset-0 backdrop-blur-md bg-black/40 z-10 rounded-lg pointer-events-none animate-in fade-in duration-300" />
                 )}
-          </div>
         </div>
       </div>
+    </div>
     </div>
     <UpgradeModal open={upgradeOpen} onOpenChange={setUpgradeOpen} title="Upgrade Required" message="Your current plan's seat limit has been reached. Add Extra Subaccount Seat or upgrade to continue." cta="View Plans" />
     <SeatLimitModal open={seatLimitOpen} onOpenChange={setSeatLimitOpen} />

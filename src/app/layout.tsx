@@ -2,6 +2,7 @@ import type { Metadata } from 'next'
 import { Inter, Outfit } from 'next/font/google'
 import { ThemeProvider } from 'next-themes'
 import { Navigation } from '@/components/Navigation'
+import { LayoutWrapper } from '@/components/LayoutWrapper'
 import "./globals.css";
 
 const inter = Inter({ subsets: ['latin'], variable: '--pg-font-body' })
@@ -22,7 +23,9 @@ export default function RootLayout({
       <body className={`${inter.variable} ${outfit.variable}`}>
         <ThemeProvider attribute="class" defaultTheme="dark" enableSystem>
           <Navigation />
-          {children}
+          <LayoutWrapper>
+            {children}
+          </LayoutWrapper>
         </ThemeProvider>
       </body>
     </html>
